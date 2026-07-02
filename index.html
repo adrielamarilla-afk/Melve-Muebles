@@ -596,7 +596,7 @@
       <h3>Escribinos</h3>
       <p>Consultas, presupuestos y pedidos mayoristas — te respondemos por el mismo canal que prefieras.</p>
       <div class="contact-list">
-        <a class="contact-item" href="https://wa.me/5491100000000" target="_blank" rel="noopener">
+        <a class="contact-item" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
           <span class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg></span>
           <span class="ci-text"><div class="ci-k">WhatsApp</div><div class="ci-v">Pedidos y consultas rápidas</div></span>
         </a>
@@ -694,7 +694,7 @@
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/5491100000000" target="_blank" rel="noopener">
+<a class="wa-float" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg>
   WhatsApp
 </a>
@@ -795,7 +795,7 @@ function cardHTML(p){
     <div class="material">${p.material}</div>
     <div class="prices">${priceBlock}</div>
     <div class="cta-row">
-      <a class="btn small" href="https://wa.me/5491100000000?text=${waText}" target="_blank" rel="noopener">Consultar</a>
+      <a class="btn small" href="https://wa.me/5491166789801?text=${waText}" target="_blank" rel="noopener">Consultar</a>
     </div>
   </article>`;
 }
@@ -828,11 +828,11 @@ navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => na
 
 /* Lookbook (real catalog pages) */
 const pages = [
-  {src:"assets/1.jpeg", label:"Sillas industriales"},
-  {src:"assets/2.jpeg", label:"Mesas"},
-  {src:"assets/3.jpeg", label:"Mesas y escritorios"},
-  {src:"assets/4.jpeg", label:"Sillas oficina y gamer"},
-  {src:"assets/5.jpeg", label:"Sillas exclusivas importadas"},
+  {src:"1.jpeg", label:"Sillas industriales"},
+  {src:"2.jpeg", label:"Mesas"},
+  {src:"3.jpeg", label:"Mesas y escritorios"},
+  {src:"4.jpeg", label:"Sillas oficina y gamer"},
+  {src:"5.jpeg", label:"Sillas exclusivas importadas"},
 ];
 const lookbookGrid = document.getElementById("lookbookGrid");
 lookbookGrid.innerHTML = pages.map((p,i) => `
@@ -875,7 +875,7 @@ document.getElementById("quoteForm").addEventListener("submit", function(e){
   const text = encodeURIComponent(
     `Hola! Soy ${name} (tel: ${phone}).\nTipo de compra: ${type}\nZona de envío: ${zone}\nMe interesa: ${msg}`
   );
-  window.open(`https://wa.me/5491100000000?text=${text}`, "_blank");
+  window.open(`https://wa.me/5491166789801?text=${text}`, "_blank");
 });
 
 /* Reveal on scroll */
