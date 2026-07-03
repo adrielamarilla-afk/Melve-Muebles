@@ -3,887 +3,537 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Melve Muebles — Mueblería en Buenos Aires · Nórdico, Industrial, Minimalista</title>
-<meta name="description" content="Mueblería en Buenos Aires. Mesas, sillas, escritorios y muebles industriales en madera, hierro y melamina. Venta minorista y mayorista. Envíos a CABA y GBA.">
+<title>Melve Muebles — Mueblería en Buenos Aires · Sillas, Mesas y Escritorios</title>
+<meta name="description" content="Mueblería en Buenos Aires. Mesas, sillas, escritorios y muebles industriales. Venta minorista y mayorista. Envíos a CABA y GBA. Cuotas sin interés.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Monda:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-
-  /* ============ TOKENS ============ */
   :root{
-    --lino:#F3EFE7;
-    --niebla:#EAE4D8;
-    --niebla-2:#E1D9C8;
-    --tinta:#211E1A;
-    --tinta-60: rgba(33,30,26,.6);
-    --tinta-35: rgba(33,30,26,.35);
-    --roble:#9C6B3E;
-    --roble-2:#B4854F;
-    --hierro:#4B4F54;
-    --hierro-2:#33363A;
-    --oxido:#7C4A32;
-    --linea: rgba(33,30,26,.16);
-    --blanco:#FCFAF6;
-
-    --display: 'Playfair Display', Georgia, serif;
-    --body: 'Monda', Arial, sans-serif;
-
-    --maxw: 1240px;
+    --bg:#0e0e0e;
+    --soft:#1a1918;
+    --ink:#f4f2ee;
+    --muted:#a3a09a;
+    --line:#2b2a28;
+    --accent:#F26A21;
+    --accent-dark:#d9531a;
+    --dark:#000000;
+    --display:'Manrope', sans-serif;
+    --body:'Inter', Arial, sans-serif;
+    --maxw:1280px;
   }
-
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
-    margin:0;
-    background:var(--lino);
-    color:var(--tinta);
-    font-family:var(--body);
-    font-size:16px;
-    line-height:1.5;
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--body); font-size:16px; line-height:1.55;
     -webkit-font-smoothing:antialiased;
   }
-  img{max-width:100%;display:block;}
-  a{color:inherit;text-decoration:none;}
-  ul{list-style:none;margin:0;padding:0;}
-  button{font-family:inherit;cursor:pointer;}
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none; margin:0; padding:0;}
+  button{font-family:inherit; cursor:pointer;}
+  h1,h2,h3{font-family:var(--display); margin:0; letter-spacing:-.02em; line-height:1.1;}
 
-  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
-  @media (max-width:720px){ .wrap{padding:0 20px;} }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px;}
+  @media (max-width:720px){ .wrap{padding:0 18px;} }
 
-  .eyebrow{
-    font-family:var(--body);
-    font-size:12px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--roble);
-    font-weight:700;
-  }
-
-  h1,h2,h3{font-family:var(--display); font-weight:600; margin:0; color:var(--tinta);}
-  .lede{color:var(--tinta-60); font-size:17px; max-width:52ch;}
-
-  /* ============ SIGNATURE: LÍNEA DE MEDICIÓN ============ */
-  .medline{
-    display:flex; align-items:center; gap:10px;
-    width:100%;
-    color:var(--tinta-35);
-  }
-  .medline .tick{width:1px; height:9px; background:var(--tinta-35); flex:0 0 auto;}
-  .medline .rule{flex:1 1 auto; height:1px; background:var(--tinta-35);}
-  .medline .label{
-    font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-    white-space:nowrap; padding:0 6px; font-weight:700; color:var(--hierro);
-  }
-
-  .divider{ padding: 64px 0 8px; }
-
-  /* ============ HEADER ============ */
-  header{
-    position:sticky; top:0; z-index:50;
-    background:rgba(243,239,231,.92);
-    backdrop-filter: blur(6px);
-    border-bottom:1px solid var(--linea);
-  }
-  .nav-row{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 0;
-  }
-  .logo{
-    font-family:var(--display); font-weight:700; font-size:22px; letter-spacing:.02em;
-    display:flex; flex-direction:column; line-height:1;
-  }
-  .logo span{
-    font-family:var(--body); font-size:9px; letter-spacing:.28em; color:var(--roble);
-    margin-top:5px; font-weight:700;
-  }
-  nav.links{display:flex; gap:30px; align-items:center;}
-  nav.links a{
-    font-size:13px; letter-spacing:.03em; text-transform:uppercase; font-weight:700;
-    color:var(--hierro); position:relative; padding:4px 0;
-  }
-  nav.links a:hover{color:var(--roble);}
-  .nav-cta{
-    display:flex; align-items:center; gap:14px;
-  }
   .btn{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:11px 20px;
-    border:1px solid var(--tinta);
-    font-size:12px; letter-spacing:.08em; text-transform:uppercase; font-weight:700;
-    background:var(--tinta); color:var(--lino);
-    transition:.2s ease;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 22px; font-weight:700; font-size:14px; border-radius:10px;
+    border:1.5px solid var(--accent); background:var(--accent); color:#fff;
+    transition:.18s ease;
   }
-  .btn:hover{background:var(--oxido); border-color:var(--oxido);}
-  .btn.ghost{background:transparent; color:var(--tinta); border-color:var(--tinta);}
-  .btn.ghost:hover{background:var(--tinta); color:var(--lino);}
-  .btn.small{padding:9px 14px; font-size:11px;}
+  .btn:hover{background:var(--accent-dark); border-color:var(--accent-dark);}
+  .btn.accent{background:var(--accent); border-color:var(--accent);}
+  .btn.accent:hover{background:var(--accent-dark); border-color:var(--accent-dark);}
+  .btn.ghost{background:transparent; color:var(--ink); border-color:rgba(255,255,255,.28);}
+  .btn.ghost:hover{background:#fff; color:#111; border-color:#fff;}
+  .btn.sm{padding:10px 16px; font-size:13px; border-radius:8px;}
 
+  /* HEADER */
+  header{
+    position:sticky; top:0; z-index:60; background:rgba(14,14,14,.92);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 0;}
+  .logo{display:flex; align-items:center;}
+  .logo img{height:52px; width:auto; display:block;}
+  @media (max-width:520px){ .logo img{height:42px;} }
+  nav.links{display:flex; gap:28px; align-items:center;}
+  nav.links a{font-size:14px; font-weight:600; color:var(--ink); opacity:.85;}
+  nav.links a:hover{color:var(--accent); opacity:1;}
+  .nav-cta{display:flex; align-items:center; gap:12px;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
-  .menu-toggle span{width:22px; height:2px; background:var(--tinta);}
-
+  .menu-toggle span{width:24px; height:2px; background:var(--ink); border-radius:2px;}
   @media (max-width:900px){
     nav.links{display:none;}
     .menu-toggle{display:flex;}
     nav.links.open{
       display:flex; flex-direction:column; align-items:flex-start; gap:0;
-      position:absolute; top:100%; left:0; right:0; background:var(--lino);
-      border-bottom:1px solid var(--linea); padding:6px 20px 18px;
+      position:absolute; top:100%; left:0; right:0; background:#fff;
+      border-bottom:1px solid var(--line); padding:8px 18px 16px;
     }
-    nav.links.open a{padding:12px 0; width:100%; border-bottom:1px solid var(--linea);}
+    nav.links.open a{padding:13px 0; width:100%; border-bottom:1px solid var(--line);}
+    .nav-cta .btn.desk{display:none;}
   }
 
-  /* ============ HERO ============ */
-  .hero{
-    padding:78px 0 40px;
-    display:grid; grid-template-columns:1.1fr .9fr; gap:60px; align-items:center;
-  }
-  @media (max-width:900px){ .hero{grid-template-columns:1fr; gap:40px; padding-top:48px;} }
+  /* HERO */
+  .hero{padding:64px 0 42px; display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero{grid-template-columns:1fr; gap:34px; padding:40px 0 26px;} }
+  .eyebrow{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); background:rgba(242,106,33,.14); padding:7px 13px; border-radius:999px; margin-bottom:20px;}
+  .hero h1{font-size:clamp(36px,5.4vw,58px); font-weight:800;}
+  .hero h1 span{color:var(--accent);}
+  .hero p.lede{color:var(--muted); font-size:18px; max-width:48ch; margin:20px 0 28px;}
+  .hero-actions{display:flex; gap:12px; flex-wrap:wrap;}
+  .hero-badges{display:flex; flex-wrap:wrap; gap:10px; margin-top:30px;}
+  .hero-badges span{font-size:13px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:7px;}
+  .hero-badges span::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent);}
+  .hero-visual{border-radius:18px; overflow:hidden; border:1px solid var(--line); box-shadow:0 24px 60px rgba(0,0,0,.10); background:var(--soft);}
+  .hero-visual img{width:100%; height:100%; object-fit:cover;}
 
-  .hero h1{
-    font-size:clamp(38px,5vw,60px);
-    line-height:1.04;
-    letter-spacing:-.01em;
-  }
-  .hero h1 em{font-style:italic; color:var(--roble); font-weight:500;}
-  .hero .lede{margin:22px 0 30px; font-size:18px;}
+  /* STRIP */
+  .strip{background:#000; color:#fff; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .strip-inner{display:flex; justify-content:center; gap:44px; flex-wrap:wrap; font-size:13.5px; font-weight:600; letter-spacing:.02em;}
+  .strip-inner span{display:flex; align-items:center; gap:9px; opacity:.92;}
+  .strip-inner svg{width:17px; height:17px; stroke:var(--accent);}
 
-  .hero-badges{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:34px;}
-  .badge{
-    border:1px solid var(--linea); padding:8px 14px;
-    font-size:11.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
-    color:var(--hierro); background:var(--blanco);
-  }
-  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  /* SECTION */
+  .sec{padding:64px 0;}
+  .sec-head{display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:34px; flex-wrap:wrap;}
+  .sec-head h2{font-size:clamp(28px,3.6vw,40px); font-weight:800;}
+  .sec-head p{color:var(--muted); font-size:16px; margin:8px 0 0; max-width:52ch;}
+  .sec-kicker{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:10px;}
 
-  .hero-visual{ position:relative; }
-  .blueprint-card{
-    background:var(--blanco);
-    border:1px solid var(--linea);
-    padding:30px 30px 22px;
-  }
-  .blueprint-card svg{width:100%; height:auto; display:block;}
-  .spec-caption{
-    display:flex; justify-content:space-between; align-items:baseline;
-    margin-top:16px; padding-top:14px; border-top:1px dashed var(--linea);
-  }
-  .spec-caption .name{font-family:var(--display); font-style:italic; font-size:15px;}
-  .spec-caption .val{font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--roble); font-weight:700;}
+  /* FILTERS */
+  .filters{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px;}
+  .filters button{padding:9px 18px; border-radius:999px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font-weight:600; font-size:13.5px; transition:.15s ease;}
+  .filters button:hover{border-color:var(--accent);}
+  .filters button.active{background:var(--accent); border-color:var(--accent); color:#fff;}
 
-  /* ============ CATEGORY NAV ============ */
-  .catnav{padding:10px 0 6px;}
-  .catnav-inner{
-    display:flex; gap:0; border-top:1px solid var(--tinta); border-bottom:1px solid var(--tinta);
-    overflow-x:auto;
+  /* CATALOG GRID */
+  .catalog-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:22px;}
+  @media (max-width:1080px){ .catalog-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:760px){ .catalog-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:460px){ .catalog-grid{grid-template-columns:1fr;} }
+  .prod{
+    border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--soft);
+    display:flex; flex-direction:column; transition:.2s ease;
   }
-  .catnav-inner a{
-    padding:16px 22px; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:700;
-    white-space:nowrap; border-right:1px solid var(--linea); color:var(--hierro);
-  }
-  .catnav-inner a:last-child{border-right:none;}
-  .catnav-inner a:hover{color:var(--roble); background:var(--niebla);}
+  .prod:hover{box-shadow:0 16px 40px rgba(0,0,0,.5); transform:translateY(-3px); border-color:var(--accent);}
+  .prod-img{position:relative; aspect-ratio:1/1; overflow:hidden; background:var(--soft); cursor:pointer;}
+  .prod-img img{width:100%; height:100%; object-fit:cover; transition:.4s ease;}
+  .prod:hover .prod-img img{transform:scale(1.05);}
+  .prod-img .zoom{position:absolute; top:10px; right:10px; background:rgba(255,255,255,.92); border-radius:8px; padding:6px; display:flex; box-shadow:0 2px 8px rgba(0,0,0,.12); opacity:0; transition:.2s;}
+  .prod:hover .prod-img .zoom{opacity:1;}
+  .prod-img .zoom svg{width:16px; height:16px; stroke:var(--ink);}
+  .prod-foot{padding:12px; display:flex;}
+  .prod-foot .btn{flex:1;}
 
-  /* ============ PRICE TOGGLE (global) ============ */
-  .price-toggle-bar{
-    display:flex; align-items:center; justify-content:flex-end; gap:12px;
-    padding:22px 0 0;
-  }
-  .price-toggle-bar .lbl{font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--tinta-60); font-weight:700;}
-  .switch{
-    position:relative; width:52px; height:26px; background:var(--hierro); border-radius:999px; border:none; padding:3px;
-    display:flex; align-items:center;
-  }
-  .switch .knob{
-    width:20px; height:20px; background:var(--lino); border-radius:50%;
-    transform:translateX(0); transition:.2s ease;
-  }
-  .switch.on{background:var(--roble);}
-  .switch.on .knob{transform:translateX(26px);}
+  /* FEATURES */
+  .features{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  @media (max-width:820px){ .features{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:440px){ .features{grid-template-columns:1fr;} }
+  .feat{background:var(--soft); border-radius:14px; padding:26px 22px;}
+  .feat .ic{width:44px; height:44px; border-radius:11px; background:var(--bg); display:flex; align-items:center; justify-content:center; margin-bottom:14px; border:1px solid var(--line);}
+  .feat .ic svg{width:22px; height:22px; stroke:var(--accent);}
+  .feat h3{font-size:17px; font-weight:700; margin-bottom:6px;}
+  .feat p{color:var(--muted); font-size:14px; margin:0;}
 
-  /* ============ SECTIONS ============ */
-  section.category{padding:56px 0 10px;}
-  .cat-head{
-    display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
-    margin-bottom:30px; flex-wrap:wrap;
-  }
-  .cat-head h2{font-size:clamp(28px,3.4vw,40px);}
-  .cat-head .lede{font-size:15px; margin-top:8px;}
-  .cat-index{font-family:var(--display); font-style:italic; font-size:15px; color:var(--roble);}
+  /* BANNER */
+  .banner{background:linear-gradient(120deg,#F26A21,#c9420f); color:#fff; border-radius:20px; padding:44px; display:flex; align-items:center; justify-content:space-between; gap:30px; flex-wrap:wrap;}
+  .banner h2{color:#fff; font-size:clamp(24px,3vw,34px); font-weight:800; margin-bottom:10px;}
+  .banner p{color:rgba(255,255,255,.9); font-size:15px; margin:0; max-width:50ch;}
+  .banner .big{font-family:var(--display); font-weight:800; font-size:64px; color:#fff; line-height:1;}
+  .banner .btn.accent{background:#fff; color:#c9420f; border-color:#fff;}
+  .banner .btn.accent:hover{background:#111; color:#fff; border-color:#111;}
 
-  .grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
-    background:var(--linea); border:1px solid var(--linea);
-  }
-  @media (max-width:1080px){ .grid{grid-template-columns:repeat(3,1fr);} }
-  @media (max-width:760px){ .grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:480px){ .grid{grid-template-columns:1fr;} }
+  /* CONTACT */
+  .contact{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  @media (max-width:820px){ .contact{grid-template-columns:1fr;} }
+  .cta-card{border:1px solid var(--line); border-radius:16px; padding:32px;}
+  .cta-card h3{font-size:22px; font-weight:800; margin-bottom:8px;}
+  .cta-card p{color:var(--muted); font-size:15px; margin:0 0 22px;}
+  .contact-list{display:flex; flex-direction:column; gap:12px;}
+  .ci{display:flex; align-items:center; gap:14px; padding:14px; border:1px solid var(--line); border-radius:12px; transition:.18s;}
+  .ci:hover{border-color:var(--accent); background:rgba(242,106,33,.10);}
+  .ci .ic{width:42px; height:42px; border-radius:10px; background:var(--soft); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .ci .ic svg{width:20px; height:20px; stroke:var(--ink);}
+  .ci .k{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700;}
+  .ci .v{font-size:16px; font-weight:600;}
+  .form{display:flex; flex-direction:column; gap:13px;}
+  .form input,.form select,.form textarea{width:100%; border:1px solid var(--line); border-radius:10px; padding:13px 14px; font-family:var(--body); font-size:15px; color:var(--ink); background:var(--soft);}
+  .form input::placeholder,.form textarea::placeholder{color:#77746e;}
+  .form input:focus,.form select:focus,.form textarea:focus{outline:none; border-color:var(--accent);}
+  .form textarea{resize:vertical; min-height:90px;}
+  .form label{font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700; margin-bottom:6px; display:block;}
+  .form .row{display:grid; grid-template-columns:1fr 1fr; gap:13px;}
+  @media (max-width:520px){ .form .row{grid-template-columns:1fr;} }
 
-  .card{
-    background:var(--blanco);
-    padding:22px 20px 20px;
-    display:flex; flex-direction:column;
-    transition:.2s ease;
-  }
-  .card:hover{background:var(--niebla);}
-  .card .icon{
-    height:96px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;
-  }
-  .card .icon svg{width:auto; height:88px; stroke:var(--hierro);}
-  .card:hover .icon svg{stroke:var(--roble);}
-  .card .tag{
-    font-size:10px; letter-spacing:.1em; text-transform:uppercase; font-weight:700;
-    color:var(--roble); margin-bottom:6px;
-  }
-  .card h3{font-size:18px; font-weight:600; margin-bottom:4px;}
-  .card .material{font-size:12.5px; color:var(--tinta-60); margin-bottom:16px;}
-  .card .prices{margin-top:auto; border-top:1px dashed var(--linea); padding-top:12px;}
-  .card .price-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2px;}
-  .card .price-row .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--tinta-60);}
-  .card .price-row .v{font-size:16px; font-weight:700; font-family:var(--display);}
-  .card .price-row.minor{display:block;}
-  .card .price-row.wholesale .v{color:var(--roble);}
-  .card .consultar{font-size:13px; font-style:italic; color:var(--tinta-60); font-family:var(--display);}
-  .card .cta-row{display:flex; gap:8px; margin-top:14px;}
-  .card .cta-row .btn{flex:1; justify-content:center; padding:9px 10px; font-size:10.5px;}
+  /* FOOTER */
+  footer{background:#000; color:rgba(255,255,255,.66); padding:52px 0 26px; margin-top:24px; border-top:1px solid var(--line);}
+  .foot-top{display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:34px; padding-bottom:34px; border-bottom:1px solid rgba(255,255,255,.12);}
+  @media (max-width:720px){ .foot-top{grid-template-columns:1fr 1fr;} }
+  .foot-top h4{color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px; font-family:var(--body); font-weight:700;}
+  .foot-top a,.foot-top p{font-size:14px; line-height:2; color:rgba(255,255,255,.66);}
+  .foot-top a:hover{color:var(--accent);}
+  .foot-logo{font-family:var(--display); font-weight:800; font-size:24px; color:#fff; margin-bottom:10px;}
+  .foot-bottom{display:flex; justify-content:space-between; padding-top:22px; font-size:13px; color:rgba(255,255,255,.45); flex-wrap:wrap; gap:8px;}
 
-  /* ============ WHOLESALE BANNER ============ */
-  .wholesale-banner{
-    margin:60px 0; padding:34px 36px;
-    background:var(--tinta); color:var(--lino);
-    display:flex; justify-content:space-between; align-items:center; gap:30px; flex-wrap:wrap;
-  }
-  .wholesale-banner h3{color:var(--lino); font-size:24px; margin-bottom:8px;}
-  .wholesale-banner p{margin:0; color:rgba(252,250,246,.7); font-size:13.5px; max-width:56ch;}
-  .wholesale-banner .num{font-family:var(--display); font-size:44px; color:var(--roble-2); line-height:1;}
+  /* WHATSAPP FLOAT */
+  .wa{position:fixed; bottom:22px; right:22px; z-index:80; background:#25D366; color:#fff; border-radius:999px; padding:14px 20px; font-weight:700; font-size:14px; display:flex; align-items:center; gap:9px; box-shadow:0 8px 26px rgba(0,0,0,.22);}
+  .wa svg{width:20px; height:20px;}
+  .wa:hover{background:#1ebe57;}
 
-  /* ============ ABOUT ============ */
-  .about{padding:70px 0; display:grid; grid-template-columns:.9fr 1.1fr; gap:70px; align-items:center;}
-  @media (max-width:900px){ .about{grid-template-columns:1fr; gap:36px;} }
-  .about-stats{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--linea); border:1px solid var(--linea); margin-top:30px;}
-  .stat{background:var(--blanco); padding:20px;}
-  .stat .n{font-family:var(--display); font-size:30px; color:var(--roble);}
-  .stat .d{font-size:12px; color:var(--tinta-60); margin-top:4px;}
-
-  .materials-list{display:flex; gap:0; margin-top:30px; border-top:1px solid var(--tinta); border-bottom:1px solid var(--tinta);}
-  .materials-list div{flex:1; padding:16px 4px; text-align:center; border-right:1px solid var(--linea);}
-  .materials-list div:last-child{border-right:none;}
-  .materials-list .m-name{font-family:var(--display); font-style:italic; font-size:15px;}
-  .materials-list .m-sub{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--tinta-60); margin-top:3px;}
-
-  /* ============ CATALOGO PAGES (real photos) ============ */
-  .lookbook{padding:60px 0;}
-  .lookbook-grid{
-    display:grid; grid-template-columns:repeat(5,1fr); gap:14px;
-  }
-  @media (max-width:900px){ .lookbook-grid{grid-template-columns:repeat(2,1fr);} }
-  .lookbook-item{
-    border:1px solid var(--linea); background:var(--blanco); cursor:pointer; overflow:hidden;
-    position:relative;
-  }
-  .lookbook-item img{transition:.35s ease; width:100%; height:auto;}
-  .lookbook-item:hover img{transform:scale(1.035);}
-  .lookbook-item .lb-label{
-    position:absolute; bottom:0; left:0; right:0;
-    background:linear-gradient(0deg, rgba(33,30,26,.82), transparent);
-    color:#fff; font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:700;
-    padding:26px 12px 10px;
-  }
-
-  /* Lightbox */
-  .lightbox{
-    position:fixed; inset:0; background:rgba(33,30,26,.94); z-index:200;
-    display:none; align-items:center; justify-content:center; padding:40px;
-  }
+  /* LIGHTBOX */
+  .lightbox{position:fixed; inset:0; background:rgba(20,20,20,.94); z-index:200; display:none; align-items:center; justify-content:center; padding:34px;}
   .lightbox.open{display:flex;}
-  .lightbox img{max-height:88vh; max-width:88vw; border:1px solid rgba(255,255,255,.15);}
-  .lightbox-close{
-    position:absolute; top:26px; right:34px; color:#fff; font-size:14px; letter-spacing:.1em;
-    text-transform:uppercase; border:1px solid rgba(255,255,255,.4); padding:10px 16px; background:none;
-  }
-  .lightbox-nav{position:absolute; top:50%; transform:translateY(-50%); background:none; border:none; color:#fff; font-size:34px; padding:14px; font-family:var(--display);}
-  .lightbox-nav.prev{left:14px;}
-  .lightbox-nav.next{right:14px;}
+  .lightbox img{max-height:84vh; max-width:90vw; border-radius:10px;}
+  .lb-btn{position:absolute; background:rgba(255,255,255,.12); border:none; color:#fff; width:52px; height:52px; border-radius:50%; font-size:26px; display:flex; align-items:center; justify-content:center;}
+  .lb-btn:hover{background:rgba(255,255,255,.24);}
+  .lb-close{top:24px; right:28px; width:46px; height:46px; font-size:20px;}
+  .lb-prev{left:20px; top:50%; transform:translateY(-50%);}
+  .lb-next{right:20px; top:50%; transform:translateY(-50%);}
+  .lb-wa{position:absolute; bottom:26px; left:50%; transform:translateX(-50%);}
 
-  /* ============ CONTACT ============ */
-  .contact{padding:70px 0 30px; display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--linea); border:1px solid var(--linea);}
-  @media (max-width:900px){ .contact{grid-template-columns:1fr;} }
-  .contact-panel{background:var(--blanco); padding:44px 40px;}
-  .contact-panel h3{font-size:26px; margin-bottom:16px;}
-  .contact-panel p{color:var(--tinta-60); font-size:14.5px; margin-bottom:26px; max-width:44ch;}
-
-  .contact-list{display:flex; flex-direction:column; gap:0;}
-  .contact-item{
-    display:flex; align-items:center; gap:14px; padding:16px 0; border-top:1px solid var(--linea);
-  }
-  .contact-item:last-child{border-bottom:1px solid var(--linea);}
-  .contact-item .ci-icon{
-    width:36px; height:36px; flex:0 0 auto; border:1px solid var(--linea); display:flex; align-items:center; justify-content:center;
-  }
-  .contact-item .ci-icon svg{width:17px; height:17px; stroke:var(--hierro);}
-  .contact-item .ci-text .ci-k{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--tinta-60); font-weight:700;}
-  .contact-item .ci-text .ci-v{font-size:15px; font-weight:600;}
-  .contact-item:hover .ci-v{color:var(--roble);}
-
-  .form-grid{display:flex; flex-direction:column; gap:14px;}
-  .form-grid input, .form-grid select, .form-grid textarea{
-    width:100%; border:1px solid var(--linea); background:var(--lino);
-    padding:13px 14px; font-family:var(--body); font-size:14px; color:var(--tinta);
-  }
-  .form-grid textarea{resize:vertical; min-height:90px;}
-  .form-grid label{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--tinta-60); font-weight:700; margin-bottom:6px; display:block;}
-  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media (max-width:520px){ .form-row{grid-template-columns:1fr;} }
-
-  .zone-note{
-    margin-top:18px; padding:14px 16px; border:1px dashed var(--linea); font-size:12.5px; color:var(--tinta-60);
-    display:flex; gap:10px; align-items:flex-start;
-  }
-
-  .qr-panel{
-    margin-top:14px; padding:16px; border:1px solid var(--linea); background:var(--lino);
-    display:flex; gap:16px; align-items:center;
-  }
-  .qr-panel img{border:1px solid var(--linea); flex:0 0 auto;}
-  .qr-panel .qr-k{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--roble); font-weight:700; margin-bottom:4px;}
-  .qr-panel .qr-v{font-size:12.5px; color:var(--tinta-60); line-height:1.5;}
-
-  /* ============ FOOTER ============ */
-  footer{background:var(--tinta); color:rgba(252,250,246,.7); padding:56px 0 26px; margin-top:40px;}
-  .footer-top{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; padding-bottom:40px; border-bottom:1px solid rgba(252,250,246,.14);}
-  @media (max-width:800px){ .footer-top{grid-template-columns:1fr 1fr; row-gap:32px;} }
-  .footer-top h4{color:#fff; font-family:var(--body); font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:16px;}
-  .footer-top a, .footer-top p{font-size:13.5px; line-height:2.1; color:rgba(252,250,246,.65);}
-  .footer-logo{font-family:var(--display); font-size:24px; color:#fff; margin-bottom:10px;}
-  .footer-bottom{display:flex; justify-content:space-between; padding-top:22px; font-size:11.5px; color:rgba(252,250,246,.45); flex-wrap:wrap; gap:10px;}
-
-  /* Whatsapp float */
-  .wa-float{
-    position:fixed; bottom:22px; right:22px; z-index:100;
-    background:var(--tinta); color:var(--lino); border:1px solid var(--roble);
-    padding:13px 18px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:700;
-    display:flex; align-items:center; gap:9px;
-    box-shadow:0 6px 20px rgba(33,30,26,.18);
-  }
-  .wa-float svg{width:16px; height:16px;}
-  .wa-float:hover{background:var(--oxido);}
-
-  .reveal{opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease;}
-  .reveal.show{opacity:1; transform:translateY(0);}
-
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    .reveal{opacity:1; transform:none; transition:none;}
-    .lookbook-item img{transition:none;}
-  }
-
-  :focus-visible{outline:2px solid var(--roble); outline-offset:2px;}
+  .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.show{opacity:1; transform:none;}
+  @media (prefers-reduced-motion:reduce){ .reveal{opacity:1; transform:none; transition:none;} }
 </style>
 </head>
 <body>
 
-<!-- ============ HEADER ============ -->
+<!-- HEADER -->
 <header>
-  <div class="wrap nav-row">
-    <a href="#inicio" class="logo">MELVE<span>MUEBLES · BUENOS AIRES</span></a>
+  <div class="wrap nav">
+    <a href="#inicio" class="logo"><img src="https://res.cloudinary.com/dbepkj4h/image/upload/e_trim/f_auto,q_auto,h_140/Dise%C3%B1o_sin_t%C3%ADtulo_vtjddd.png" alt="Melve Muebles"></a>
     <nav class="links" id="navLinks">
-      <a href="#sillas-industrial">Sillas</a>
-      <a href="#mesas">Mesas</a>
-      <a href="#escritorios">Escritorios &amp; Gamer</a>
-      <a href="#importadas">Importadas</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#mayorista">Mayorista</a>
       <a href="#nosotros">Nosotros</a>
       <a href="#contacto">Contacto</a>
     </nav>
     <div class="nav-cta">
-      <a href="#contacto" class="btn small">Pedido mayorista</a>
+      <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" class="btn accent sm desk">WhatsApp</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
 
-<!-- ============ HERO ============ -->
+<!-- HERO -->
 <section id="inicio">
   <div class="wrap hero">
     <div>
-      <p class="eyebrow">Mueblería · CABA &amp; GBA</p>
-      <h1>Muebles de perfil <em>fino</em>,<br>hechos para durar.</h1>
-      <p class="lede">Diseñamos y vendemos mesas, sillas, escritorios y muebles industriales en madera, hierro y melamina. Líneas nórdicas, minimalistas e industriales — livianas a la vista, sólidas en el uso.</p>
-      <div class="hero-badges">
-        <span class="badge">Envíos a CABA y GBA</span>
-        <span class="badge">Venta minorista y mayorista</span>
-        <span class="badge">Madera · Hierro · Melamina</span>
-        <span class="badge">Pedidos por volumen</span>
-      </div>
+      <span class="eyebrow">Mueblería · CABA &amp; GBA</span>
+      <h1>Muebles que combinan <span>diseño</span> y durabilidad.</h1>
+      <p class="lede">Mesas, sillas, escritorios y muebles industriales en madera, hierro y melamina. Venta minorista y mayorista, con envíos a todo Buenos Aires.</p>
       <div class="hero-actions">
-        <a href="#sillas-industrial" class="btn">Ver catálogo</a>
-        <a href="#contacto" class="btn ghost">Hacer un pedido</a>
+        <a href="#catalogo" class="btn accent">Ver catálogo</a>
+        <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" class="btn ghost">Consultar por WhatsApp</a>
+      </div>
+      <div class="hero-badges">
+        <span>Envíos a CABA y GBA</span>
+        <span>Cuotas sin interés</span>
+        <span>Minorista y mayorista</span>
       </div>
     </div>
     <div class="hero-visual">
-      <div class="blueprint-card">
-        <svg viewBox="0 0 360 300" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#4B4F54" stroke-width="1.3">
-          <!-- chair blueprint -->
-          <path d="M110 60 H250 V150 H110 Z"/>
-          <path d="M110 150 L95 260"/>
-          <path d="M250 150 L265 260"/>
-          <path d="M120 150 L108 260"/>
-          <path d="M240 150 L252 260"/>
-          <path d="M108 260 H95"/>
-          <path d="M252 260 H265"/>
-          <path d="M95 205 L265 205" stroke-dasharray="2 4"/>
-          <path d="M110 60 L110 20"/>
-          <path d="M250 60 L250 20"/>
-          <path d="M110 20 H250" stroke-dasharray="2 4"/>
-          <circle cx="180" cy="20" r="2" fill="#9C6B3E" stroke="none"/>
-        </svg>
-        <div class="spec-caption">
-          <span class="name">Silla Eames · estructura hierro</span>
-          <span class="val">Perfil 12mm</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap divider">
-    <div class="medline">
-      <span class="tick"></span><span class="rule"></span>
-      <span class="label">Nórdico · Minimalista · Industrial</span>
-      <span class="rule"></span><span class="tick"></span>
+      <img id="heroImg" alt="Muebles Melve" loading="eager">
     </div>
   </div>
 </section>
 
-<!-- ============ CATEGORY NAV ============ -->
-<div class="wrap catnav">
-  <div class="catnav-inner">
-    <a href="#sillas-industrial">01 · Sillas industriales</a>
-    <a href="#mesas">02 · Mesas</a>
-    <a href="#escritorios">03 · Escritorios &amp; oficina</a>
-    <a href="#sillas-gamer">04 · Sillas oficina &amp; gamer</a>
-    <a href="#importadas">05 · Sillas exclusivas importadas</a>
+<!-- STRIP -->
+<div class="strip">
+  <div class="wrap strip-inner">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 13h13V6H3zM16 8h4l1 5h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg>Envíos a CABA y GBA</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg>Cuotas sin interés</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 7l8-4 8 4-8 4z"/><path d="M4 7v10l8 4 8-4V7"/></svg>Compra mayorista 20+ bultos</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l2.5 5 5.5.8-4 4 1 5.5-5-2.7-5 2.7 1-5.5-4-4 5.5-.8z"/></svg>Fabricación propia</span>
   </div>
 </div>
 
-<div class="wrap price-toggle-bar">
-  <span class="lbl">Minorista</span>
-  <button class="switch" id="priceSwitch" aria-label="Cambiar entre precio minorista y mayorista"><span class="knob"></span></button>
-  <span class="lbl">Mayorista (20+ bultos)</span>
-</div>
-
-<!-- ============ SILLAS INDUSTRIAL ============ -->
-<section class="category" id="sillas-industrial">
+<!-- CATALOGO -->
+<section class="sec" id="catalogo">
   <div class="wrap">
-    <div class="cat-head">
+    <div class="sec-head">
       <div>
-        <h2>Sillas industriales</h2>
-        <p class="lede">Estructuras de hierro con perfil fino y asientos en madera o polipropileno. Se venden por pack de 4 salvo indicación.</p>
+        <div class="sec-kicker">Catálogo</div>
+        <h2>Nuestros productos</h2>
+        <p>Tocá cualquier modelo para verlo en grande. Para precios y pedidos, escribinos por WhatsApp — te respondemos al toque.</p>
       </div>
-      <span class="cat-index">Línea 01</span>
     </div>
-    <div class="grid" id="grid-sillas-industrial"></div>
+    <div class="filters" id="filters"></div>
+    <div class="catalog-grid" id="catalogGrid"></div>
   </div>
 </section>
 
-<!-- ============ MESAS ============ -->
-<section class="category" id="mesas">
+<!-- FEATURES -->
+<section class="sec" style="padding-top:0;">
   <div class="wrap">
-    <div class="cat-head">
-      <div>
-        <h2>Mesas</h2>
-        <p class="lede">Mesas de madera, hierro y vidrio templado. Medidas pensadas para living-comedor y espacios de trabajo.</p>
-      </div>
-      <span class="cat-index">Línea 02</span>
-    </div>
-    <div class="grid" id="grid-mesas"></div>
-  </div>
-</section>
-
-<!-- ============ ESCRITORIOS ============ -->
-<section class="category" id="escritorios">
-  <div class="wrap">
-    <div class="cat-head">
-      <div>
-        <h2>Escritorios &amp; oficina</h2>
-        <p class="lede">Escritorios personalizados para oficina y setups gamer, con estructura de hierro fino y tablero en melamina.</p>
-      </div>
-      <span class="cat-index">Línea 03</span>
-    </div>
-    <div class="grid" id="grid-escritorios"></div>
-  </div>
-</section>
-
-<!-- ============ SILLAS OFICINA/GAMER ============ -->
-<section class="category" id="sillas-gamer">
-  <div class="wrap">
-    <div class="cat-head">
-      <div>
-        <h2>Sillas de oficina &amp; gamer</h2>
-        <p class="lede">Del sillón ejecutivo a la silla gamer con luz — confort y estructura pensados para largas jornadas.</p>
-      </div>
-      <span class="cat-index">Línea 04</span>
-    </div>
-    <div class="grid" id="grid-sillas-gamer"></div>
-  </div>
-
-  <div class="wrap">
-    <div class="wholesale-banner">
-      <div>
-        <h3>¿Pedido por volumen?</h3>
-        <p>La compra mayorista es a partir de 20 bultos. Podés combinar modelos dentro del mismo pedido. Valores en efectivo + IVA.</p>
-      </div>
-      <div class="num">20+</div>
+    <div class="features">
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 13h13V6H3zM16 8h4l1 5h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg></div><h3>Envíos a domicilio</h3><p>Coordinamos entregas en CABA y Gran Buenos Aires según tu zona.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></div><h3>Cuotas sin interés</h3><p>Consultá los planes de pago disponibles para tu compra.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 7l8-4 8 4-8 4z"/><path d="M4 7v10l8 4 8-4V7"/></svg></div><h3>Precio mayorista</h3><p>Descuentos especiales a partir de 20 bultos, combinando modelos.</p></div>
+      <div class="feat"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l2.5 5 5.5.8-4 4 1 5.5-5-2.7-5 2.7 1-5.5-4-4 5.5-.8z"/></svg></div><h3>Calidad garantizada</h3><p>Madera, hierro y melamina de primera, con terminaciones prolijas.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ IMPORTADAS ============ -->
-<section class="category" id="importadas">
+<!-- MAYORISTA -->
+<section class="sec" id="mayorista" style="padding-top:0;">
   <div class="wrap">
-    <div class="cat-head">
+    <div class="banner">
       <div>
-        <h2>Sillas exclusivas importadas</h2>
-        <p class="lede">Colección importada, disponible en distintos colores. Pack x4 salvo indicación.</p>
+        <h2>¿Comprás por volumen?</h2>
+        <p>La compra mayorista arranca en 20 bultos y podés combinar modelos dentro del mismo pedido. Escribinos y armamos tu presupuesto.</p>
+        <div style="margin-top:20px;"><a href="https://wa.me/5491166789801?text=Hola!%20Quiero%20un%20presupuesto%20mayorista." target="_blank" rel="noopener" class="btn accent">Pedir presupuesto mayorista</a></div>
       </div>
-      <span class="cat-index">Línea 05</span>
-    </div>
-    <div class="grid" id="grid-importadas"></div>
-  </div>
-</section>
-
-<!-- ============ NOSOTROS ============ -->
-<section id="nosotros">
-  <div class="wrap about">
-    <div>
-      <p class="eyebrow">Nosotros</p>
-      <h2 style="font-size:clamp(28px,3.6vw,42px); margin-top:10px;">Una mueblería, no un showroom.</h2>
-      <p class="lede" style="margin-top:16px; font-size:15.5px;">Melve Muebles es una mueblería con local de venta al público en Buenos Aires y catálogo digital. Fabricamos y comercializamos mesas, sillas, escritorios personalizados y muebles de estilo industrial, atendiendo tanto pedidos minoristas como mayoristas de alto volumen.</p>
-      <div class="materials-list">
-        <div><div class="m-name">Madera</div><div class="m-sub">Tableros &amp; asientos</div></div>
-        <div><div class="m-name">Hierro</div><div class="m-sub">Perfil fino</div></div>
-        <div><div class="m-name">Melamina</div><div class="m-sub">Escritorios</div></div>
-      </div>
-    </div>
-    <div class="about-stats">
-      <div class="stat"><div class="n">CABA</div><div class="d">Envíos y venta directa</div></div>
-      <div class="stat"><div class="n">GBA</div><div class="d">Cobertura de envíos</div></div>
-      <div class="stat"><div class="n">20+</div><div class="d">Bultos para precio mayorista</div></div>
-      <div class="stat"><div class="n">5</div><div class="d">Líneas de producto</div></div>
+      <div class="big">20+</div>
     </div>
   </div>
 </section>
 
-<!-- ============ LOOKBOOK / CATALOGO REAL ============ -->
-<section class="lookbook">
+<!-- NOSOTROS -->
+<section class="sec" id="nosotros" style="padding-top:0;">
   <div class="wrap">
-    <div class="cat-head">
+    <div class="sec-head">
+      <div style="max-width:640px;">
+        <div class="sec-kicker">Nosotros</div>
+        <h2>Una mueblería, no un showroom</h2>
+        <p>Melve Muebles es una mueblería de Buenos Aires con catálogo digital. Fabricamos y vendemos mesas, sillas, escritorios y muebles industriales, atendiendo pedidos minoristas y mayoristas. Trabajamos madera, hierro y melamina con líneas nórdicas, minimalistas e industriales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="sec" id="contacto" style="padding-top:0;">
+  <div class="wrap">
+    <div class="sec-head">
       <div>
-        <h2 style="font-size:clamp(26px,3.2vw,36px);">Hojas del catálogo</h2>
-        <p class="lede" style="font-size:14.5px;">Las fichas originales, tal como circulan para pedidos minoristas y mayoristas. Tocá una hoja para ampliarla.</p>
+        <div class="sec-kicker">Contacto</div>
+        <h2>Hacé tu pedido</h2>
+        <p>Consultas, presupuestos y pedidos mayoristas — te respondemos por donde prefieras.</p>
       </div>
     </div>
-    <div class="lookbook-grid" id="lookbookGrid"></div>
-  </div>
-</section>
-
-<!-- ============ CONTACTO ============ -->
-<section id="contacto">
-  <div class="wrap">
-    <p class="eyebrow" style="margin-bottom:8px;">Contacto</p>
-    <h2 style="font-size:clamp(28px,3.6vw,42px); margin-bottom:34px;">Hacé tu pedido</h2>
-  </div>
-
-  <div class="wrap contact">
-    <div class="contact-panel">
-      <h3>Escribinos</h3>
-      <p>Consultas, presupuestos y pedidos mayoristas — te respondemos por el mismo canal que prefieras.</p>
-      <div class="contact-list">
-        <a class="contact-item" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
-          <span class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg></span>
-          <span class="ci-text"><div class="ci-k">WhatsApp</div><div class="ci-v">Pedidos y consultas rápidas</div></span>
-        </a>
-        <a class="contact-item" href="https://www.instagram.com/melvemuebles/" target="_blank" rel="noopener">
-          <span class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="0.6" fill="#4B4F54" stroke="none"/></svg></span>
-          <span class="ci-text"><div class="ci-k">Instagram</div><div class="ci-v">melvemuebles</div></span>
-        </a>
-        <a class="contact-item" href="https://www.facebook.com/profile.php?id=61573155968998" target="_blank" rel="noopener">
-          <span class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M14 9h2V6h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2.2l.8-3H14V9z"/></svg></span>
-          <span class="ci-text"><div class="ci-k">Facebook</div><div class="ci-v">Melve Muebles</div></span>
-        </a>
-        <a class="contact-item" href="#">
-          <span class="ci-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
-          <span class="ci-text"><div class="ci-k">Zona de venta y envíos</div><div class="ci-v">CABA &amp; GBA</div></span>
-        </a>
-      </div>
-      <div class="zone-note">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B4F54" stroke-width="1.6" style="flex:0 0 auto; margin-top:2px;"><rect x="3" y="9" width="12" height="9" /><path d="M15 12h3l3 3v3h-6z"/><circle cx="7" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/></svg>
-        <span>Local de venta al público en Buenos Aires. Coordinamos envío puerta a puerta en CABA y GBA; consultá tiempos según tu zona.</span>
-      </div>
-
-      <div class="qr-panel">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&color=211E1A&bgcolor=FCFAF6&data=https://melvemuebles.com.ar/%23sillas-industrial" alt="Código QR al catálogo digital de Melve Muebles" width="86" height="86" loading="lazy">
-        <div>
-          <div class="qr-k">Catálogo digital</div>
-          <div class="qr-v">Escaneá para ver precios y hacer tu pedido desde el celular. Usalo en tus piezas impresas.</div>
+    <div class="contact">
+      <div class="cta-card">
+        <h3>Escribinos</h3>
+        <p>Elegí tu canal preferido y coordinamos tu pedido.</p>
+        <div class="contact-list">
+          <a class="ci" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg></span>
+            <span><div class="k">WhatsApp</div><div class="v">+54 9 11 6678 9801</div></span>
+          </a>
+          <a class="ci" href="https://www.instagram.com/melvemuebles/" target="_blank" rel="noopener">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="0.8" fill="#191919" stroke="none"/></svg></span>
+            <span><div class="k">Instagram</div><div class="v">@melvemuebles</div></span>
+          </a>
+          <a class="ci" href="https://www.facebook.com/profile.php?id=61573155968998" target="_blank" rel="noopener">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M14 9h2V6h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2.2l.8-3H14V9z"/></svg></span>
+            <span><div class="k">Facebook</div><div class="v">Melve Muebles</div></span>
+          </a>
         </div>
       </div>
-    </div>
 
-    <div class="contact-panel">
-      <h3>Pedí un presupuesto</h3>
-      <p>Contanos qué necesitás y te contestamos por WhatsApp con precio minorista o mayorista según tu volumen.</p>
-      <form class="form-grid" id="quoteForm">
-        <div class="form-row">
-          <div><label for="qName">Nombre</label><input id="qName" type="text" required placeholder="Tu nombre"></div>
-          <div><label for="qPhone">Teléfono</label><input id="qPhone" type="tel" required placeholder="11 xxxx-xxxx"></div>
-        </div>
-        <div>
-          <label for="qType">Tipo de compra</label>
-          <select id="qType">
-            <option value="Minorista">Minorista</option>
-            <option value="Mayorista (20+ bultos)">Mayorista (20+ bultos)</option>
-          </select>
-        </div>
-        <div>
-          <label for="qZone">Zona de envío</label>
-          <select id="qZone">
-            <option>CABA</option>
-            <option>GBA Norte</option>
-            <option>GBA Oeste</option>
-            <option>GBA Sur</option>
-            <option>Retiro en local</option>
-          </select>
-        </div>
-        <div>
-          <label for="qMsg">Qué productos te interesan</label>
-          <textarea id="qMsg" placeholder="Ej: 4 sillas Milan + 1 mesa Eames 120cm"></textarea>
-        </div>
-        <button type="submit" class="btn" style="justify-content:center; margin-top:6px;">Enviar por WhatsApp</button>
-      </form>
+      <div class="cta-card">
+        <h3>Pedí un presupuesto</h3>
+        <p>Contanos qué buscás y te contestamos por WhatsApp.</p>
+        <form class="form" id="quoteForm">
+          <div class="row">
+            <div><label for="qName">Nombre</label><input id="qName" type="text" required placeholder="Tu nombre"></div>
+            <div><label for="qPhone">Teléfono</label><input id="qPhone" type="tel" required placeholder="11 xxxx-xxxx"></div>
+          </div>
+          <div>
+            <label for="qType">Tipo de compra</label>
+            <select id="qType"><option>Minorista</option><option>Mayorista (20+ bultos)</option></select>
+          </div>
+          <div>
+            <label for="qMsg">¿Qué productos te interesan?</label>
+            <textarea id="qMsg" placeholder="Ej: mesa Milan 120x80 + 4 sillas Eames"></textarea>
+          </div>
+          <button type="submit" class="btn accent" style="margin-top:4px;">Enviar por WhatsApp</button>
+        </form>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ FOOTER ============ -->
+<!-- FOOTER -->
 <footer>
-  <div class="wrap footer-top">
+  <div class="wrap foot-top">
     <div>
-      <div class="footer-logo">MELVE MUEBLES</div>
-      <p>Mueblería en Buenos Aires. Diseño nórdico, minimalista e industrial en madera, hierro y melamina.</p>
+      <div class="foot-logo">MELVE MUEBLES</div>
+      <p>Mueblería en Buenos Aires. Diseño nórdico, minimalista e industrial en madera, hierro y melamina. Envíos a CABA y GBA.</p>
     </div>
     <div>
-      <h4>Catálogo</h4>
-      <a href="#sillas-industrial" style="display:block;">Sillas industriales</a>
-      <a href="#mesas" style="display:block;">Mesas</a>
-      <a href="#escritorios" style="display:block;">Escritorios &amp; gamer</a>
-      <a href="#importadas" style="display:block;">Importadas</a>
-    </div>
-    <div>
-      <h4>Mueblería</h4>
+      <h4>Navegación</h4>
+      <a href="#catalogo" style="display:block;">Catálogo</a>
+      <a href="#mayorista" style="display:block;">Mayorista</a>
       <a href="#nosotros" style="display:block;">Nosotros</a>
       <a href="#contacto" style="display:block;">Contacto</a>
-      <a href="#contacto" style="display:block;">Pedidos mayoristas</a>
     </div>
     <div>
-      <h4>Redes</h4>
-      <a href="https://www.instagram.com/melvemuebles/" target="_blank" rel="noopener" style="display:block;">instagram/melvemuebles</a>
+      <h4>Seguinos</h4>
+      <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" style="display:block;">WhatsApp</a>
+      <a href="https://www.instagram.com/melvemuebles/" target="_blank" rel="noopener" style="display:block;">Instagram</a>
       <a href="https://www.facebook.com/profile.php?id=61573155968998" target="_blank" rel="noopener" style="display:block;">Facebook</a>
     </div>
   </div>
-  <div class="wrap footer-bottom">
+  <div class="wrap foot-bottom">
     <span>© 2026 Melve Muebles — mueblería en Buenos Aires.</span>
     <span>Envíos a CABA y GBA · Minorista y mayorista</span>
   </div>
 </footer>
 
-<a class="wa-float" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg>
+<a class="wa" href="https://wa.me/5491166789801" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 21l1.6-4.8A8 8 0 1 1 8.8 19.4L3 21z"/></svg>
   WhatsApp
 </a>
 
-<!-- Lightbox -->
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lbClose">Cerrar ✕</button>
-  <button class="lightbox-nav prev" id="lbPrev">‹</button>
+  <button class="lb-btn lb-close" id="lbClose" aria-label="Cerrar">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Anterior">‹</button>
   <img id="lbImg" src="" alt="">
-  <button class="lightbox-nav next" id="lbNext">›</button>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Siguiente">›</button>
+  <a class="btn accent lb-wa" id="lbWa" href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
 </div>
 
 <script>
-/* =========================================================
-   DATA — extraído del catálogo real (HDC_CATALOGO_26_6)
-   ========================================================= */
-const ICONS = {
-  chair: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M28 20h44v34H28z"/><path d="M28 54l-6 30M72 54l6 30M34 54l-5 30M66 54l5 30"/></svg>`,
-  chairPad: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M24 22h52v10H24z"/><path d="M28 32v22h44V32"/><path d="M28 54l-6 30M72 54l6 30M34 54l-5 30M66 54l5 30"/></svg>`,
-  table: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M12 26h76v8H12z"/><path d="M20 34l-4 40M80 34l4 40M40 34l-2 40M60 34l2 40"/></svg>`,
-  desk: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M10 30h80v7H10z"/><path d="M16 37v38M84 37v38"/><path d="M30 45h18v20H30z"/></svg>`,
-  office: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M30 16h34v30H30z"/><path d="M47 46v18"/><path d="M32 80l30-4M47 64l-15 16M47 64l15 16"/><circle cx="47" cy="76" r="3"/></svg>`,
-  gamer: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M26 14h40l6 30H20z"/><path d="M47 44v20"/><path d="M30 78l25-6M47 64l-14 14M47 64l14 14"/><circle cx="47" cy="72" r="3"/></svg>`,
-  bench: `<svg viewBox="0 0 100 100" fill="none" stroke-width="2.2" stroke-linecap="round"><circle cx="50" cy="30" r="14"/><path d="M50 44v20"/><path d="M50 64l-16 20M50 64l16 20"/></svg>`
-};
+/* ====== CONFIG ====== */
+const CLOUD = "dbepkj4h";
+const WA = "5491166789801";
+const TAG = "melve";   // etiqueta de Cloudinary. Toda foto con esta etiqueta aparece sola en la web.
+const LOGO_ID = "Diseño_sin_título_vtjddd";   // el logo: se usa arriba, NO en el catálogo.
 
-const sillasIndustrial = [
-  {name:"Tulip", pack:"x4", material:"Hierro &amp; polipropileno", icon:"chair", min:103000, may:96000},
-  {name:"Tolix", pack:"x1", material:"Hierro macizo", icon:"chair", min:80000, may:74000},
-  {name:"Windsor", pack:"x4", material:"Madera maciza", icon:"chairPad", min:89000, may:86000},
-  {name:"Eames", pack:"x4", material:"Hierro &amp; madera", icon:"chair", min:40000, may:35000},
-  {name:"Eames Calada", pack:"x4", material:"Hierro &amp; madera calada", icon:"chair", min:80000, may:74000},
-  {name:"Roma", pack:"x4", material:"Hierro &amp; asiento tapizado", icon:"chairPad", min:80000, may:71000},
-  {name:"Milan", pack:"x4", material:"Hierro &amp; madera", icon:"chair", min:89000, may:81000},
-  {name:"Allegra", pack:"x4", material:"Hierro &amp; madera", icon:"chair", min:80000, may:71000},
-  {name:"Banqueta Tolix", pack:"x1", material:"Hierro macizo", icon:"bench", min:42000, may:38000},
-];
+let IMAGES = [];       // se llena solo desde Cloudinary
 
-const mesas = [
-  {name:"Mesa Milan 120x80cm", pack:"120×80cm", material:"Madera &amp; hierro", icon:"table", min:130000, may:115000},
-  {name:"Mesa Eames 120cm", pack:"120cm", material:"Madera &amp; hierro", icon:"table", min:null, may:null},
-  {name:"Mesa Tolix 60x60", pack:"60×60cm", material:"Hierro macizo", icon:"table", min:120000, may:98000},
-  {name:"Mesa Milan 140x80cm", pack:"140×80cm", material:"Madera &amp; hierro", icon:"table", min:130000, may:108000},
-  {name:"Mesa Eames Vidrio 100cm", pack:"100cm", material:"Vidrio templado &amp; hierro", icon:"table", min:100000, may:88000},
-  {name:"Mesa Eames Vidrio 120x80", pack:"120×80cm", material:"Vidrio templado &amp; hierro", icon:"table", min:110000, may:99000},
-  {name:"Mesa Eames 100cm", pack:"100cm", material:"Madera &amp; hierro", icon:"table", min:105000, may:88000},
-  {name:"Allegra", pack:"Mesa", material:"Madera &amp; hierro", icon:"table", min:120000, may:104000},
-  {name:"Mesa Plegable", pack:"Plegable", material:"Madera &amp; hierro", icon:"table", min:null, may:null},
-  {name:"Mesa Eames Vidrio 120cm", pack:"120cm", material:"Vidrio templado &amp; hierro", icon:"table", min:null, may:null},
-];
-
-const escritorios = [
-  {name:"Escritorio Oficina", pack:"Estándar", material:"Melamina &amp; hierro", icon:"desk", min:100000, may:70000},
-  {name:"Escritorio Gamer 120cm", pack:"120cm", material:"Melamina &amp; hierro", icon:"gamer", min:90000, may:81000},
-  {name:"Escritorio Gamer", pack:"Estándar", material:"Melamina &amp; hierro", icon:"gamer", min:90000, may:75000},
-  {name:"Escritorio Oficina 85cm", pack:"85cm", material:"Melamina &amp; hierro", icon:"desk", min:74000, may:68000},
-  {name:"Escritorio Gamer apoya monitor 125cm", pack:"125cm", material:"Melamina &amp; hierro", icon:"gamer", min:51000, may:46500},
-  {name:"Mesa/Escritorio Tulip 120x60cm", pack:"120×60cm", material:"Madera &amp; hierro", icon:"desk", min:68000, may:62000},
-  {name:"Escritorio Oficina Cajón 95cm", pack:"95cm · con cajón", material:"Melamina &amp; hierro", icon:"desk", min:79000, may:65000},
-  {name:"Escritorio Gamer con luz", pack:"Con iluminación LED", material:"Melamina &amp; hierro", icon:"gamer", min:91000, may:75000},
-];
-
-const sillasGamer = [
-  {name:"Gamer GG-01", pack:"Silla gamer", material:"Ecocuero &amp; hierro", icon:"gamer", min:70000, may:62000},
-  {name:"Silla Mesh", pack:"Silla de oficina", material:"Malla técnica", icon:"office", min:125000, may:99000},
-  {name:"Sillón Gerencial", pack:"Sillón", material:"Ecocuero", icon:"office", min:115000, may:99000},
-  {name:"Gamer GG-06", pack:"Silla gamer", material:"Ecocuero &amp; hierro", icon:"gamer", min:75000, may:66000},
-  {name:"Sillón Ejecutivo", pack:"Sillón", material:"Ecocuero premium", icon:"office", min:160000, may:100000},
-  {name:"Tulip Oficina", pack:"Silla de oficina", material:"Hierro &amp; tapizado", icon:"office", min:220000, may:187000},
-  {name:"Gamer King GG-07", pack:"Silla gamer XL", material:"Ecocuero &amp; hierro", icon:"gamer", min:160000, may:125000},
-  {name:"Silla Bastones", pack:"Silla de oficina", material:"Hierro &amp; tapizado", icon:"office", min:50000, may:44000},
-];
-
-const importadas = [
-  {name:"Gran Vita", pack:"x4", material:"Colores a elección", icon:"chairPad", min:145000, may:115000},
-  {name:"Positano", pack:"x4", material:"Colores a elección", icon:"chairPad", min:180000, may:150000},
-  {name:"Sicilia", pack:"x4", material:"Colores a elección", icon:"chairPad", min:140000, may:105000},
-  {name:"Amalfi", pack:"x4", material:"Colores a elección", icon:"chairPad", min:190000, may:150000},
-  {name:"Gran Positano", pack:"x4", material:"Colores a elección", icon:"chairPad", min:140000, may:105000},
-  {name:"Pompeya", pack:"x4", material:"Colores a elección", icon:"chairPad", min:140000, may:105000},
-  {name:"Turín", pack:"x4", material:"Colores a elección", icon:"chairPad", min:140000, may:105000},
-];
-
-const fmt = n => n === null ? null : "$ " + n.toLocaleString("es-AR");
-
-function cardHTML(p){
-  const priceBlock = (p.min===null) ?
-    `<span class="consultar">Precio a consultar</span>` :
-    `<div class="price-row minor" data-role="minor"><span class="k">Minorista</span><br><span class="v">${fmt(p.min)}</span></div>
-     <div class="price-row wholesale" data-role="wholesale" style="display:none;"><span class="k">Mayorista</span><br><span class="v">${fmt(p.may)}</span></div>`;
-
-  const waText = encodeURIComponent(`Hola! Quiero consultar por: ${p.name} (${p.pack}).`);
-
-  return `<article class="card" data-name="${p.name.toLowerCase()}">
-    <div class="icon">${ICONS[p.icon]}</div>
-    <div class="tag">${p.pack}</div>
-    <h3>${p.name}</h3>
-    <div class="material">${p.material}</div>
-    <div class="prices">${priceBlock}</div>
-    <div class="cta-row">
-      <a class="btn small" href="https://wa.me/5491166789801?text=${waText}" target="_blank" rel="noopener">Consultar</a>
-    </div>
-  </article>`;
+/* URL optimizada (liviana y rápida) */
+function imgUrl(item, w){ return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_${w}/${item.public_id}.${item.format}`; }
+function fullUrl(item){ return `https://res.cloudinary.com/${CLOUD}/image/upload/${item.public_id}.${item.format}`; }
+function waLink(item){
+  const text = encodeURIComponent(`Hola! Quiero consultar por este producto del catálogo: ${fullUrl(item)}`);
+  return `https://wa.me/${WA}?text=${text}`;
 }
 
-function renderGrid(id, data){
-  document.getElementById(id).innerHTML = data.map(cardHTML).join("");
+/* Categorías: cada una es una etiqueta de Cloudinary. Etiquetá las fotos con estas
+   palabras (sillas, mesas, escritorios, gamer, importadas) y el filtro las agrupa solo. */
+const CATEGORIES = [
+  {label:"Sillas",          tag:"sillas"},
+  {label:"Mesas",           tag:"mesas"},
+  {label:"Escritorios",     tag:"escritorios"},
+  {label:"Oficina & Gamer", tag:"gamer"},
+  {label:"Importadas",      tag:"importadas"},
+];
+
+const grid = document.getElementById("catalogGrid");
+const filtersEl = document.getElementById("filters");
+const lightbox = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbWa = document.getElementById("lbWa");
+let lbIndex = 0;
+let categoryOf = {};      // public_id -> categoría
+let currentFilter = "all";
+let view = [];            // fotos visibles según el filtro
+
+function listUrl(tag){ return `https://res.cloudinary.com/${CLOUD}/image/list/${tag}.json`; }
+function getList(tag){
+  return fetch(listUrl(tag)).then(r => r.ok ? r.json() : {resources:[]}).catch(() => ({resources:[]}));
 }
 
-renderGrid("grid-sillas-industrial", sillasIndustrial);
-renderGrid("grid-mesas", mesas);
-renderGrid("grid-escritorios", escritorios);
-renderGrid("grid-sillas-gamer", sillasGamer);
-renderGrid("grid-importadas", importadas);
+/* Traer la lista general + la de cada categoría, todo junto */
+grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">Cargando productos…</p>';
+Promise.all([ getList(TAG), ...CATEGORIES.map(c => getList(c.tag)) ])
+  .then(([main, ...cats]) => {
+    CATEGORIES.forEach((c,i) => (cats[i].resources || []).forEach(x => {
+      if(!categoryOf[x.public_id]) categoryOf[x.public_id] = c.tag;
+    }));
+    IMAGES = (main.resources || [])
+      .filter(x => x.public_id !== LOGO_ID)                    // saca el logo del catálogo
+      .filter(x => x.width === x.height)                       // solo cuadradas (excluye sueltas)
+      .sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""));
+    buildFilters();
+    render();
+  })
+  .catch(() => {
+    grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">No se pudieron cargar los productos ahora. Recargá la página en un momento.</p>';
+  });
 
-/* Price toggle: minorista <-> mayorista */
-const priceSwitch = document.getElementById("priceSwitch");
-let wholesale = false;
-priceSwitch.addEventListener("click", () => {
-  wholesale = !wholesale;
-  priceSwitch.classList.toggle("on", wholesale);
-  document.querySelectorAll('[data-role="minor"]').forEach(el => el.style.display = wholesale ? "none" : "block");
-  document.querySelectorAll('[data-role="wholesale"]').forEach(el => el.style.display = wholesale ? "block" : "none");
+function buildFilters(){
+  const counts = {};
+  IMAGES.forEach(x => { const t = categoryOf[x.public_id]; if(t) counts[t] = (counts[t]||0)+1; });
+  let html = `<button data-f="all" class="active">Todos (${IMAGES.length})</button>`;
+  CATEGORIES.forEach(c => { if(counts[c.tag]) html += `<button data-f="${c.tag}">${c.label} (${counts[c.tag]})</button>`; });
+  filtersEl.innerHTML = html;
+  filtersEl.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    currentFilter = b.dataset.f;
+    filtersEl.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
+    render();
+  }));
+}
+
+function render(){
+  view = (currentFilter === "all") ? IMAGES : IMAGES.filter(x => categoryOf[x.public_id] === currentFilter);
+  if(IMAGES.length){ document.getElementById("heroImg").src = imgUrl(IMAGES[0], 900); }
+  grid.innerHTML = view.map((item,i) => `
+    <article class="prod">
+      <div class="prod-img" data-index="${i}">
+        <img src="${imgUrl(item,700)}" alt="Producto Melve Muebles" loading="lazy">
+        <span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4M11 8v6M8 11h6"/></svg></span>
+      </div>
+      <div class="prod-foot">
+        <a class="btn sm" href="${waLink(item)}" target="_blank" rel="noopener">Consultar</a>
+      </div>
+    </article>`).join("");
+  grid.querySelectorAll(".prod-img").forEach(el =>
+    el.addEventListener("click", () => openLb(parseInt(el.dataset.index)))
+  );
+}
+
+/* Lightbox */
+function openLb(i){
+  if(!view.length) return;
+  lbIndex = (i + view.length) % view.length;
+  lbImg.src = imgUrl(view[lbIndex], 1200);
+  lbWa.href = waLink(view[lbIndex]);
+  lightbox.classList.add("open");
+}
+document.getElementById("lbClose").addEventListener("click", () => lightbox.classList.remove("open"));
+document.getElementById("lbPrev").addEventListener("click", () => openLb(lbIndex-1));
+document.getElementById("lbNext").addEventListener("click", () => openLb(lbIndex+1));
+lightbox.addEventListener("click", e => { if(e.target === lightbox) lightbox.classList.remove("open"); });
+document.addEventListener("keydown", e => {
+  if(!lightbox.classList.contains("open")) return;
+  if(e.key === "Escape") lightbox.classList.remove("open");
+  if(e.key === "ArrowLeft") openLb(lbIndex-1);
+  if(e.key === "ArrowRight") openLb(lbIndex+1);
 });
 
-/* Mobile menu */
+/* Menú mobile */
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 menuToggle.addEventListener("click", () => navLinks.classList.toggle("open"));
 navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
 
-/* Lookbook (real catalog pages) */
-const pages = [
-  {src:"1.jpeg", label:"Sillas industriales"},
-  {src:"2.jpeg", label:"Mesas"},
-  {src:"3.jpeg", label:"Mesas y escritorios"},
-  {src:"4.jpeg", label:"Sillas oficina y gamer"},
-  {src:"5.jpeg", label:"Sillas exclusivas importadas"},
-];
-const lookbookGrid = document.getElementById("lookbookGrid");
-lookbookGrid.innerHTML = pages.map((p,i) => `
-  <div class="lookbook-item" data-index="${i}">
-    <img src="${p.src}" alt="Hoja de catálogo: ${p.label}" loading="lazy">
-    <div class="lb-label">${p.label}</div>
-  </div>`).join("");
-
-const lightbox = document.getElementById("lightbox");
-const lbImg = document.getElementById("lbImg");
-let lbIndex = 0;
-function openLightbox(i){
-  lbIndex = i;
-  lbImg.src = pages[i].src;
-  lbImg.alt = pages[i].label;
-  lightbox.classList.add("open");
-}
-lookbookGrid.querySelectorAll(".lookbook-item").forEach(el => {
-  el.addEventListener("click", () => openLightbox(parseInt(el.dataset.index)));
-});
-document.getElementById("lbClose").addEventListener("click", () => lightbox.classList.remove("open"));
-lightbox.addEventListener("click", e => { if(e.target === lightbox) lightbox.classList.remove("open"); });
-document.getElementById("lbPrev").addEventListener("click", () => openLightbox((lbIndex - 1 + pages.length) % pages.length));
-document.getElementById("lbNext").addEventListener("click", () => openLightbox((lbIndex + 1) % pages.length));
-document.addEventListener("keydown", e => {
-  if(!lightbox.classList.contains("open")) return;
-  if(e.key === "Escape") lightbox.classList.remove("open");
-  if(e.key === "ArrowLeft") openLightbox((lbIndex - 1 + pages.length) % pages.length);
-  if(e.key === "ArrowRight") openLightbox((lbIndex + 1) % pages.length);
-});
-
-/* Quote form -> WhatsApp */
+/* Formulario -> WhatsApp */
 document.getElementById("quoteForm").addEventListener("submit", function(e){
   e.preventDefault();
   const name = document.getElementById("qName").value;
   const phone = document.getElementById("qPhone").value;
   const type = document.getElementById("qType").value;
-  const zone = document.getElementById("qZone").value;
   const msg = document.getElementById("qMsg").value;
-  const text = encodeURIComponent(
-    `Hola! Soy ${name} (tel: ${phone}).\nTipo de compra: ${type}\nZona de envío: ${zone}\nMe interesa: ${msg}`
-  );
-  window.open(`https://wa.me/5491166789801?text=${text}`, "_blank");
+  const text = encodeURIComponent(`Hola! Soy ${name} (tel: ${phone}).\nTipo de compra: ${type}\nMe interesa: ${msg}`);
+  window.open(`https://wa.me/${WA}?text=${text}`, "_blank");
 });
 
-/* Reveal on scroll */
-const revealEls = document.querySelectorAll(".category, .about, .lookbook, #contacto");
+/* Aparición al hacer scroll */
+const revealEls = document.querySelectorAll(".sec, .strip");
 revealEls.forEach(el => el.classList.add("reveal"));
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add("show"); io.unobserve(entry.target);} });
-}, {threshold:0.08});
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add("show"); io.unobserve(en.target);} });
+}, {threshold:0.06});
 revealEls.forEach(el => io.observe(el));
 </script>
 </body>
