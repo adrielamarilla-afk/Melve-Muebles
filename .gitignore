@@ -1,0 +1,4 @@
+# Imágenes de producto — viven en Cloudinary, no en GitHub
+*.png
+*.jpeg
+*.jpg
