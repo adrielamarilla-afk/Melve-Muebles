@@ -157,9 +157,10 @@
   .modal-lista{font-size:14px; color:var(--muted); text-decoration:line-through; margin-bottom:4px;}
   .modal-cuotas{font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.6; white-space:pre-line;}
   .modal-img{position:relative;}
-  .modal-thumbs{position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px;}
-  .modal-thumbs button{width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.4); border:none; padding:0;}
-  .modal-thumbs button.active{background:#fff;}
+  .modal-gallery{display:flex; flex-direction:column; gap:12px;}
+  .modal-thumbrow{display:flex; gap:9px; flex-wrap:wrap;}
+  .modal-thumbrow button{width:58px; height:58px; border-radius:9px; overflow:hidden; border:2px solid var(--line); padding:0; background-color:var(--soft); background-size:cover; background-position:center; cursor:pointer;}
+  .modal-thumbrow button.active{border-color:var(--accent);}
   .img-nav{position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%; background:rgba(0,0,0,.45); border:none; color:#fff; font-size:22px; display:flex; align-items:center; justify-content:center; line-height:1; transition:.15s ease;}
   .img-nav:hover{background:rgba(0,0,0,.7);}
   .img-nav.prev{left:14px;} .img-nav.next{right:14px;}
@@ -262,7 +263,11 @@
   .modal-img img{width:100%; height:100%; object-fit:contain;}
   .modal-info{padding:0; display:flex; flex-direction:column;}
   .modal-kicker{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);}
-  .modal-cat{font-size:12.5px; color:var(--muted); margin-bottom:14px;}
+  .opt-block{margin:16px 0;}
+  .opt-label{font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); font-weight:700; margin-bottom:9px;}
+  .opt-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .opt-row button{padding:9px 16px; border-radius:8px; border:1.5px solid var(--line); background:var(--soft); color:var(--ink); font-weight:700; font-size:13.5px;}
+  .opt-row button.active{border-color:var(--accent); background:rgba(242,106,33,.14); color:var(--accent);}
   .modal-title{font-size:28px; font-weight:800; margin:8px 0 14px;}
   .modal-note{color:var(--muted); font-size:14.5px; margin:0 0 22px;}
   .modal-buy{width:100%; padding:15px;}
@@ -272,6 +277,12 @@
   .pdp-desc{border-top:1px solid var(--line); margin-top:44px; padding-top:32px;}
   .pdp-desc h4{font-size:12.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); font-weight:700; margin-bottom:14px;}
   .pdp-desc p{color:var(--ink); opacity:.88; font-size:15px; line-height:1.75; max-width:70ch; margin:0;}
+  .pdp-feat-h{margin-top:28px;}
+  .pdp-feat-list{margin:0; padding-left:18px; color:var(--ink); opacity:.88; font-size:14.5px; line-height:1.85; max-width:70ch;}
+  .pdp-similar{border-top:1px solid var(--line); margin-top:44px; padding-top:32px;}
+  .pdp-similar h4{font-size:12.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); font-weight:700; margin-bottom:18px;}
+  .pdp-similar .catalog-grid{gap:16px;}
+  .pdp-similar .prod-img{cursor:pointer;}
   .btn.buy{background:#25D366; border-color:#25D366; color:#fff; gap:8px;}
   .btn.buy:hover{background:#1ebe57; border-color:#1ebe57;}
   @media (max-width:760px){
@@ -521,19 +532,30 @@
   </div>
   <div class="pdp-wrap">
     <div class="modal-card">
-      <div class="modal-img">
-        <img id="lbImg" src="" alt="Producto Melve Muebles">
-        <button class="img-nav prev" id="lbImgPrev" aria-label="Foto anterior">‹</button>
-        <button class="img-nav next" id="lbImgNext" aria-label="Foto siguiente">›</button>
-        <div class="modal-thumbs" id="lbThumbs"></div>
+      <div class="modal-gallery">
+        <div class="modal-img">
+          <img id="lbImg" src="" alt="Producto Melve Muebles">
+          <button class="img-nav prev" id="lbImgPrev" aria-label="Foto anterior">‹</button>
+          <button class="img-nav next" id="lbImgNext" aria-label="Foto siguiente">›</button>
+        </div>
+        <div class="modal-thumbrow" id="lbThumbRow"></div>
       </div>
       <div class="modal-info">
         <span class="modal-kicker">Melve Muebles · ★ 5,0 en Google</span>
         <h3 class="modal-title" id="lbTitle">Producto</h3>
-        <div class="modal-cat" id="lbCat"></div>
         <div class="modal-price" id="lbPrice"></div>
         <div class="modal-lista" id="lbLista"></div>
         <div class="modal-cuotas" id="lbCuotas"></div>
+
+        <div class="opt-block" id="colorBlock">
+          <div class="opt-label">Color</div>
+          <div class="opt-row" id="colorRow"></div>
+        </div>
+        <div class="opt-block" id="qtyBlock">
+          <div class="opt-label">Cantidad</div>
+          <div class="opt-row" id="qtyRow"></div>
+        </div>
+
         <p class="modal-note">Precio en <b>efectivo</b>. Tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
         <a class="btn buy modal-buy" id="lbWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor" width="20" height="20"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.6 1.4 5.6 1.4h.2c6.6 0 12-5.4 12-12S22.6 3 16 3zm5.9 14c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3s0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.5s.1-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3 2.1 3.2 5 4.5c.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5z"/></svg>Comprar por WhatsApp</a>
         <ul class="modal-feats">
@@ -543,9 +565,17 @@
         </ul>
       </div>
     </div>
+
     <div class="pdp-desc">
       <h4>Descripción</h4>
       <p id="lbDesc"></p>
+      <h4 class="pdp-feat-h">Características</h4>
+      <ul class="pdp-feat-list" id="lbFeatList"></ul>
+    </div>
+
+    <div class="pdp-similar" id="pdpSimilar">
+      <h4>Productos similares</h4>
+      <div class="catalog-grid" id="similarGrid"></div>
     </div>
   </div>
 </div>
@@ -687,9 +717,16 @@ function cuotasText(lista){
   return `3 cuotas de ${fmt(n/3)} sin interés\n6 cuotas de ${fmt(n/6)} sin interés`;
 }
 
-function waLink(item){
+function priceNum(p){ return parseInt((p||"").replace(/[^\d]/g,""), 10) || 0; }
+function fmtMoney(n){ return "$" + Math.round(n).toLocaleString("es-AR"); }
+
+function waLink(item, qty, color){
   const d = info(item);
-  const label = d.n + (d.p ? ` (${d.p} efectivo)` : "");
+  qty = qty || 1;
+  let label = d.n;
+  if(color) label += ` color ${color}`;
+  if(qty > 1) label += ` x${qty}`;
+  if(d.p) label += ` (${fmtMoney(priceNum(d.p) * qty)} efectivo)`;
   const text = encodeURIComponent(`Hola! Quiero comprar: ${label} 👉 ${fullUrl(item)}`);
   return `https://wa.me/${WA}?text=${text}`;
 }
@@ -884,23 +921,46 @@ function render(){
 /* Migas de pan: en qué categoría del menú vive esta etiqueta */
 function categoryPath(tag){
   for(const g of MENU){
-    if(g.tag === tag) return g.label;
-    if(g.items){ const it = g.items.find(x => x.tag === tag); if(it) return `${g.label} › ${it.label}`; }
+    if(g.tag === tag) return `Inicio › ${g.label}`;
+    if(g.items){ const it = g.items.find(x => x.tag === tag); if(it) return `Inicio › ${g.label} › ${it.label}`; }
   }
-  return "Catálogo";
+  return "Inicio › Catálogo";
 }
-/* Descripción por defecto (se usa si el producto no trae una propia en PRODUCTS con "desc") */
+/* Descripción y características por defecto (se usan si el producto no trae las suyas propias) */
 function defaultDesc(item, d){
   const tag = categoryOf[item.public_id];
   if(tag === "comedor") return `${d.n}. Estructura resistente pensada para el uso diario. Coordinamos color y stock disponible por WhatsApp, con pago 100% en efectivo y envío a CABA y GBA.`;
   return `${d.n}. Fabricación propia de Melve Muebles, en Buenos Aires. Coordinamos color, stock y envío por WhatsApp, con pago en efectivo.`;
 }
+function featList(tag){
+  if(tag === "comedor") return [
+    "Diseño versátil, combina con distintos estilos de decoración.",
+    "Estructura resistente, pensada para el uso diario.",
+    "Fabricación propia de Melve Muebles.",
+    "Coordinamos color y stock disponible por WhatsApp.",
+  ];
+  return [
+    "Fabricación propia de Melve Muebles, en Buenos Aires.",
+    "Pensado para durar en el uso diario.",
+    "Coordinamos color, stock y envío por WhatsApp.",
+  ];
+}
+
+/* Categorías que se venden por unidad (habilitan selector de color y/o cantidad) */
+const COLOR_CATEGORIES = ["comedor"];
+const QTY_CATEGORIES = ["comedor"];
+const DEFAULT_COLORS = ["Blanco","Negro"];
+
+let selColor = null;
+let selQty = 1;
 
 /* Página de producto (a pantalla completa, con botón Volver como una página real) */
 function openLb(i){
   if(!groups.length) return;
   lbIndex = (i + groups.length) % groups.length;
   curImgIdx = 0;
+  selQty = 1;
+  selColor = null;
   renderLbImage();
   lightbox.classList.add("open");
   history.pushState({ pdp:true }, "", "#producto");
@@ -913,26 +973,73 @@ function closeLb(){
 window.addEventListener("popstate", () => {
   lightbox.classList.remove("open");
 });
+
+function updatePriceDisplay(){
+  const d = groups[lbIndex].d;
+  const qty = selQty || 1;
+  const totalP = priceNum(d.p) * qty;
+  const totalL = d.lista ? priceNum(d.lista) * qty : 0;
+  document.getElementById("lbPrice").textContent = fmtMoney(totalP);
+  document.getElementById("lbLista").textContent = totalL ? `Lista ${fmtMoney(totalL)}` : "";
+  document.getElementById("lbCuotas").textContent = totalL ? cuotasText(fmtMoney(totalL)) : "";
+}
+function updateBuyLink(){
+  lbWa.href = waLink(groups[lbIndex].images[0], selQty, selColor);
+}
+
 function renderLbImage(){
   const g = groups[lbIndex];
   const d = g.d;
   const item = g.images[curImgIdx];
+  const tag = categoryOf[item.public_id];
   lbImg.src = imgUrl(item, 1200);
   lbImg.alt = d.n;
   document.getElementById("lbTitle").textContent = d.n;
-  const catPath = categoryPath(categoryOf[item.public_id]);
-  document.getElementById("lbCat").textContent = `Categoría: ${catPath}`;
-  document.getElementById("lbPrice").textContent = d.p;
-  document.getElementById("lbLista").textContent = d.lista ? `Lista ${d.lista}` : "";
-  document.getElementById("lbCuotas").textContent = cuotasText(d.lista);
+  const catPath = categoryPath(tag);
   document.getElementById("lbCrumb").textContent = `${catPath} › ${d.n}`;
   document.getElementById("lbDesc").textContent = d.desc || defaultDesc(item, d);
-  lbWa.href = waLink(g.images[0]);
-  const thumbs = document.getElementById("lbThumbs");
+  document.getElementById("lbFeatList").innerHTML = featList(tag).map(f => `<li>${f}</li>`).join("");
+
+  /* Selector de color */
+  const colorBlock = document.getElementById("colorBlock");
+  const colorRow = document.getElementById("colorRow");
+  if(COLOR_CATEGORIES.includes(tag)){
+    const colors = d.colors || DEFAULT_COLORS;
+    if(!selColor) selColor = colors[0];
+    colorRow.innerHTML = colors.map(c => `<button class="${c===selColor?"active":""}" data-color="${c}">${c}</button>`).join("");
+    colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { selColor = b.dataset.color; renderLbImage(); }));
+    colorBlock.style.display = "";
+  } else {
+    selColor = null;
+    colorBlock.style.display = "none";
+  }
+
+  /* Selector de cantidad */
+  const qtyBlock = document.getElementById("qtyBlock");
+  const qtyRow = document.getElementById("qtyRow");
+  if(QTY_CATEGORIES.includes(tag)){
+    qtyRow.innerHTML = [1,2,3,4].map(q => `<button class="${q===selQty?"active":""}" data-qty="${q}">x${q}</button>`).join("");
+    qtyRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      selQty = parseInt(b.dataset.qty, 10);
+      qtyRow.querySelectorAll("button").forEach(x => x.classList.toggle("active", x===b));
+      updatePriceDisplay();
+      updateBuyLink();
+    }));
+    qtyBlock.style.display = "";
+  } else {
+    selQty = 1;
+    qtyBlock.style.display = "none";
+  }
+
+  updatePriceDisplay();
+  updateBuyLink();
+
+  /* Miniaturas de fotos del producto */
+  const thumbs = document.getElementById("lbThumbRow");
   const imgPrev = document.getElementById("lbImgPrev");
   const imgNext = document.getElementById("lbImgNext");
   if(g.images.length > 1){
-    thumbs.innerHTML = g.images.map((im,idx) => `<button class="${idx===curImgIdx?"active":""}" data-idx="${idx}" aria-label="Ver foto ${idx+1}"></button>`).join("");
+    thumbs.innerHTML = g.images.map((im,idx) => `<button class="${idx===curImgIdx?"active":""}" data-idx="${idx}" style="background-image:url(${imgUrl(im,140)})" aria-label="Ver foto ${idx+1}"></button>`).join("");
     thumbs.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { curImgIdx = parseInt(b.dataset.idx); renderLbImage(); }));
     imgPrev.classList.remove("hidden");
     imgNext.classList.remove("hidden");
@@ -941,8 +1048,40 @@ function renderLbImage(){
     imgPrev.classList.add("hidden");
     imgNext.classList.add("hidden");
   }
+
+  renderSimilar(tag);
   window.scrollTo(0,0);
+  lightbox.scrollTop = 0;
 }
+
+/* Productos similares: otros productos de la misma categoría */
+function renderSimilar(tag){
+  const wrap = document.getElementById("pdpSimilar");
+  const simGrid = document.getElementById("similarGrid");
+  const others = groups
+    .map((g,idx) => ({g,idx}))
+    .filter(x => x.idx !== lbIndex && categoryOf[x.g.images[0].public_id] === tag)
+    .slice(0,4);
+  if(!others.length){ wrap.style.display = "none"; return; }
+  wrap.style.display = "";
+  simGrid.innerHTML = others.map(({g,idx}) => { const d = g.d; const item = g.images[0]; return `
+    <article class="prod">
+      <div class="prod-img" data-simidx="${idx}">
+        <img src="${imgUrl(item,500)}" alt="${d.n}" loading="lazy">
+      </div>
+      <div class="prod-body">
+        <h3 class="prod-name">${d.n}</h3>
+        <div class="prod-price">${d.p}<span class="prod-ef">${d.p ? " efectivo" : ""}</span></div>
+      </div>
+      <div class="prod-foot">
+        <button class="btn sm" data-simidx="${idx}">Ver producto</button>
+      </div>
+    </article>`; }).join("");
+  simGrid.querySelectorAll("[data-simidx]").forEach(el =>
+    el.addEventListener("click", () => openLb(parseInt(el.dataset.simidx, 10)))
+  );
+}
+
 function changeImg(delta){
   const g = groups[lbIndex];
   if(!g || g.images.length < 2) return;
@@ -959,6 +1098,9 @@ document.addEventListener("keydown", e => {
   if(e.key === "ArrowLeft") changeImg(-1);
   if(e.key === "ArrowRight") changeImg(1);
 });
+/* Arreglo definitivo del scroll con la rueda: movemos el scroll a mano,
+   así no depende de configuraciones raras de mouse/navegador. */
+lightbox.addEventListener("wheel", e => { lightbox.scrollTop += e.deltaY; }, { passive:true });
 
 /* Menú mobile (abrir/cerrar) */
 const menuToggle = document.getElementById("menuToggle");
