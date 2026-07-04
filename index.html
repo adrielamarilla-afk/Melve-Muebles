@@ -60,9 +60,18 @@
   .logo{display:flex; align-items:center;}
   .logo img{height:52px; width:auto; display:block;}
   @media (max-width:520px){ .logo img{height:42px;} }
-  nav.links{display:flex; gap:28px; align-items:center;}
-  nav.links a{font-size:14px; font-weight:600; color:var(--ink); opacity:.85;}
-  nav.links a:hover{color:var(--accent); opacity:1;}
+  nav.links{display:flex; gap:26px; align-items:center;}
+  nav.links a{color:var(--ink);}
+  .menu-item{position:relative;}
+  .top{font-size:14px; font-weight:600; color:var(--ink); opacity:.9; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:8px 0;}
+  .top:hover{color:var(--accent); opacity:1;}
+  .caret{width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); position:relative; top:-2px;}
+  .mega{position:absolute; top:100%; left:0; margin-top:6px; min-width:440px; background:#151413; border:1px solid var(--line); border-radius:14px; padding:14px; display:none; grid-template-columns:repeat(2,1fr); gap:6px; box-shadow:0 24px 60px rgba(0,0,0,.55); z-index:70;}
+  .menu-item:hover .mega{display:grid;}
+  .mega a{display:flex; align-items:center; gap:12px; padding:9px; border-radius:10px;}
+  .mega a:hover{background:var(--soft);}
+  .mega .thumb{width:46px; height:46px; border-radius:8px; background:var(--soft) center/cover no-repeat; border:1px solid var(--line); flex:0 0 auto;}
+  .mega .lbl{font-size:14px; font-weight:600; color:var(--ink);}
   .nav-cta{display:flex; align-items:center; gap:12px;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
   .menu-toggle span{width:24px; height:2px; background:var(--ink); border-radius:2px;}
@@ -70,11 +79,16 @@
     nav.links{display:none;}
     .menu-toggle{display:flex;}
     nav.links.open{
-      display:flex; flex-direction:column; align-items:flex-start; gap:0;
-      position:absolute; top:100%; left:0; right:0; background:#fff;
-      border-bottom:1px solid var(--line); padding:8px 18px 16px;
+      display:flex; flex-direction:column; align-items:stretch; gap:0;
+      position:absolute; top:100%; left:0; right:0; background:var(--bg);
+      border-bottom:1px solid var(--line); padding:8px 18px 16px; max-height:78vh; overflow:auto;
     }
-    nav.links.open a{padding:13px 0; width:100%; border-bottom:1px solid var(--line);}
+    .menu-item{width:100%;}
+    .top{width:100%; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line);}
+    .mega{position:static; transform:none; margin:0; min-width:0; grid-template-columns:1fr; background:transparent; border:none; box-shadow:none; padding:2px 0 10px 8px; display:none;}
+    .menu-item:hover .mega{display:none;}
+    .menu-item.open .mega{display:block;}
+    .top.plain{border-bottom:1px solid var(--line);}
     .nav-cta .btn.desk{display:none;}
   }
 
@@ -207,12 +221,7 @@
 <header>
   <div class="wrap nav">
     <a href="#inicio" class="logo"><img src="https://res.cloudinary.com/dbepkj4h/image/upload/e_make_transparent:20/e_trim/f_png,q_auto,h_160/Dise%C3%B1o_sin_t%C3%ADtulo_vtjddd.png" alt="Melve Muebles"></a>
-    <nav class="links" id="navLinks">
-      <a href="#catalogo">Catálogo</a>
-      <a href="#mayorista">Mayorista</a>
-      <a href="#nosotros">Nosotros</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
+    <nav class="links" id="navLinks"></nav>
     <div class="nav-cta">
       <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" class="btn accent sm desk">WhatsApp</a>
       <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
@@ -418,32 +427,61 @@ function waLink(item){
   return `https://wa.me/${WA}?text=${text}`;
 }
 
-/* Categorías: cada una es una etiqueta de Cloudinary. Etiquetá las fotos con estas
-   palabras (sillas, mesas, escritorios, gamer, importadas) y el filtro las agrupa solo. */
-const CATEGORIES = [
-  {label:"Sillas",          tag:"sillas"},
-  {label:"Mesas",           tag:"mesas"},
-  {label:"Escritorios",     tag:"escritorios"},
-  {label:"Oficina & Gamer", tag:"gamer"},
-  {label:"Importadas",      tag:"importadas"},
+/* ===== MENÚ / CATEGORÍAS =====
+   Cada subcategoría es una etiqueta de Cloudinary. Subí las fotos con la etiqueta
+   'melve' + la de su categoría (ej: 'espejos') y aparecen solas en su filtro. */
+const MENU = [
+  { label:"Mesas", items:[
+    { label:"Rectangulares", tag:"mesas-rect" },
+    { label:"Circulares",    tag:"mesas-circ" },
+    { label:"Cuadradas",     tag:"mesas-cuad" },
+  ]},
+  { label:"Sillas", items:[
+    { label:"Comedor",       tag:"comedor" },
+    { label:"Industriales",  tag:"industriales" },
+    { label:"Banquetas",     tag:"banquetas" },
+  ]},
+  { label:"Oficina", items:[
+    { label:"Escritorios",       tag:"escritorios" },
+    { label:"Sillas de Oficina", tag:"oficina" },
+    { label:"Sillas Gamer",      tag:"gamer" },
+  ]},
+  { label:"Deco", items:[
+    { label:"Espejos",  tag:"espejos" },
+    { label:"Rack TV",  tag:"rack-tv" },
+    { label:"Repisas",  tag:"repisas" },
+    { label:"Estantes", tag:"estantes" },
+  ]},
+  { label:"Combos", tag:"combos", items:[] },
 ];
+const LINKS = [
+  { label:"Mayorista", href:"#mayorista" },
+  { label:"Nosotros",  href:"#nosotros" },
+  { label:"Contacto",  href:"#contacto" },
+];
+/* Todas las etiquetas hoja (para traer listas y armar los chips) */
+const CATEGORIES = MENU.flatMap(g => (g.items && g.items.length) ? g.items : (g.tag ? [{label:g.label, tag:g.tag}] : []));
 
 const grid = document.getElementById("catalogGrid");
 const filtersEl = document.getElementById("filters");
+const navLinks = document.getElementById("navLinks");
 const lightbox = document.getElementById("lightbox");
 const lbImg = document.getElementById("lbImg");
 const lbWa = document.getElementById("lbWa");
 let lbIndex = 0;
 let categoryOf = {};      // public_id -> categoría
-let currentFilter = "all";
-let view = [];            // fotos visibles según el filtro
+let currentTags = null;   // null = todos; si no, array de etiquetas
+let view = [];
 
 function listUrl(tag){ return `https://res.cloudinary.com/${CLOUD}/image/list/${tag}.json`; }
 function getList(tag){
   return fetch(listUrl(tag)).then(r => r.ok ? r.json() : {resources:[]}).catch(() => ({resources:[]}));
 }
+function scrollToCatalog(){ document.getElementById("catalogo").scrollIntoView({behavior:"smooth"}); }
 
-/* Traer la lista general + la de cada categoría, todo junto */
+buildMenu();
+
+/* Traer la lista general + la de cada categoría */
 grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">Cargando productos…</p>';
 Promise.all([ getList(TAG), ...CATEGORIES.map(c => getList(c.tag)) ])
   .then(([main, ...cats]) => {
@@ -455,12 +493,54 @@ Promise.all([ getList(TAG), ...CATEGORIES.map(c => getList(c.tag)) ])
       .filter(x => x.width === x.height)                       // solo cuadradas (excluye sueltas)
       .sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""));
     buildFilters();
+    fillThumbs();
     render();
   })
   .catch(() => {
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">No se pudieron cargar los productos ahora. Recargá la página en un momento.</p>';
   });
 
+/* ===== Mega-menú superior ===== */
+function buildMenu(){
+  let html = MENU.map(g => {
+    if(!g.items || !g.items.length){
+      return `<div class="menu-item"><a class="top" data-tags="${g.tag}">${g.label}</a></div>`;
+    }
+    const sub = g.items.map(it =>
+      `<a data-tag="${it.tag}"><span class="thumb" data-cat="${it.tag}"></span><span class="lbl">${it.label}</span></a>`
+    ).join("");
+    return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega">${sub}</div></div>`;
+  }).join("");
+  html += LINKS.map(l => `<a class="top plain" href="${l.href}">${l.label}</a>`).join("");
+  navLinks.innerHTML = html;
+
+  navLinks.querySelectorAll(".menu-item").forEach(mi => {
+    const top = mi.querySelector(".top");
+    const hasMega = !!mi.querySelector(".mega");
+    top.addEventListener("click", () => {
+      if(window.innerWidth <= 900 && hasMega){ mi.classList.toggle("open"); return; }
+      const tags = top.dataset.tags ? top.dataset.tags.split(",")
+                 : [...mi.querySelectorAll(".mega a")].map(a => a.dataset.tag);
+      applyFilter(tags, top.textContent);
+      scrollToCatalog(); navLinks.classList.remove("open");
+    });
+  });
+  navLinks.querySelectorAll(".mega a").forEach(a => a.addEventListener("click", e => {
+    e.preventDefault();
+    applyFilter([a.dataset.tag], a.querySelector(".lbl").textContent);
+    scrollToCatalog(); navLinks.classList.remove("open");
+  }));
+  navLinks.querySelectorAll("a.plain").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
+}
+
+function fillThumbs(){
+  navLinks.querySelectorAll(".mega .thumb").forEach(t => {
+    const first = IMAGES.find(x => categoryOf[x.public_id] === t.dataset.cat);
+    if(first) t.style.backgroundImage = `url(${imgUrl(first,120)})`;
+  });
+}
+
+/* ===== Chips de filtro dentro del catálogo ===== */
 function buildFilters(){
   const counts = {};
   IMAGES.forEach(x => { const t = categoryOf[x.public_id]; if(t) counts[t] = (counts[t]||0)+1; });
@@ -468,15 +548,26 @@ function buildFilters(){
   CATEGORIES.forEach(c => { if(counts[c.tag]) html += `<button data-f="${c.tag}">${c.label} (${counts[c.tag]})</button>`; });
   filtersEl.innerHTML = html;
   filtersEl.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-    currentFilter = b.dataset.f;
-    filtersEl.querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b));
-    render();
+    applyFilter(b.dataset.f === "all" ? null : [b.dataset.f]);
   }));
 }
 
+function applyFilter(tags, label){
+  currentTags = (tags && tags.length) ? tags : null;
+  render();
+  filtersEl.querySelectorAll("button").forEach(b => {
+    const on = currentTags ? (currentTags.length === 1 && b.dataset.f === currentTags[0]) : (b.dataset.f === "all");
+    b.classList.toggle("active", on);
+  });
+}
+
 function render(){
-  view = (currentFilter === "all") ? IMAGES : IMAGES.filter(x => categoryOf[x.public_id] === currentFilter);
+  view = !currentTags ? IMAGES : IMAGES.filter(x => currentTags.includes(categoryOf[x.public_id]));
   if(IMAGES.length){ document.getElementById("heroImg").src = imgUrl(IMAGES[0], 900); }
+  if(!view.length){
+    grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; padding:20px 0;">Todavía no hay productos en esta categoría. ¡Pronto los subimos!</p>';
+    return;
+  }
   grid.innerHTML = view.map((item,i) => `
     <article class="prod">
       <div class="prod-img" data-index="${i}">
@@ -511,11 +602,9 @@ document.addEventListener("keydown", e => {
   if(e.key === "ArrowRight") openLb(lbIndex+1);
 });
 
-/* Menú mobile */
+/* Menú mobile (abrir/cerrar) */
 const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
 menuToggle.addEventListener("click", () => navLinks.classList.toggle("open"));
-navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
 
 /* Formulario -> WhatsApp */
 document.getElementById("quoteForm").addEventListener("submit", function(e){
