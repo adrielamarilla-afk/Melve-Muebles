@@ -147,10 +147,14 @@
   .prod-name{font-size:13.5px; font-weight:600; line-height:1.35; margin:0 0 7px; min-height:37px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
   .prod-price{font-size:19px; font-weight:800; color:var(--accent); font-family:var(--display);}
   .prod-price .prod-ef{font-family:var(--body); font-size:11px; font-weight:600; color:var(--muted); letter-spacing:.02em;}
+  .prod-lista{font-size:12px; color:var(--muted); text-decoration:line-through; margin-top:2px;}
+  .prod-cuotas{font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4;}
   .prod-foot{padding:12px 13px 14px; display:flex;}
   .prod-foot .btn{flex:1;}
   .modal-price{font-size:30px; font-weight:800; color:var(--accent); font-family:var(--display); margin:0 0 4px;}
   .modal-price::after{content:" efectivo"; font-family:var(--body); font-size:12px; font-weight:600; color:var(--muted);}
+  .modal-lista{font-size:14px; color:var(--muted); text-decoration:line-through; margin-bottom:2px;}
+  .modal-cuotas{font-size:13px; color:var(--muted); margin-bottom:18px;}
 
   /* FEATURES */
   .features{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
@@ -504,6 +508,8 @@
       <span class="modal-kicker">Melve Muebles</span>
       <h3 class="modal-title" id="lbTitle">Producto</h3>
       <div class="modal-price" id="lbPrice"></div>
+      <div class="modal-lista" id="lbLista"></div>
+      <div class="modal-cuotas" id="lbCuotas"></div>
       <p class="modal-note">Precio en <b>efectivo</b>. Tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
       <a class="btn buy modal-buy" id="lbWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor" width="20" height="20"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.6 1.4 5.6 1.4h.2c6.6 0 12-5.4 12-12S22.6 3 16 3zm5.9 14c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3s0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.5s.1-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3 2.1 3.2 5 4.5c.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5z"/></svg>Comprar por WhatsApp</a>
       <ul class="modal-feats">
@@ -623,8 +629,35 @@ const PRODUCTS = {
   "1_npn5nh": {n:"Mesa Atria Nogal + 4 Sillas Allegra", p:"$294.999"},
   "00_nvlwo1": {n:"Mesa Eames MDF 70cm + 2 Sillas Tulum", p:"$239.999"},
   "1_qveui4": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulip", p:"$313.999"},
+
+  /* Sillas de comedor sueltas (efectivo + precio lista) */
+  "Silla_Windsor_fnazms": {n:"Silla Windsor", p:"$139.999", lista:"$203.160"},
+  "Silla_Windsor_info_bguczb": {n:"Silla Windsor", p:"$139.999", lista:"$203.160"},
+  "Silla_Tulum_vs3ypq": {n:"Silla Tulum", p:"$189.999", lista:"$275.750"},
+  "Silla_Tulum_info_rdavyw": {n:"Silla Tulum", p:"$189.999", lista:"$275.750"},
+  "Silla_Tulip_cgninb": {n:"Silla Tulip", p:"$149.999", lista:"$217.670"},
+  "Silla_Tulip_info_f0fodg": {n:"Silla Tulip", p:"$149.999", lista:"$217.670"},
+  "Silla_Tolix_jptafa": {n:"Silla Tolix", p:"$195.999", lista:"$282.980"},
+  "Silla_Tolix_info_xtru2l": {n:"Silla Tolix", p:"$195.999", lista:"$282.980"},
+  "Silla_Roma_adzpsa": {n:"Silla Roma", p:"$129.999", lista:"$188.650"},
+  "Silla_Roma_info_pwygug": {n:"Silla Roma", p:"$129.999", lista:"$188.650"},
+  "Silla_Milan_o6quzv": {n:"Silla Milan", p:"$139.999", lista:"$203.160"},
+  "Silla_Milan_info_qhhfpa": {n:"Silla Milan", p:"$139.999", lista:"$203.160"},
+  "Silla_Eames_oh4tsb": {n:"Silla Eames", p:"$129.999", lista:"$188.650"},
+  "Silla_Eames_info_kzmwcb": {n:"Silla Eames", p:"$129.999", lista:"$188.650"},
+  "Silla_Allegra_no9aef": {n:"Silla Allegra", p:"$129.999", lista:"$188.650"},
+  "Silla_Allegra_info_wj1tay": {n:"Silla Allegra", p:"$129.999", lista:"$188.650"},
 };
 function info(item){ return PRODUCTS[item.public_id] || {n:"Combo Melve — Mesa + sillas", p:""}; }
+
+/* A partir del precio lista, calcula 3 y 6 cuotas sin interés */
+function cuotasText(lista){
+  if(!lista) return "";
+  const n = parseInt(lista.replace(/[^\d]/g,""), 10);
+  if(!n) return "";
+  const fmt = x => "$" + Math.round(x).toLocaleString("es-AR");
+  return `3 cuotas de ${fmt(n/3)} · 6 cuotas de ${fmt(n/6)} sin interés`;
+}
 
 function waLink(item){
   const d = info(item);
@@ -783,6 +816,7 @@ function render(){
       <div class="prod-body">
         <h3 class="prod-name">${d.n}</h3>
         <div class="prod-price">${d.p}<span class="prod-ef">${d.p ? " efectivo" : ""}</span></div>
+        ${d.lista ? `<div class="prod-lista">Lista ${d.lista}</div><div class="prod-cuotas">${cuotasText(d.lista)}</div>` : ""}
       </div>
       <div class="prod-foot">
         <button class="btn sm open-modal" data-index="${i}">Comprar</button>
@@ -806,6 +840,8 @@ function openLb(i){
   lbImg.alt = d.n;
   document.getElementById("lbTitle").textContent = d.n;
   document.getElementById("lbPrice").textContent = d.p;
+  document.getElementById("lbLista").textContent = d.lista ? `Lista ${d.lista}` : "";
+  document.getElementById("lbCuotas").textContent = cuotasText(d.lista);
   lbWa.href = waLink(item);
   lightbox.classList.add("open");
 }
