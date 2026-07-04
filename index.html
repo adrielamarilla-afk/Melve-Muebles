@@ -160,6 +160,11 @@
   .modal-thumbs{position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px;}
   .modal-thumbs button{width:11px; height:11px; border-radius:50%; background:rgba(255,255,255,.4); border:none; padding:0;}
   .modal-thumbs button.active{background:#fff;}
+  .img-nav{position:absolute; top:50%; transform:translateY(-50%); width:38px; height:38px; border-radius:50%; background:rgba(0,0,0,.45); border:none; color:#fff; font-size:22px; display:flex; align-items:center; justify-content:center; line-height:1; transition:.15s ease;}
+  .img-nav:hover{background:rgba(0,0,0,.7);}
+  .img-nav.prev{left:14px;} .img-nav.next{right:14px;}
+  .img-nav.hidden{display:none;}
+  @media (max-width:760px){ .img-nav{width:32px; height:32px; font-size:18px;} }
 
   /* FEATURES */
   .features{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
@@ -508,7 +513,12 @@
   <button class="lb-close" id="lbClose" aria-label="Cerrar">✕</button>
   <button class="lb-nav prev" id="lbPrev" aria-label="Anterior">‹</button>
   <div class="modal-card">
-    <div class="modal-img"><img id="lbImg" src="" alt="Producto Melve Muebles"><div class="modal-thumbs" id="lbThumbs"></div></div>
+    <div class="modal-img">
+      <img id="lbImg" src="" alt="Producto Melve Muebles">
+      <button class="img-nav prev" id="lbImgPrev" aria-label="Foto anterior">‹</button>
+      <button class="img-nav next" id="lbImgNext" aria-label="Foto siguiente">›</button>
+      <div class="modal-thumbs" id="lbThumbs"></div>
+    </div>
     <div class="modal-info">
       <span class="modal-kicker">Melve Muebles</span>
       <h3 class="modal-title" id="lbTitle">Producto</h3>
@@ -878,13 +888,27 @@ function renderLbImage(){
   document.getElementById("lbCuotas").textContent = cuotasText(d.lista);
   lbWa.href = waLink(g.images[0]);
   const thumbs = document.getElementById("lbThumbs");
+  const imgPrev = document.getElementById("lbImgPrev");
+  const imgNext = document.getElementById("lbImgNext");
   if(g.images.length > 1){
     thumbs.innerHTML = g.images.map((im,idx) => `<button class="${idx===curImgIdx?"active":""}" data-idx="${idx}" aria-label="Ver foto ${idx+1}"></button>`).join("");
     thumbs.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { curImgIdx = parseInt(b.dataset.idx); renderLbImage(); }));
+    imgPrev.classList.remove("hidden");
+    imgNext.classList.remove("hidden");
   } else {
     thumbs.innerHTML = "";
+    imgPrev.classList.add("hidden");
+    imgNext.classList.add("hidden");
   }
 }
+function changeImg(delta){
+  const g = groups[lbIndex];
+  if(!g || g.images.length < 2) return;
+  curImgIdx = (curImgIdx + delta + g.images.length) % g.images.length;
+  renderLbImage();
+}
+document.getElementById("lbImgPrev").addEventListener("click", e => { e.stopPropagation(); changeImg(-1); });
+document.getElementById("lbImgNext").addEventListener("click", e => { e.stopPropagation(); changeImg(1); });
 document.getElementById("lbClose").addEventListener("click", () => lightbox.classList.remove("open"));
 document.getElementById("lbPrev").addEventListener("click", () => openLb(lbIndex-1));
 document.getElementById("lbNext").addEventListener("click", () => openLb(lbIndex+1));
