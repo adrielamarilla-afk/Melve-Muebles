@@ -143,8 +143,14 @@
   .prod-img .zoom{position:absolute; top:10px; right:10px; background:rgba(255,255,255,.92); border-radius:8px; padding:6px; display:flex; box-shadow:0 2px 8px rgba(0,0,0,.12); opacity:0; transition:.2s;}
   .prod:hover .prod-img .zoom{opacity:1;}
   .prod-img .zoom svg{width:16px; height:16px; stroke:var(--ink);}
-  .prod-foot{padding:12px; display:flex;}
+  .prod-body{padding:13px 13px 0; flex:1;}
+  .prod-name{font-size:13.5px; font-weight:600; line-height:1.35; margin:0 0 7px; min-height:37px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .prod-price{font-size:19px; font-weight:800; color:var(--accent); font-family:var(--display);}
+  .prod-price .prod-ef{font-family:var(--body); font-size:11px; font-weight:600; color:var(--muted); letter-spacing:.02em;}
+  .prod-foot{padding:12px 13px 14px; display:flex;}
   .prod-foot .btn{flex:1;}
+  .modal-price{font-size:30px; font-weight:800; color:var(--accent); font-family:var(--display); margin:0 0 4px;}
+  .modal-price::after{content:" efectivo"; font-family:var(--body); font-size:12px; font-weight:600; color:var(--muted);}
 
   /* FEATURES */
   .features{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
@@ -444,8 +450,9 @@
     <div class="modal-img"><img id="lbImg" src="" alt="Producto Melve Muebles"></div>
     <div class="modal-info">
       <span class="modal-kicker">Melve Muebles</span>
-      <h3 class="modal-title">Hacé tu pedido</h3>
-      <p class="modal-note">Mirá el modelo y el precio en la imagen. Tocá <b>Comprar</b> y coordinamos todo por WhatsApp — pago en efectivo y envío a tu zona.</p>
+      <h3 class="modal-title" id="lbTitle">Producto</h3>
+      <div class="modal-price" id="lbPrice"></div>
+      <p class="modal-note">Precio en <b>efectivo</b>. Tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
       <a class="btn buy modal-buy" id="lbWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor" width="20" height="20"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.6 1.4 5.6 1.4h.2c6.6 0 12-5.4 12-12S22.6 3 16 3zm5.9 14c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3s0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.5s.1-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3 2.1 3.2 5 4.5c.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5z"/></svg>Comprar por WhatsApp</a>
       <ul class="modal-feats">
         <li>Pago en efectivo</li>
@@ -469,8 +476,108 @@ let IMAGES = [];       // se llena solo desde Cloudinary
 /* URL optimizada (liviana y rápida) */
 function imgUrl(item, w){ return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_${w}/${item.public_id}.${item.format}`; }
 function fullUrl(item){ return `https://res.cloudinary.com/${CLOUD}/image/upload/${item.public_id}.${item.format}`; }
+/* Base de productos (nombre + precio), leída de las fichas del catálogo */
+const PRODUCTS = {
+  "666444_csp1qr": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Allegra", p:"$329.999"},
+  "65666_qatzjs": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Tulip", p:"$349.999"},
+  "34344_ghuawk": {n:"Mesa Petra Nogal 100cm + 4 Sillas Allegra", p:"$329.999"},
+  "34343_to8ict": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tulip", p:"$349.999"},
+  "6442_mqix8r": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Tolix", p:"$395.999"},
+  "6664_ce0che": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Windsor", p:"$339.999"},
+  "52533_esqgak": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tolix", p:"$395.999"},
+  "5555_oxz2e6": {n:"Mesa Milan MDF 120x80 + 4 Sillas Windsor", p:"$314.999"},
+  "5554_vrfwzc": {n:"Mesa Petra Nogal 100cm + 4 Sillas Eames", p:"$329.999"},
+  "3333_l5jka1": {n:"Mesa Moderna MDF 90cm + 4 Sillas Tulip", p:"$314.999"},
+  "3434_h1xsvp": {n:"Mesa Petra Nogal 100cm + 4 Sillas Milan", p:"$339.999"},
+  "5345_o8gams": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tulum", p:"$379.999"},
+  "99_ctgobt": {n:"Mesa Eames MDF 70cm + 2 Sillas Roma", p:"$219.999"},
+  "666_e1uw6h": {n:"Mesa Milan MDF 70x70 + 2 Sillas Roma", p:"$219.999"},
+  "97_tw5zpq": {n:"Mesa Industrial 120x70 + 4 Sillas Tolix", p:"$355.999"},
+  "626_guqkdl": {n:"Mesa Petra Nogal 100cm + 4 Sillas Roma", p:"$329.999"},
+  "94_ylzbxu": {n:"Mesa Industrial 120x70 + 4 Sillas Allegra", p:"$289.999"},
+  "95_tl6ayq": {n:"Mesa Industrial 120x70 + 4 Sillas Roma", p:"$289.999"},
+  "96_tawtrw": {n:"Mesa Industrial 120x70 + 4 Sillas Tulum", p:"$339.999"},
+  "93_pxxuyk": {n:"Mesa Industrial 120x70 + 4 Sillas Eames", p:"$289.999"},
+  "92_tjblqd": {n:"Mesa Industrial 120x70 + 4 Sillas Milan", p:"$299.999"},
+  "91_peccap": {n:"Mesa Industrial 120x70 + 4 Sillas Windsor", p:"$299.999"},
+  "88_manvlk": {n:"Mesa Eames MDF 70cm + 2 Sillas Eames", p:"$214.999"},
+  "80_rpokos": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tolix", p:"$428.999"},
+  "90_bopwj9": {n:"Mesa Industrial 120x70 + 4 Sillas Tulip", p:"$309.999"},
+  "81_ioycza": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tulum", p:"$412.999"},
+  "79_f1xokf": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Roma", p:"$362.999"},
+  "75_wcxrim": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Windsor", p:"$372.999"},
+  "77_qibrmd": {n:"Mesa Eames MDF 70cm + 2 Sillas Allegra", p:"$219.999"},
+  "76_lgiyqn": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Milan", p:"$372.999"},
+  "78_fqnbkn": {n:"Mesa Eames MDF 70cm + 2 Sillas Tolix", p:"$247.999"},
+  "67_zrnp80": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tulum", p:"$244.999"},
+  "74_v1lmk6": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tulip", p:"$382.999"},
+  "68_cfrtad": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tolix", p:"$252.999"},
+  "65_fwmoij": {n:"Mesa Milan MDF 70x70 + 2 Sillas Allegra", p:"$219.999"},
+  "66_oux4mf": {n:"Mesa Eames MDF 70cm + 2 Sillas Windsor", p:"$219.999"},
+  "62_yhglij": {n:"Mesa Milan MDF 70x70 + 2 Sillas Milan", p:"$224.999"},
+  "63_cn3aep": {n:"Mesa Milan MDF 70x70 + 2 Sillas Windsor", p:"$224.999"},
+  "61_es2hrb": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tulip", p:"$229.999"},
+  "64_y3lyos": {n:"Mesa Milan MDF 70x70 + 2 Sillas Eames", p:"$219.999"},
+  "60_b661sn": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tolix", p:"$370.999"},
+  "59_jieavx": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tulum", p:"$354.999"},
+  "58_iyp0uz": {n:"Mesa Milan MDF 120x80 + 4 Sillas Roma", p:"$304.999"},
+  "56_jc0kpr": {n:"Mesa Milan MDF 120x80 + 4 Sillas Eames", p:"$304.999"},
+  "53_ted0d8": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tulip", p:"$324.999"},
+  "57_rslojx": {n:"Mesa Milan MDF 120x80 + 4 Sillas Allegra", p:"$304.999"},
+  "55_rxunwh": {n:"Mesa Eames MDF 70cm + 2 Sillas Milan", p:"$219.999"},
+  "54_yonlk5": {n:"Mesa Milan MDF 120x80 + 4 Sillas Milan", p:"$314.999"},
+  "52_htan0f": {n:"Mesa Petra Stellar 100cm + 4 Sillas Allegra", p:"$329.999"},
+  "50_oxm6xd": {n:"Mesa Petra Stellar 100cm + 4 Sillas Windsor", p:"$339.999"},
+  "49_u6hxiw": {n:"Mesa Petra Stellar 100cm + 4 Sillas Tulip", p:"$349.999"},
+  "44_mlev8x": {n:"Mesa Eames MDF 70cm + 2 Sillas Tulip", p:"$224.999"},
+  "40_hhghfw": {n:"Mesa Moderna MDF 90cm + 4 Sillas Tolix", p:"$360.999"},
+  "38_rzjaxf": {n:"Mesa Moderna MDF 90cm + 4 Sillas Roma", p:"$294.999"},
+  "39_yyjyjn": {n:"Mesa Moderna MDF 90cm + 4 Sillas Tolix", p:"$344.999"},
+  "37_emujwg": {n:"Mesa Moderna MDF 90cm + 4 Sillas Allegra", p:"$294.999"},
+  "35_sabl6h": {n:"Mesa Moderna MDF 90cm + 4 Sillas Eames", p:"$294.999"},
+  "36_wddefq": {n:"Mesa Moderna MDF 90cm + 4 Sillas Windsor", p:"$304.999"},
+  "34_am4ler": {n:"Mesa Moderna MDF 90cm + 4 Sillas Milan", p:"$304.999"},
+  "24_egeuku": {n:"Mesa Eames MDF 100cm + 4 Sillas Tulum", p:"$349.999"},
+  "20_kgaact": {n:"Mesa Eames MDF 100cm + 4 Sillas Milan", p:"$309.999"},
+  "23_bbquvz": {n:"Mesa Eames MDF 100cm + 4 Sillas Tolix", p:"$365.999"},
+  "22_i3etf7": {n:"Mesa Eames MDF 100cm + 4 Sillas Roma", p:"$299.999"},
+  "19_z12tp3": {n:"Mesa Eames MDF 100cm + 4 Sillas Windsor", p:"$309.999"},
+  "21_b6rqq4": {n:"Mesa Eames MDF 100cm + 4 Sillas Allegra", p:"$299.999"},
+  "17_wxmdid": {n:"Mesa Eames MDF 100cm + 4 Sillas Eames", p:"$299.999"},
+  "18_h6unyl": {n:"Mesa Eames MDF 100cm + 4 Sillas Tulip", p:"$319.999"},
+  "15_jhzzka": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tolix", p:"$355.999"},
+  "16_fsgy0e": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tulum", p:"$339.999"},
+  "12_kh6xdq": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Milan", p:"$299.999"},
+  "14_peyat7": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Roma", p:"$289.999"},
+  "13_tj1b0n": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Allegra", p:"$289.999"},
+  "11_b5kqa3": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Windsor", p:"$299.999"},
+  "9_iymhb3": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Eames", p:"$289.999"},
+  "8a_hzmxwz": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tolix", p:"$359.999"},
+  "10_akrlkq": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tulip", p:"$309.999"},
+  "8_zky8nl": {n:"Mesa Atria Freijo + 4 Sillas Roma", p:"$299.999"},
+  "7a_x4apdm": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulum", p:"$343.999"},
+  "6a_ddhkm5": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Roma", p:"$293.999"},
+  "6_kwhgbl": {n:"Mesa Atria Freijo + 4 Sillas Milan", p:"$309.999"},
+  "7_z19iva": {n:"Mesa Atria Freijo + 4 Sillas Tulum", p:"$349.999"},
+  "5ss_yi6akc": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Allegra", p:"$293.999"},
+  "5a_gqwpjf": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Eames", p:"$293.999"},
+  "5_emkikc": {n:"Mesa Atria Freijo + 4 Sillas Tulip", p:"$319.999"},
+  "4_u4mcz6": {n:"Mesa Atria Nogal + 4 Sillas Windsor", p:"$304.999"},
+  "2a_yeaap7": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Windsor", p:"$303.999"},
+  "2_bmc0rt": {n:"Mesa Atria Nogal + 4 Sillas Eames", p:"$294.999"},
+  "3a_d2n9hf": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Milan", p:"$303.999"},
+  "3_zhr314": {n:"Mesa Atria Nogal + 4 Sillas Tolix", p:"$360.999"},
+  "1a_qoi8sh": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulip", p:"$313.999"},
+  "1_npn5nh": {n:"Mesa Atria Nogal + 4 Sillas Allegra", p:"$294.999"},
+  "00_nvlwo1": {n:"Mesa Eames MDF 70cm + 2 Sillas Tulum", p:"$239.999"},
+  "1_qveui4": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulip", p:"$313.999"},
+};
+function info(item){ return PRODUCTS[item.public_id] || {n:"Combo Melve — Mesa + sillas", p:""}; }
+
 function waLink(item){
-  const text = encodeURIComponent(`Hola! Quiero comprar este producto del catálogo 👉 ${fullUrl(item)}`);
+  const d = info(item);
+  const label = d.n + (d.p ? ` (${d.p} efectivo)` : "");
+  const text = encodeURIComponent(`Hola! Quiero comprar: ${label} 👉 ${fullUrl(item)}`);
   return `https://wa.me/${WA}?text=${text}`;
 }
 
@@ -615,16 +722,20 @@ function render(){
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; padding:20px 0;">Todavía no hay productos en esta categoría. ¡Pronto los subimos!</p>';
     return;
   }
-  grid.innerHTML = view.map((item,i) => `
+  grid.innerHTML = view.map((item,i) => { const d = info(item); return `
     <article class="prod">
       <div class="prod-img" data-index="${i}">
-        <img src="${imgUrl(item,700)}" alt="Producto Melve Muebles" loading="lazy">
+        <img src="${imgUrl(item,700)}" alt="${d.n}" loading="lazy">
         <span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4M11 8v6M8 11h6"/></svg></span>
+      </div>
+      <div class="prod-body">
+        <h3 class="prod-name">${d.n}</h3>
+        <div class="prod-price">${d.p}<span class="prod-ef">${d.p ? " efectivo" : ""}</span></div>
       </div>
       <div class="prod-foot">
         <button class="btn sm open-modal" data-index="${i}">Comprar</button>
       </div>
-    </article>`).join("");
+    </article>`; }).join("");
   grid.querySelectorAll(".prod-img").forEach(el =>
     el.addEventListener("click", () => openLb(parseInt(el.dataset.index)))
   );
@@ -637,8 +748,13 @@ function render(){
 function openLb(i){
   if(!view.length) return;
   lbIndex = (i + view.length) % view.length;
-  lbImg.src = imgUrl(view[lbIndex], 1200);
-  lbWa.href = waLink(view[lbIndex]);
+  const item = view[lbIndex];
+  const d = info(item);
+  lbImg.src = imgUrl(item, 1200);
+  lbImg.alt = d.n;
+  document.getElementById("lbTitle").textContent = d.n;
+  document.getElementById("lbPrice").textContent = d.p;
+  lbWa.href = waLink(item);
   lightbox.classList.add("open");
 }
 document.getElementById("lbClose").addEventListener("click", () => lightbox.classList.remove("open"));
