@@ -153,7 +153,7 @@
   .prod-foot{padding:12px 13px 14px; display:flex;}
   .prod-foot .btn{flex:1;}
   .modal-price{font-size:30px; font-weight:800; color:var(--accent); font-family:var(--display); margin:0 0 4px;}
-  .modal-price::after{content:" efectivo"; font-family:var(--body); font-size:12px; font-weight:600; color:var(--muted);}
+  .modal-price .prod-ef{font-family:var(--body); font-size:12px; font-weight:600; color:var(--muted);}
   .modal-lista{font-size:14px; color:var(--muted); text-decoration:line-through; margin-bottom:4px;}
   .modal-cuotas{font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.6; white-space:pre-line;}
   .modal-img{position:relative;}
@@ -689,22 +689,25 @@ const PRODUCTS = {
   "1_qveui4": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulip", p:"$313.999"},
 
   /* Sillas de comedor sueltas (efectivo + precio lista) */
-  "Silla_Windsor_fnazms": {n:"Silla Windsor", p:"$139.999", lista:"$203.160"},
-  "Silla_Windsor_info_bguczb": {n:"Silla Windsor", p:"$139.999", lista:"$203.160"},
-  "Silla_Tulum_vs3ypq": {n:"Silla Tulum", p:"$189.999", lista:"$275.750"},
-  "Silla_Tulum_info_rdavyw": {n:"Silla Tulum", p:"$189.999", lista:"$275.750"},
-  "Silla_Tulip_cgninb": {n:"Silla Tulip", p:"$149.999", lista:"$217.670"},
-  "Silla_Tulip_info_f0fodg": {n:"Silla Tulip", p:"$149.999", lista:"$217.670"},
-  "Silla_Tolix_jptafa": {n:"Silla Tolix", p:"$195.999", lista:"$282.980"},
-  "Silla_Tolix_info_xtru2l": {n:"Silla Tolix", p:"$195.999", lista:"$282.980"},
-  "Silla_Roma_adzpsa": {n:"Silla Roma", p:"$129.999", lista:"$188.650"},
-  "Silla_Roma_info_pwygug": {n:"Silla Roma", p:"$129.999", lista:"$188.650"},
-  "Silla_Milan_o6quzv": {n:"Silla Milan", p:"$139.999", lista:"$203.160"},
-  "Silla_Milan_info_qhhfpa": {n:"Silla Milan", p:"$139.999", lista:"$203.160"},
-  "Silla_Eames_oh4tsb": {n:"Silla Eames", p:"$129.999", lista:"$188.650"},
-  "Silla_Eames_info_kzmwcb": {n:"Silla Eames", p:"$129.999", lista:"$188.650"},
-  "Silla_Allegra_no9aef": {n:"Silla Allegra", p:"$129.999", lista:"$188.650"},
-  "Silla_Allegra_info_wj1tay": {n:"Silla Allegra", p:"$129.999", lista:"$188.650"},
+  /* p/lista = precio del pack x4 (el único que tenemos confirmado por ahora).
+     "qty" trae el precio real de cada cantidad; si falta un número (1, 2 o 3),
+     la ficha muestra "Consultar por WhatsApp" en vez de inventar un precio. */
+  "Silla_Windsor_fnazms": {n:"Silla Windsor", p:"$139.999", lista:"$203.160", qty:{4:{p:"$139.999",lista:"$203.160"}}},
+  "Silla_Windsor_info_bguczb": {n:"Silla Windsor", p:"$139.999", lista:"$203.160", qty:{4:{p:"$139.999",lista:"$203.160"}}},
+  "Silla_Tulum_vs3ypq": {n:"Silla Tulum", p:"$189.999", lista:"$275.750", qty:{4:{p:"$189.999",lista:"$275.750"}}},
+  "Silla_Tulum_info_rdavyw": {n:"Silla Tulum", p:"$189.999", lista:"$275.750", qty:{4:{p:"$189.999",lista:"$275.750"}}},
+  "Silla_Tulip_cgninb": {n:"Silla Tulip", p:"$149.999", lista:"$217.670", qty:{4:{p:"$149.999",lista:"$217.670"}}},
+  "Silla_Tulip_info_f0fodg": {n:"Silla Tulip", p:"$149.999", lista:"$217.670", qty:{4:{p:"$149.999",lista:"$217.670"}}},
+  "Silla_Tolix_jptafa": {n:"Silla Tolix", p:"$195.999", lista:"$282.980", qty:{4:{p:"$195.999",lista:"$282.980"}}},
+  "Silla_Tolix_info_xtru2l": {n:"Silla Tolix", p:"$195.999", lista:"$282.980", qty:{4:{p:"$195.999",lista:"$282.980"}}},
+  "Silla_Roma_adzpsa": {n:"Silla Roma", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
+  "Silla_Roma_info_pwygug": {n:"Silla Roma", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
+  "Silla_Milan_o6quzv": {n:"Silla Milan", p:"$139.999", lista:"$203.160", qty:{4:{p:"$139.999",lista:"$203.160"}}},
+  "Silla_Milan_info_qhhfpa": {n:"Silla Milan", p:"$139.999", lista:"$203.160", qty:{4:{p:"$139.999",lista:"$203.160"}}},
+  "Silla_Eames_oh4tsb": {n:"Silla Eames", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
+  "Silla_Eames_info_kzmwcb": {n:"Silla Eames", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
+  "Silla_Allegra_no9aef": {n:"Silla Allegra", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
+  "Silla_Allegra_info_wj1tay": {n:"Silla Allegra", p:"$129.999", lista:"$188.650", qty:{4:{p:"$129.999",lista:"$188.650"}}},
 };
 function info(item){ return PRODUCTS[item.public_id] || {n:"Combo Melve — Mesa + sillas", p:""}; }
 
@@ -720,13 +723,20 @@ function cuotasText(lista){
 function priceNum(p){ return parseInt((p||"").replace(/[^\d]/g,""), 10) || 0; }
 function fmtMoney(n){ return "$" + Math.round(n).toLocaleString("es-AR"); }
 
+/* Precio real para una cantidad puntual. Si no lo cargamos todavía, devuelve null
+   (la ficha muestra "Consultar por WhatsApp" en vez de inventar un número). */
+function pricesForQty(d, qty){
+  return (d.qty && d.qty[qty]) || null;
+}
+
 function waLink(item, qty, color){
   const d = info(item);
   qty = qty || 1;
+  const pr = pricesForQty(d, qty);
   let label = d.n;
   if(color) label += ` color ${color}`;
   if(qty > 1) label += ` x${qty}`;
-  if(d.p) label += ` (${fmtMoney(priceNum(d.p) * qty)} efectivo)`;
+  label += pr ? ` (${pr.p} efectivo)` : ` — consultar precio para x${qty}`;
   const text = encodeURIComponent(`Hola! Quiero comprar: ${label} 👉 ${fullUrl(item)}`);
   return `https://wa.me/${WA}?text=${text}`;
 }
@@ -977,11 +987,17 @@ window.addEventListener("popstate", () => {
 function updatePriceDisplay(){
   const d = groups[lbIndex].d;
   const qty = selQty || 1;
-  const totalP = priceNum(d.p) * qty;
-  const totalL = d.lista ? priceNum(d.lista) * qty : 0;
-  document.getElementById("lbPrice").textContent = fmtMoney(totalP);
-  document.getElementById("lbLista").textContent = totalL ? `Lista ${fmtMoney(totalL)}` : "";
-  document.getElementById("lbCuotas").textContent = totalL ? cuotasText(fmtMoney(totalL)) : "";
+  const pr = pricesForQty(d, qty);
+  const priceEl = document.getElementById("lbPrice");
+  if(pr){
+    priceEl.innerHTML = `${pr.p}<span class="prod-ef"> efectivo</span>`;
+    document.getElementById("lbLista").textContent = pr.lista ? `Lista ${pr.lista}` : "";
+    document.getElementById("lbCuotas").textContent = pr.lista ? cuotasText(pr.lista) : "";
+  } else {
+    priceEl.textContent = "Consultar por WhatsApp";
+    document.getElementById("lbLista").textContent = "";
+    document.getElementById("lbCuotas").textContent = "";
+  }
 }
 function updateBuyLink(){
   lbWa.href = waLink(groups[lbIndex].images[0], selQty, selColor);
