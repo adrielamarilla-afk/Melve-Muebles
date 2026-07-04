@@ -248,8 +248,8 @@
   @media (max-width:520px){ .wa{width:56px; height:56px; bottom:18px; right:18px;} .wa svg{width:30px; height:30px;} }
 
   /* PÁGINA DE PRODUCTO (a pantalla completa, no ventana chica) */
-  .lightbox{position:fixed; inset:0; background:var(--bg); z-index:200; display:none; flex-direction:column; overflow-y:auto;}
-  .lightbox.open{display:flex;}
+  .lightbox{position:fixed; inset:0; background:var(--bg); z-index:200; display:none; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;}
+  .lightbox.open{display:block;}
   .pdp-top{position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; padding:16px 24px;}
   .pdp-back{background:none; border:none; color:var(--ink); font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px; white-space:nowrap;}
   .pdp-back:hover{color:var(--accent);}
@@ -262,6 +262,7 @@
   .modal-img img{width:100%; height:100%; object-fit:contain;}
   .modal-info{padding:0; display:flex; flex-direction:column;}
   .modal-kicker{font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);}
+  .modal-cat{font-size:12.5px; color:var(--muted); margin-bottom:14px;}
   .modal-title{font-size:28px; font-weight:800; margin:8px 0 14px;}
   .modal-note{color:var(--muted); font-size:14.5px; margin:0 0 22px;}
   .modal-buy{width:100%; padding:15px;}
@@ -527,8 +528,9 @@
         <div class="modal-thumbs" id="lbThumbs"></div>
       </div>
       <div class="modal-info">
-        <span class="modal-kicker">Melve Muebles</span>
+        <span class="modal-kicker">Melve Muebles · ★ 5,0 en Google</span>
         <h3 class="modal-title" id="lbTitle">Producto</h3>
+        <div class="modal-cat" id="lbCat"></div>
         <div class="modal-price" id="lbPrice"></div>
         <div class="modal-lista" id="lbLista"></div>
         <div class="modal-cuotas" id="lbCuotas"></div>
@@ -901,18 +903,15 @@ function openLb(i){
   curImgIdx = 0;
   renderLbImage();
   lightbox.classList.add("open");
-  document.body.style.overflow = "hidden";
   history.pushState({ pdp:true }, "", "#producto");
 }
 function closeLb(){
   if(!lightbox.classList.contains("open")) return;
   lightbox.classList.remove("open");
-  document.body.style.overflow = "";
   if(location.hash === "#producto") history.back();
 }
 window.addEventListener("popstate", () => {
   lightbox.classList.remove("open");
-  document.body.style.overflow = "";
 });
 function renderLbImage(){
   const g = groups[lbIndex];
@@ -921,10 +920,12 @@ function renderLbImage(){
   lbImg.src = imgUrl(item, 1200);
   lbImg.alt = d.n;
   document.getElementById("lbTitle").textContent = d.n;
+  const catPath = categoryPath(categoryOf[item.public_id]);
+  document.getElementById("lbCat").textContent = `Categoría: ${catPath}`;
   document.getElementById("lbPrice").textContent = d.p;
   document.getElementById("lbLista").textContent = d.lista ? `Lista ${d.lista}` : "";
   document.getElementById("lbCuotas").textContent = cuotasText(d.lista);
-  document.getElementById("lbCrumb").textContent = `${categoryPath(categoryOf[item.public_id])} › ${d.n}`;
+  document.getElementById("lbCrumb").textContent = `${catPath} › ${d.n}`;
   document.getElementById("lbDesc").textContent = d.desc || defaultDesc(item, d);
   lbWa.href = waLink(g.images[0]);
   const thumbs = document.getElementById("lbThumbs");
