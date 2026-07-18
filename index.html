@@ -646,129 +646,25 @@
   </div>
 </div>
 
+<script src="supabase.js"></script>
 <script>
 /* ====== CONFIG ====== */
 const CLOUD = "dbepkj4h";
 const WA = "5491166789801";
-const TAG = "melve";   // etiqueta de Cloudinary. Toda foto con esta etiqueta aparece sola en la web.
 const LOGO_ID = "Diseño_sin_título_vtjddd";   // el logo: se usa arriba, NO en el catálogo.
+const sb = window.supabase.createClient(
+  "https://rqdbswgtxmghrwtswdzx.supabase.co",
+  "sb_publishable_W4wWTRCCVVF2Pc6A75M8Mg_HprU_U1N"
+);
 
 let IMAGES = [];       // se llena solo desde Cloudinary
 
 /* URL optimizada (liviana y rápida) */
 function imgUrl(item, w){ return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_${w}/${item.public_id}.${item.format}`; }
 function fullUrl(item){ return `https://res.cloudinary.com/${CLOUD}/image/upload/${item.public_id}.${item.format}`; }
-/* Base de productos (nombre + precio), leída de las fichas del catálogo */
-const PRODUCTS = {
-  /* Combos (mesa + sillas). Precios restaurados por cruce de nombre contra el
-     catálogo anterior (validado con firma de tokens en orden estable). Los que
-     faltan quedaron marcados para pedirle el precio a Adriel. */
-  "Industrial_120x70_4_Sillas_Allegra_ngkbiu": {n:"Mesa Industrial 120x70 + 4 Sillas Allegra", p:"$289.999"},
-  "Industrial_120x70_4_Sillas_Eames_kofs04": {n:"Mesa Industrial 120x70 + 4 Sillas Eames", p:"$289.999"},
-  "Industrial_120x70_4_Sillas_Milan_urbpow": {n:"Mesa Industrial 120x70 + 4 Sillas Milan", p:"$299.999"},
-  "Industrial_120x70_4_Sillas_Roma_cam3o6": {n:"Mesa Industrial 120x70 + 4 Sillas Roma", p:"$289.999"},
-  "Industrial_120x70_4_Sillas_Tolix_pmbh49": {n:"Mesa Industrial 120x70 + 4 Sillas Tolix", p:"$355.999"},
-  "Industrial_120x70_4_Sillas_Tulip_lzzqoz": {n:"Mesa Industrial 120x70 + 4 Sillas Tulip", p:"$309.999"},
-  "Industrial_120x70_4_Sillas_Tulum_ikd3us": {n:"Mesa Industrial 120x70 + 4 Sillas Tulum", p:"$339.999"},
-  "Industrial_120x70_4_Sillas_Windsor_mivak9": {n:"Mesa Industrial 120x70 + 4 Sillas Windsor", p:"$299.999"},
-  "Eames_vidrio_120x80_4_Sillas_Allegra_ptxt2q": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Allegra", p:"$293.999"},
-  "Milan_120x80_4_Sillas_Allegra_okden7": {n:"Mesa Milan MDF 120x80 + 4 Sillas Allegra", p:"$304.999"},
-  "Stellar_120x80_4_Sillas_Allegra_u4x1ja": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Allegra", p:"$329.999"},
-  "Eames_vidrio_120x80_4_Sillas_Eames_edfsxv": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Eames", p:"$293.999"},
-  "Eames_vidrio_120x80_4_Sillas_Milan_zhglwo": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Milan", p:"$303.999"},
-  "Milan_120x80_4_Sillas_Eames_rlyzkl": {n:"Mesa Milan MDF 120x80 + 4 Sillas Eames", p:"$304.999"},
-  "Eames_vidrio_120x80_4_Sillas_Roma_xs5iu7": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Roma", p:"$293.999"},
-  "Eames_vidrio_120x80_4_Sillas_Tolix_j8kzql": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tolix", p:"$359.999"},
-  "Eames_vidrio_120x80_4_Sillas_Tulip_m4nyq3": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulip", p:"$313.999"},
-  "Eames_vidrio_120x80_4_Sillas_Tulum_dpntu6": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Tulum", p:"$343.999"},
-  "Eames_vidrio_120x80_4_Sillas_Windsor_q6ahxt": {n:"Mesa Vidrio Eames 120x80 + 4 Sillas Windsor", p:"$303.999"},
-  "Milan_vidrio_120x80_4_Sillas_Milan_gylsdo": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Milan", p:"$372.999"},
-  "Milan_120x80_4_Sillas_Milan_spuwkw": {n:"Mesa Milan MDF 120x80 + 4 Sillas Milan", p:"$314.999"},
-  "Milan_vidrio_120x80_4_Sillas_Roma_qglbjx": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Roma", p:"$362.999"},
-  "Milan_120x80_4_Sillas_Roma_hweoys": {n:"Mesa Milan MDF 120x80 + 4 Sillas Roma", p:"$304.999"},
-  "Milan_vidrio_120x80_4_Sillas_Tolix_z03edf": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tolix", p:"$428.999"},
-  "Milan_120x80_4_Sillas_Tolix_ue2lth": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tolix", p:"$370.999"},
-  "Milan_vidrio_120x80_4_Sillas_Tulip_f9xxmv": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tulip", p:"$382.999"},
-  "Milan_120x80_4_Sillas_Tulip_tntqkb": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tulip", p:"$324.999"},
-  "Milan_vidrio_120x80_4_Sillas_Tulum_lg9pib": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Tulum", p:"$412.999"},
-  "Milan_120x80_4_Sillas_Tulum_iwsg2w": {n:"Mesa Milan MDF 120x80 + 4 Sillas Tulum", p:"$354.999"},
-  "Milan_vidrio_120x80_4_Sillas_Windsor_dopmld": {n:"Mesa Vidrio Milan 120x80 + 4 Sillas Windsor", p:"$372.999"},
-  "Milan_120x80_4_Sillas_Windsor_kukqn5": {n:"Mesa Milan MDF 120x80 + 4 Sillas Windsor", p:"$314.999"},
-  "Stellar_120x80_4_Sillas_Tolix_wptm7k": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Tolix", p:"$395.999"},
-  "Stellar_120x80_4_Sillas_Tulip_rxb3h5": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Tulip", p:"$349.999"},
-  "Stellar_120x80_4_Sillas_Windsor_zlxxcq": {n:"Mesa Stellar MDP 120x80 + 4 Sillas Windsor", p:"$339.999"},
-  "Milan_70x70_2_Sillas_Allegra_mlqrko": {n:"Mesa Milan MDF 70x70 + 2 Sillas Allegra", p:"$219.999"},
-  "Milan_70x70_2_Sillas_Eames_kud8mv": {n:"Mesa Milan MDF 70x70 + 2 Sillas Eames", p:"$219.999"},
-  "Milan_70x70_2_Sillas_Milan_wo8cln": {n:"Mesa Milan MDF 70x70 + 2 Sillas Milan", p:"$224.999"},
-  "Milan_70x70_2_Sillas_Roma_zcphmv": {n:"Mesa Milan MDF 70x70 + 2 Sillas Roma", p:"$219.999"},
-  "Milan_70x70_2_Sillas_Tolix_e8twwe": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tolix", p:"$252.999"},
-  "Milan_70x70_2_Sillas_Tulip_azytsb": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tulip", p:"$229.999"},
-  "Milan_70x70_2_Sillas_Tulum_lervbq": {n:"Mesa Milan MDF 70x70 + 2 Sillas Tulum", p:"$244.999"},
-  "Milan_70x70_2_Sillas_Windsor_emj1tm": {n:"Mesa Milan MDF 70x70 + 2 Sillas Windsor", p:"$224.999"},
-  "Eames_100_4_Sillas_Allegra_scceyh": {n:"Mesa Eames MDF 100cm + 4 Sillas Allegra", p:"$299.999"},
-  "Petra_Nogal_100_4_Sillas_Allegra_dvoooh": {n:"Mesa Petra Nogal 100cm + 4 Sillas Allegra", p:"$329.999"},
-  "Petra_Stellar_100_4_Sillas_Allegra_qo1goq": {n:"Mesa Petra Stellar 100cm + 4 Sillas Allegra", p:"$329.999"},
-  "Eames_100_4_Sillas_Eames_afhh0e": {n:"Mesa Eames MDF 100cm + 4 Sillas Eames", p:"$299.999"},
-  "Eames_100_4_Sillas_Milan_dnnapy": {n:"Mesa Eames MDF 100cm + 4 Sillas Milan", p:"$309.999"},
-  "Petra_Nogal_100_4_Sillas_Eames_pqq1wp": {n:"Mesa Petra Nogal 100cm + 4 Sillas Eames", p:"$329.999"},
-  "Eames_100_4_Sillas_Roma_vawjtt": {n:"Mesa Eames MDF 100cm + 4 Sillas Roma", p:"$299.999"},
-  "Eames_100_4_Sillas_Tolix_ibyrk6": {n:"Mesa Eames MDF 100cm + 4 Sillas Tolix", p:"$365.999"},
-  "Eames_100_4_Sillas_Tulip_plogel": {n:"Mesa Eames MDF 100cm + 4 Sillas Tulip", p:"$319.999"},
-  "Eames_100_4_Sillas_Tulum_ixvvst": {n:"Mesa Eames MDF 100cm + 4 Sillas Tulum", p:"$349.999"},
-  "Eames_100_4_Sillas_Windsor_ntxdwz": {n:"Mesa Eames MDF 100cm + 4 Sillas Windsor", p:"$309.999"},
-  "Petra_Nogal_100_4_Sillas_Milan_phbqjl": {n:"Mesa Petra Nogal 100cm + 4 Sillas Milan", p:"$339.999"},
-  "Petra_Nogal_100_4_Sillas_Roma_ucp0ll": {n:"Mesa Petra Nogal 100cm + 4 Sillas Roma", p:"$329.999"},
-  "Petra_Nogal_100_4_Sillas_Tolix_rlp7oi": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tolix", p:"$395.999"},
-  "Petra_Nogal_100_4_Sillas_Tulip_r98lrz": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tulip", p:"$349.999"},
-  "Petra_Nogal_100_4_Sillas_Tulum_uglsqq": {n:"Mesa Petra Nogal 100cm + 4 Sillas Tulum", p:"$379.999"},
-  "Petra_Stellar_100_4_Sillas_Tulip_me6hv0": {n:"Mesa Petra Stellar 100cm + 4 Sillas Tulip", p:"$349.999"},
-  "Petra_Stellar_100_4_Sillas_Windsor_idh96b": {n:"Mesa Petra Stellar 100cm + 4 Sillas Windsor", p:"$339.999"},
-  "Moderna_90_4_Sillas_Allegra_s5cr74": {n:"Mesa Moderna MDF 90cm + 4 Sillas Allegra", p:"$294.999"},
-  "Moderna_90_4_Sillas_Eames_q1luif": {n:"Mesa Moderna MDF 90cm + 4 Sillas Eames", p:"$294.999"},
-  "Moderna_90_4_Sillas_Milan_w6mdja": {n:"Mesa Moderna MDF 90cm + 4 Sillas Milan", p:"$304.999"},
-  "Moderna_90_4_Sillas_Roma_sjvys8": {n:"Mesa Moderna MDF 90cm + 4 Sillas Roma", p:"$294.999"},
-  "Moderna_90_4_Sillas_Tulip_ygmmwu": {n:"Mesa Moderna MDF 90cm + 4 Sillas Tulip", p:"$314.999"},
-  "Moderna_90_4_Sillas_Windsor_qzg5rh": {n:"Mesa Moderna MDF 90cm + 4 Sillas Windsor", p:"$304.999"},
-  "Vidrio_100_4_Sillas_Windsor_okiu5m": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Windsor", p:"$299.999"},
-  "Vidrio_100_4_Sillas_Tulum_jaozrk": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tulum", p:"$339.999"},
-  "Vidrio_100_4_Sillas_Tulip_vv2pgu": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tulip", p:"$309.999"},
-  "Vidrio_100_4_Sillas_Tolix_r1drft": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Tolix", p:"$355.999"},
-  "Vidrio_100_4_Sillas_Roma_glpeww": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Roma", p:"$289.999"},
-  "Vidrio_100_4_Sillas_Milan_omcgnu": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Milan", p:"$299.999"},
-  "Vidrio_100_4_Sillas_Eames_guwyfi": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Eames", p:"$289.999"},
-  "Vidrio_100_4_Sillas_Allegra_oipnss": {n:"Mesa Vidrio Eames 100cm + 4 Sillas Allegra", p:"$289.999"},
-  "Atria_90x90_4_Windsor_oslrno": {n:"Mesa Atria 90x90 + 4 Sillas Windsor", p:"$304.999"},
-  "Atria_90x90_4_Sillas_Tolix_saqh9e": {n:"Mesa Atria 90x90 + 4 Sillas Tolix", p:"$360.999"},
-  "Atria_90x90_4_Sillas_Tulum_pb92gg": {n:"Mesa Atria 90x90 + 4 Sillas Tulum", p:"$349.999"},
-  "Atria_90x90_4_Sillas_Roma_nowbp3": {n:"Mesa Atria 90x90 + 4 Sillas Roma", p:"$299.999"},
-  "Atria_90x90_4_Sillas_Tulip_v77shy": {n:"Mesa Atria 90x90 + 4 Sillas Tulip", p:"$319.999"},
-  "Atria_90x90_4_Sillas_Milan_jzjqpz": {n:"Mesa Atria 90x90 + 4 Sillas Milan", p:"$309.999"},
-  "Atria_90x90_4_Sillas_Eames_oi59k7": {n:"Mesa Atria 90x90 + 4 Sillas Eames", p:"$294.999"},
-  "Atria_90x90_4_Sillas_Allegra_sj2kxx": {n:"Mesa Atria 90x90 + 4 Sillas Allegra", p:"$294.999"},
-  "137_tzu2nv": {n:"Mesa Tolix cuadrada Negra + 4 Sillas Tolix", p:""},   /* falta precio */
-  "136_vyx6jt": {n:"Mesa Tolix cuadrada Blanca + 4 Sillas Tolix", p:""}, /* falta precio */
-
-  /* Sillas de comedor sueltas (efectivo + precio lista) */
-  /* p/lista = precio del pack x4 (el único que tenemos confirmado por ahora).
-     "qty" trae el precio real de cada cantidad; si falta un número (1, 2 o 3),
-     la ficha muestra "Consultar por WhatsApp" en vez de inventar un precio. */
-  "Silla_Windsor_fnazms": {n:"Silla Windsor", p:"$139.999", lista:"$203.160", qty:{1:{p:"$47.999",lista:"$69.660"},2:{p:"$74.999",lista:"$108.850"},3:{p:"$104.999",lista:"$152.370"},4:{p:"$139.999",lista:"$203.160"},6:{p:"$199.999",lista:"$290.230"}}},
-  "Silla_Windsor_info_bguczb": {n:"Silla Windsor", p:"$139.999", lista:"$203.160", qty:{1:{p:"$47.999",lista:"$69.660"},2:{p:"$74.999",lista:"$108.850"},3:{p:"$104.999",lista:"$152.370"},4:{p:"$139.999",lista:"$203.160"},6:{p:"$199.999",lista:"$290.230"}}},
-  "Silla_Tulum_vs3ypq": {n:"Silla Tulum", p:"$189.999", lista:"$275.750", qty:{1:{p:"$61.999",lista:"$89.970"},2:{p:"$99.999",lista:"$145.120"},3:{p:"$194.999"},4:{p:"$189.999",lista:"$275.750"},6:{p:"$264.999",lista:"$384.550"}}},
-  "Silla_Tulum_info_rdavyw": {n:"Silla Tulum", p:"$189.999", lista:"$275.750", qty:{1:{p:"$61.999",lista:"$89.970"},2:{p:"$99.999",lista:"$145.120"},3:{p:"$194.999"},4:{p:"$189.999",lista:"$275.750"},6:{p:"$264.999",lista:"$384.550"}}},
-  "Silla_Tulip_cgninb": {n:"Silla Tulip", p:"$149.999", lista:"$217.670", qty:{1:{p:"$49.999",lista:"$72.550"},2:{p:"$79.999",lista:"$116.090"},3:{p:"$117.999",lista:"$171.235"},4:{p:"$149.999",lista:"$217.670"},6:{p:"$214.999",lista:"$311.996"}}},
-  "Silla_Tulip_info_f0fodg": {n:"Silla Tulip", p:"$149.999", lista:"$217.670", qty:{1:{p:"$49.999",lista:"$72.550"},2:{p:"$79.999",lista:"$116.090"},3:{p:"$117.999",lista:"$171.235"},4:{p:"$149.999",lista:"$217.670"},6:{p:"$214.999",lista:"$311.996"}}},
-  "Silla_Tolix_jptafa": {n:"Silla Tolix", p:"$195.999", lista:"$282.980", qty:{1:{p:"$61.999",lista:"$89.970"},2:{p:"$102.999",lista:"$149.500"},3:{p:"$162.999",lista:"$236.540"},4:{p:"$195.999",lista:"$282.980"},6:{p:"$294.999",lista:"$428.090"}}},
-  "Silla_Tolix_info_xtru2l": {n:"Silla Tolix", p:"$195.999", lista:"$282.980", qty:{1:{p:"$61.999",lista:"$89.970"},2:{p:"$102.999",lista:"$149.500"},3:{p:"$162.999",lista:"$236.540"},4:{p:"$195.999",lista:"$282.980"},6:{p:"$294.999",lista:"$428.090"}}},
-  "Silla_Roma_adzpsa": {n:"Silla Roma", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-  "Silla_Roma_info_pwygug": {n:"Silla Roma", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-  "Silla_Milan_o6quzv": {n:"Silla Milan", p:"$139.999", lista:"$203.160", qty:{1:{p:"$47.999",lista:"$69.660"},2:{p:"$74.999",lista:"$108.850"},3:{p:"$104.999",lista:"$152.370"},4:{p:"$139.999",lista:"$203.160"},6:{p:"$199.999",lista:"$290.230"}}},
-  "Silla_Milan_info_qhhfpa": {n:"Silla Milan", p:"$139.999", lista:"$203.160", qty:{1:{p:"$47.999",lista:"$69.660"},2:{p:"$74.999",lista:"$108.850"},3:{p:"$104.999",lista:"$152.370"},4:{p:"$139.999",lista:"$203.160"},6:{p:"$199.999",lista:"$290.230"}}},
-  "Silla_Eames_oh4tsb": {n:"Silla Eames", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-  "Silla_Eames_info_kzmwcb": {n:"Silla Eames", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-  "Silla_Allegra_no9aef": {n:"Silla Allegra", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-  "Silla_Allegra_info_wj1tay": {n:"Silla Allegra", p:"$129.999", lista:"$188.650", qty:{1:{p:"$44.999",lista:"$65.300"},2:{p:"$69.999",lista:"$101.580"},3:{p:"$102.999",lista:"$149.500"},4:{p:"$129.999",lista:"$188.650"},6:{p:"$184.999",lista:"$268.460"}}},
-};
+/* Los productos ya NO se escriben acá a mano: se cargan solos desde Supabase
+   (ver loadFromSupabase más abajo). PRODUCTS queda vacío hasta que carguen. */
+let PRODUCTS = {};
 function info(item){ return PRODUCTS[item.public_id] || {n:"Combo Melve — Mesa + sillas", p:""}; }
 
 /* A partir del precio lista, calcula 3 y 6 cuotas sin interés (una debajo de la otra) */
@@ -869,25 +765,49 @@ let view = [];
 let groups = [];          // productos agrupados del catálogo completo (según el filtro activo)
 let curImgIdx = 0;        // foto actual dentro del producto abierto en la ficha
 
-function listUrl(tag){ return `https://res.cloudinary.com/${CLOUD}/image/list/${tag}.json`; }
-function getList(tag){
-  return fetch(listUrl(tag)).then(r => r.ok ? r.json() : {resources:[]}).catch(() => ({resources:[]}));
-}
-
 buildMenu();
 buildCatTiles();
 
-/* Traer la lista general + la de cada categoría */
+/* Trae todos los productos desde Supabase y arma IMAGES/categoryOf/PRODUCTS
+   exactamente en el mismo formato que usaba el sistema viejo de Cloudinary,
+   así el resto del código (groupProducts, render, la ficha, etc.) no cambia. */
+async function loadFromSupabase(){
+  const { data, error } = await sb.from("products").select("*");
+  if(error) throw error;
+  IMAGES = [];
+  categoryOf = {};
+  PRODUCTS = {};
+  (data || []).forEach(row => {
+    let qty;
+    if(row.qty_pricing){
+      qty = {};
+      Object.keys(row.qty_pricing).forEach(k => {
+        const qd = row.qty_pricing[k];
+        qty[k] = { p: fmtMoney(qd.p) };
+        if(qd.lista) qty[k].lista = fmtMoney(qd.lista);
+      });
+    }
+    const d = {
+      n: row.name,
+      p: row.price ? fmtMoney(row.price) : "",
+      lista: row.price_lista ? fmtMoney(row.price_lista) : undefined,
+      qty,
+      colors: row.colors || undefined,
+      desc: row.description || undefined,
+    };
+    (row.images || []).forEach(img => {
+      const item = { public_id: img.public_id, format: img.format, created_at: row.created_at };
+      IMAGES.push(item);
+      categoryOf[img.public_id] = row.category;
+      PRODUCTS[img.public_id] = d;
+    });
+  });
+  IMAGES.sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""));
+}
+
 grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">Cargando productos…</p>';
-Promise.all([ getList(TAG), ...CATEGORIES.map(c => getList(c.tag)) ])
-  .then(([main, ...cats]) => {
-    CATEGORIES.forEach((c,i) => (cats[i].resources || []).forEach(x => {
-      if(!categoryOf[x.public_id]) categoryOf[x.public_id] = c.tag;
-    }));
-    IMAGES = (main.resources || [])
-      .filter(x => x.public_id !== LOGO_ID)                    // saca el logo del catálogo
-      .filter(x => x.width === x.height)                       // solo cuadradas (excluye sueltas)
-      .sort((a,b) => (b.created_at||"").localeCompare(a.created_at||""));
+loadFromSupabase()
+  .then(() => {
     buildFilters();
     fillThumbs();
     fillCatTiles();

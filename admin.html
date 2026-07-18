@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de administración — Melve Muebles</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e0e0e; --soft:#1a1918; --ink:#f4f2ee; --muted:#a3a09a; --line:#2b2a28;
+    --accent:#F26A21; --accent-dark:#d9531a; --danger:#e5484d;
+    --body:'Inter', Arial, sans-serif; --display:'Manrope', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.5;}
+  h1,h2{font-family:var(--display); margin:0;}
+  input,select,textarea,button{font-family:inherit; font-size:14px;}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 22px;}
+
+  /* LOGIN */
+  #loginView{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .login-card{width:100%; max-width:360px; background:var(--soft); border:1px solid var(--line); border-radius:16px; padding:34px;}
+  .login-card h1{font-size:22px; color:var(--accent); margin-bottom:2px;}
+  .login-card small{display:block; color:var(--muted); font-size:12px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:24px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700; margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%; border:1px solid var(--line); background:var(--bg); color:var(--ink);
+    border-radius:8px; padding:11px 12px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--accent);}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 18px; border-radius:9px; border:1.5px solid var(--accent); background:var(--accent); color:#fff;
+    font-weight:700; cursor:pointer; transition:.15s ease;
+  }
+  .btn:hover{background:var(--accent-dark); border-color:var(--accent-dark);}
+  .btn.ghost{background:transparent; color:var(--ink); border-color:var(--line);}
+  .btn.ghost:hover{border-color:var(--ink);}
+  .btn.danger{background:var(--danger); border-color:var(--danger);}
+  .btn.danger:hover{background:#c93a3e; border-color:#c93a3e;}
+  .btn:disabled{opacity:.55; cursor:not-allowed;}
+  .btn.block{width:100%;}
+  #loginError{color:var(--danger); font-size:13px; margin-top:10px; min-height:16px;}
+
+  /* ADMIN SHELL */
+  #adminView header{
+    position:sticky; top:0; z-index:5; background:rgba(14,14,14,.95); border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between; padding:16px 0; margin-bottom:32px;
+  }
+  #adminView header .logo{font-family:var(--display); font-weight:800; color:var(--accent); font-size:19px;}
+  #adminView header .who{display:flex; align-items:center; gap:14px; font-size:13px; color:var(--muted);}
+  .grid2{display:grid; grid-template-columns:1fr 1.2fr; gap:34px; align-items:start; padding-bottom:60px;}
+  @media (max-width:900px){ .grid2{grid-template-columns:1fr;} }
+
+  .panel{background:var(--soft); border:1px solid var(--line); border-radius:14px; padding:24px;}
+  .panel h2{font-size:17px; margin-bottom:18px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .checkline{display:flex; align-items:center; gap:9px; margin-bottom:14px; font-size:13.5px; color:var(--ink);}
+  #qtyRows{border:1px dashed var(--line); border-radius:10px; padding:14px; margin-bottom:16px;}
+  .qty-row{display:grid; grid-template-columns:44px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px;}
+  .qty-row span{color:var(--muted); font-size:13px; font-weight:700;}
+
+  .photo-uploader{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+  #photoList{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+  .photo-thumb{position:relative; width:64px; height:64px; border-radius:8px; overflow:hidden; border:1px solid var(--line);}
+  .photo-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-thumb button{position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,.7); color:#fff; border:none; font-size:11px; line-height:1; cursor:pointer;}
+  .photo-thumb.primary::after{content:"Principal"; position:absolute; bottom:0; left:0; right:0; background:rgba(242,106,33,.9); color:#fff; font-size:8.5px; text-align:center; font-weight:700; padding:2px 0;}
+
+  .form-actions{display:flex; gap:10px; margin-top:6px;}
+
+  /* LISTA DE PRODUCTOS */
+  #searchBox{margin-bottom:16px;}
+  .prod-row{display:flex; align-items:center; gap:12px; padding:10px; border:1px solid var(--line); border-radius:10px; margin-bottom:8px; background:var(--bg);}
+  .prod-row img, .prod-row .no-img{width:46px; height:46px; border-radius:7px; object-fit:cover; background:var(--soft); flex:0 0 auto;}
+  .prod-row-info{flex:1; min-width:0;}
+  .prod-row-name{font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .prod-row-meta{font-size:12px; color:var(--muted);}
+  .prod-row .btn{padding:8px 12px; font-size:12px;}
+
+  .hint{font-size:12px; color:var(--muted); margin:-8px 0 14px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginView">
+  <form class="login-card" id="loginForm">
+    <h1>MELVE</h1>
+    <small>Panel de administración</small>
+    <div class="field"><label for="email">Email</label><input type="email" id="email" required autocomplete="username"></div>
+    <div class="field"><label for="password">Contraseña</label><input type="password" id="password" required autocomplete="current-password"></div>
+    <button type="submit" class="btn block">Iniciar sesión</button>
+    <div id="loginError"></div>
+  </form>
+</div>
+
+<!-- ADMIN -->
+<div id="adminView" style="display:none;">
+  <header>
+    <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+      <div class="logo">MELVE · Admin</div>
+      <div class="who">
+        <span id="userEmail"></span>
+        <button class="btn ghost" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap grid2">
+    <div class="panel">
+      <h2 id="formTitle">Agregar producto</h2>
+      <form id="productForm">
+        <div class="field"><label for="fName">Nombre</label><input type="text" id="fName" required placeholder="Ej: Silla Windsor"></div>
+
+        <div class="field"><label for="fCategory">Categoría</label>
+          <select id="fCategory" required></select>
+        </div>
+
+        <div class="row2">
+          <div class="field"><label for="fPrice">Precio efectivo</label><input type="number" id="fPrice" min="0" placeholder="139999"></div>
+          <div class="field"><label for="fLista">Precio lista (opcional)</label><input type="number" id="fLista" min="0" placeholder="203160"></div>
+        </div>
+
+        <div class="field"><label for="fColors">Colores (opcional, separados por coma)</label><input type="text" id="fColors" placeholder="Blanco,Negro"></div>
+        <div class="field"><label for="fDesc">Descripción (opcional)</label><textarea id="fDesc" rows="3" placeholder="Se genera una automática si lo dejás vacío"></textarea></div>
+
+        <label class="checkline"><input type="checkbox" id="fHasQty"> Se vende por cantidad (x1, x2, x3, x4, x6 — como las sillas de comedor)</label>
+        <div id="qtyRows" style="display:none;">
+          <div class="qty-row"><span>x1</span><input type="number" id="qty_1_p" placeholder="Precio"><input type="number" id="qty_1_lista" placeholder="Lista (opcional)"></div>
+          <div class="qty-row"><span>x2</span><input type="number" id="qty_2_p" placeholder="Precio"><input type="number" id="qty_2_lista" placeholder="Lista (opcional)"></div>
+          <div class="qty-row"><span>x3</span><input type="number" id="qty_3_p" placeholder="Precio"><input type="number" id="qty_3_lista" placeholder="Lista (opcional)"></div>
+          <div class="qty-row"><span>x4</span><input type="number" id="qty_4_p" placeholder="Precio"><input type="number" id="qty_4_lista" placeholder="Lista (opcional)"></div>
+          <div class="qty-row"><span>x6</span><input type="number" id="qty_6_p" placeholder="Precio"><input type="number" id="qty_6_lista" placeholder="Lista (opcional)"></div>
+        </div>
+
+        <div class="field">
+          <label>Fotos</label>
+          <div class="photo-uploader">
+            <input type="file" id="fPhoto" accept="image/*" style="flex:1;">
+            <button type="button" class="btn ghost" id="uploadBtn">Subir foto</button>
+          </div>
+          <p class="hint">La primera foto que subas es la que se ve principal. Podés subir más de una.</p>
+          <div id="photoList"></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn" id="saveBtn">Guardar producto</button>
+          <button type="button" class="btn ghost" id="cancelEditBtn" style="display:none;">Cancelar edición</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Productos cargados (<span id="prodCount">0</span>)</h2>
+      <input type="text" id="searchBox" placeholder="Buscar por nombre…">
+      <div id="productsList"></div>
+    </div>
+  </div>
+</div>
+
+<script src="supabase.js"></script>
+<script>
+const sb = window.supabase.createClient(
+  "https://rqdbswgtxmghrwtswdzx.supabase.co",
+  "sb_publishable_W4wWTRCCVVF2Pc6A75M8Mg_HprU_U1N"
+);
+
+const CLOUD = "dbepkj4h";
+const UPLOAD_PRESET = "melve_admin";
+
+const CATEGORIES = [
+  { tag:"mesas-rect",    label:"Mesas · Rectangulares" },
+  { tag:"mesas-circ",    label:"Mesas · Circulares" },
+  { tag:"mesas-cuad",    label:"Mesas · Cuadradas" },
+  { tag:"comedor",       label:"Sillas · Comedor" },
+  { tag:"industriales",  label:"Sillas · Industriales" },
+  { tag:"banquetas",     label:"Sillas · Banquetas" },
+  { tag:"escritorios",   label:"Oficina · Escritorios" },
+  { tag:"oficina",       label:"Oficina · Sillas de Oficina" },
+  { tag:"gamer",         label:"Oficina · Sillas Gamer" },
+  { tag:"espejos",       label:"Deco · Espejos" },
+  { tag:"rack-tv",       label:"Deco · Rack TV" },
+  { tag:"repisas",       label:"Deco · Repisas" },
+  { tag:"estantes",      label:"Deco · Estantes" },
+  { tag:"combos",        label:"Combos" },
+];
+document.getElementById("fCategory").innerHTML = CATEGORIES.map(c => `<option value="${c.tag}">${c.label}</option>`).join("");
+
+const QTYS = [1,2,3,4,6];
+let currentPhotos = [];   // [{public_id, format}]
+let editingId = null;
+let allProducts = [];
+
+/* ===== Sesión ===== */
+async function checkSession(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) showAdmin(session.user.email); else showLogin();
+}
+function showLogin(){
+  document.getElementById("loginView").style.display = "flex";
+  document.getElementById("adminView").style.display = "none";
+}
+function showAdmin(email){
+  document.getElementById("loginView").style.display = "none";
+  document.getElementById("adminView").style.display = "block";
+  document.getElementById("userEmail").textContent = email;
+  loadProducts();
+}
+document.getElementById("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const errEl = document.getElementById("loginError");
+  errEl.textContent = "";
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ errEl.textContent = "Email o contraseña incorrectos."; return; }
+  checkSession();
+});
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await sb.auth.signOut();
+  showLogin();
+});
+checkSession();
+
+/* ===== Subida de fotos (Cloudinary, sin firma) ===== */
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  const fileInput = document.getElementById("fPhoto");
+  const file = fileInput.files[0];
+  if(!file){ alert("Elegí una foto primero."); return; }
+  const btn = document.getElementById("uploadBtn");
+  btn.disabled = true; btn.textContent = "Subiendo…";
+  try{
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", UPLOAD_PRESET);
+    fd.append("folder", "melve");
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`, { method:"POST", body: fd });
+    const data = await res.json();
+    if(data.public_id){
+      currentPhotos.push({ public_id: data.public_id, format: data.format });
+      renderPhotoList();
+      fileInput.value = "";
+    } else {
+      alert("No se pudo subir la foto. Probá de nuevo.");
+    }
+  } catch(err){
+    alert("Error subiendo la foto. Revisá tu conexión e intentá otra vez.");
+  }
+  btn.disabled = false; btn.textContent = "Subir foto";
+});
+function renderPhotoList(){
+  const el = document.getElementById("photoList");
+  el.innerHTML = currentPhotos.map((p,i) => `
+    <div class="photo-thumb${i===0?" primary":""}">
+      <img src="https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_130/${p.public_id}.${p.format}" alt="">
+      <button type="button" data-i="${i}" aria-label="Quitar foto">✕</button>
+    </div>`).join("");
+  el.querySelectorAll("button[data-i]").forEach(b => b.addEventListener("click", () => {
+    currentPhotos.splice(parseInt(b.dataset.i,10), 1);
+    renderPhotoList();
+  }));
+}
+renderPhotoList();
+
+/* ===== Selector de cantidad ===== */
+document.getElementById("fHasQty").addEventListener("change", e => {
+  document.getElementById("qtyRows").style.display = e.target.checked ? "block" : "none";
+});
+
+/* ===== Guardar (alta / edición) ===== */
+document.getElementById("productForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = document.getElementById("fName").value.trim();
+  const category = document.getElementById("fCategory").value;
+  const price = parseFloat(document.getElementById("fPrice").value) || null;
+  const priceLista = parseFloat(document.getElementById("fLista").value) || null;
+  const colorsRaw = document.getElementById("fColors").value.trim();
+  const colors = colorsRaw ? colorsRaw.split(",").map(s => s.trim()).filter(Boolean) : null;
+  const description = document.getElementById("fDesc").value.trim() || null;
+
+  let qtyPricing = null;
+  if(document.getElementById("fHasQty").checked){
+    qtyPricing = {};
+    QTYS.forEach(q => {
+      const p = parseFloat(document.getElementById(`qty_${q}_p`).value);
+      if(p){
+        qtyPricing[q] = { p };
+        const l = parseFloat(document.getElementById(`qty_${q}_lista`).value);
+        if(l) qtyPricing[q].lista = l;
+      }
+    });
+    if(Object.keys(qtyPricing).length === 0) qtyPricing = null;
+  }
+
+  if(!name){ alert("Escribí un nombre para el producto."); return; }
+  if(currentPhotos.length === 0){ alert("Subí al menos una foto."); return; }
+
+  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, description, images: currentPhotos };
+
+  const saveBtn = document.getElementById("saveBtn");
+  saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
+  const { error } = editingId
+    ? await sb.from("products").update(row).eq("id", editingId)
+    : await sb.from("products").insert(row);
+  saveBtn.disabled = false; saveBtn.textContent = "Guardar producto";
+
+  if(error){ alert("Error al guardar: " + error.message); return; }
+  resetForm();
+  loadProducts();
+});
+
+function resetForm(){
+  document.getElementById("productForm").reset();
+  currentPhotos = [];
+  renderPhotoList();
+  editingId = null;
+  document.getElementById("formTitle").textContent = "Agregar producto";
+  document.getElementById("cancelEditBtn").style.display = "none";
+  document.getElementById("qtyRows").style.display = "none";
+}
+document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
+
+/* ===== Listado, edición y borrado ===== */
+async function loadProducts(){
+  const { data, error } = await sb.from("products").select("*").order("created_at", { ascending:false });
+  if(error){ console.error(error); return; }
+  allProducts = data || [];
+  renderProductsList(allProducts);
+}
+function renderProductsList(list){
+  document.getElementById("prodCount").textContent = list.length;
+  const el = document.getElementById("productsList");
+  if(!list.length){ el.innerHTML = '<p class="hint">Todavía no hay productos cargados.</p>'; return; }
+  el.innerHTML = list.map(p => {
+    const img0 = p.images && p.images[0];
+    const thumb = img0 ? `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_100/${img0.public_id}.${img0.format}` : "";
+    const catLabel = (CATEGORIES.find(c => c.tag === p.category) || {}).label || p.category;
+    const priceTxt = p.price ? "$" + Number(p.price).toLocaleString("es-AR") : "sin precio";
+    return `
+    <div class="prod-row">
+      ${thumb ? `<img src="${thumb}" alt="">` : `<div class="no-img"></div>`}
+      <div class="prod-row-info">
+        <div class="prod-row-name">${p.name}</div>
+        <div class="prod-row-meta">${catLabel} · ${priceTxt}</div>
+      </div>
+      <button type="button" class="btn ghost editBtn" data-id="${p.id}">Editar</button>
+      <button type="button" class="btn danger delBtn" data-id="${p.id}">Borrar</button>
+    </div>`;
+  }).join("");
+  el.querySelectorAll(".editBtn").forEach(b => b.addEventListener("click", () => editProduct(b.dataset.id)));
+  el.querySelectorAll(".delBtn").forEach(b => b.addEventListener("click", () => deleteProduct(b.dataset.id)));
+}
+function editProduct(id){
+  const p = allProducts.find(x => String(x.id) === String(id));
+  if(!p) return;
+  editingId = p.id;
+  document.getElementById("fName").value = p.name || "";
+  document.getElementById("fCategory").value = p.category || "";
+  document.getElementById("fPrice").value = p.price || "";
+  document.getElementById("fLista").value = p.price_lista || "";
+  document.getElementById("fColors").value = (p.colors || []).join(",");
+  document.getElementById("fDesc").value = p.description || "";
+  currentPhotos = p.images ? p.images.map(x => ({...x})) : [];
+  renderPhotoList();
+
+  const hasQty = p.qty_pricing && Object.keys(p.qty_pricing).length > 0;
+  document.getElementById("fHasQty").checked = !!hasQty;
+  document.getElementById("qtyRows").style.display = hasQty ? "block" : "none";
+  QTYS.forEach(q => {
+    const qd = p.qty_pricing && p.qty_pricing[q];
+    document.getElementById(`qty_${q}_p`).value = qd ? qd.p : "";
+    document.getElementById(`qty_${q}_lista`).value = (qd && qd.lista) ? qd.lista : "";
+  });
+
+  document.getElementById("formTitle").textContent = "Editar producto";
+  document.getElementById("cancelEditBtn").style.display = "inline-flex";
+  window.scrollTo(0,0);
+}
+async function deleteProduct(id){
+  if(!confirm("¿Seguro que querés borrar este producto? No se puede deshacer.")) return;
+  const { error } = await sb.from("products").delete().eq("id", id);
+  if(error){ alert("Error al borrar: " + error.message); return; }
+  if(editingId === id) resetForm();
+  loadProducts();
+}
+
+/* ===== Buscador ===== */
+document.getElementById("searchBox").addEventListener("input", e => {
+  const q = e.target.value.toLowerCase();
+  renderProductsList(allProducts.filter(p => p.name.toLowerCase().includes(q)));
+});
+</script>
+</body>
+</html>
