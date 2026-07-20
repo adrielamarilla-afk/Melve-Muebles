@@ -69,7 +69,7 @@
   .caret{width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); position:relative; top:-2px;}
   .mega{position:absolute; top:100%; left:0; margin-top:6px; min-width:440px; background:#151413; border:1px solid var(--line); border-radius:14px; padding:14px; display:none; grid-template-columns:repeat(2,1fr); gap:6px; box-shadow:0 24px 60px rgba(0,0,0,.55); z-index:70;}
   .menu-item:hover .mega{display:grid;}
-  .mega a{display:flex; align-items:center; gap:12px; padding:9px; border-radius:10px;}
+  .mega a{display:flex; align-items:center; gap:12px; padding:9px; border-radius:10px; cursor:pointer; user-select:none;}
   .mega a:hover{background:var(--soft);}
   .mega .thumb{width:46px; height:46px; border-radius:8px; background:var(--soft) center/cover no-repeat; border:1px solid var(--line); flex:0 0 auto;}
   .mega .lbl{font-size:14px; font-weight:600; color:var(--ink);}
@@ -756,6 +756,10 @@ const filtersEl = document.getElementById("filters");
 const navLinks = document.getElementById("navLinks");
 const lightbox = document.getElementById("lightbox");
 const fullCatalog = document.getElementById("fullCatalog");
+/* Si la URL ya indica una ficha o el catálogo, la mostramos de entrada (todavía vacía)
+   para no dejar ver un instante el inicio mientras se cargan los datos de Supabase. */
+if(location.hash.startsWith("#producto=")) lightbox.classList.add("open");
+else if(location.hash === "#catalogo") fullCatalog.classList.add("open");
 const lbImg = document.getElementById("lbImg");
 const lbWa = document.getElementById("lbWa");
 let currentGroup = null;  // producto abierto en la ficha (objeto {d, images})
