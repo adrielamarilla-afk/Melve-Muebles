@@ -80,6 +80,20 @@
   .prod-row .btn{padding:8px 12px; font-size:12px;}
 
   .hint{font-size:12px; color:var(--muted); margin:-8px 0 14px;}
+
+  /* TABS */
+  .tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .tab-btn{padding:9px 14px; border-radius:8px; border:1px solid var(--line); background:var(--soft); color:var(--muted); font-weight:700; font-size:13px; cursor:pointer;}
+  .tab-btn.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+
+  /* CARGA RAPIDA */
+  .batch-row{display:grid; grid-template-columns:52px 1fr 1fr 110px 28px; gap:8px; align-items:center; margin-bottom:8px;}
+  .batch-row img{width:52px; height:52px; border-radius:7px; object-fit:cover; border:1px solid var(--line);}
+  .batch-row select{padding:8px 6px; font-size:12.5px;}
+  .batch-row input{padding:8px 8px; font-size:12.5px;}
+  .batch-row .removeRow{background:none; border:none; color:var(--danger); font-size:16px; cursor:pointer;}
+  .batch-row .batch-status{grid-column:1/-1; font-size:11.5px; color:var(--muted); margin:-4px 0 4px 60px;}
+  @media (max-width:640px){ .batch-row{grid-template-columns:1fr; gap:6px;} .batch-row img{width:80px; height:80px;} }
 </style>
 </head>
 <body>
@@ -109,7 +123,13 @@
   </header>
 
   <div class="wrap grid2">
-    <div class="panel">
+    <div>
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="tabSingle">Uno por uno</button>
+        <button type="button" class="tab-btn" id="tabBatch">Carga rápida (varias fotos)</button>
+      </div>
+
+    <div class="panel" id="singlePanel">
       <h2 id="formTitle">Agregar producto</h2>
       <form id="productForm">
         <div class="field"><label for="fName">Nombre</label><input type="text" id="fName" required placeholder="Ej: Silla Windsor"></div>
@@ -152,6 +172,26 @@
       </form>
     </div>
 
+    <div class="panel" id="batchPanel" style="display:none;">
+      <h2>Carga rápida</h2>
+      <p class="hint">Elegí varias fotos de una vez, completá nombre y precio de cada una, y guardalas todas juntas.</p>
+
+      <div class="field"><label for="batchCategory">Categoría para todas (podés cambiarla por foto abajo)</label>
+        <select id="batchCategory"></select>
+      </div>
+      <div class="field"><label for="batchFiles">Fotos</label>
+        <input type="file" id="batchFiles" accept="image/*" multiple>
+      </div>
+
+      <div id="batchRows"></div>
+
+      <div class="form-actions">
+        <button type="button" class="btn" id="batchSaveAll" style="display:none;">Guardar todos</button>
+      </div>
+      <p class="hint" id="batchStatus"></p>
+    </div>
+    </div>
+
     <div class="panel">
       <h2>Productos cargados (<span id="prodCount">0</span>)</h2>
       <input type="text" id="searchBox" placeholder="Buscar por nombre…">
@@ -186,12 +226,15 @@ const CATEGORIES = [
   { tag:"estantes",      label:"Deco · Estantes" },
   { tag:"combos",        label:"Combos" },
 ];
-document.getElementById("fCategory").innerHTML = CATEGORIES.map(c => `<option value="${c.tag}">${c.label}</option>`).join("");
+const categoryOptions = CATEGORIES.map(c => `<option value="${c.tag}">${c.label}</option>`).join("");
+document.getElementById("fCategory").innerHTML = categoryOptions;
+document.getElementById("batchCategory").innerHTML = categoryOptions;
 
 const QTYS = [1,2,3,4,6];
 let currentPhotos = [];   // [{public_id, format}]
 let editingId = null;
 let allProducts = [];
+let batchFilesList = [];  // [File, ...] seleccionados para carga rápida
 
 /* ===== Sesión ===== */
 async function checkSession(){
@@ -321,6 +364,93 @@ function resetForm(){
   document.getElementById("qtyRows").style.display = "none";
 }
 document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
+
+/* ===== Carga rápida (varias fotos a la vez) ===== */
+document.getElementById("tabSingle").addEventListener("click", () => {
+  document.getElementById("tabSingle").classList.add("active");
+  document.getElementById("tabBatch").classList.remove("active");
+  document.getElementById("singlePanel").style.display = "block";
+  document.getElementById("batchPanel").style.display = "none";
+});
+document.getElementById("tabBatch").addEventListener("click", () => {
+  document.getElementById("tabBatch").classList.add("active");
+  document.getElementById("tabSingle").classList.remove("active");
+  document.getElementById("batchPanel").style.display = "block";
+  document.getElementById("singlePanel").style.display = "none";
+});
+
+document.getElementById("batchFiles").addEventListener("change", e => {
+  batchFilesList = Array.from(e.target.files);
+  renderBatchRows();
+});
+function renderBatchRows(){
+  const el = document.getElementById("batchRows");
+  const defaultCat = document.getElementById("batchCategory").value;
+  el.innerHTML = batchFilesList.map((file, i) => `
+    <div class="batch-row" data-i="${i}">
+      <img src="${URL.createObjectURL(file)}" alt="">
+      <input type="text" class="batchName" placeholder="Nombre">
+      <input type="number" class="batchPrice" placeholder="Precio" min="0" step="1">
+      <select class="batchCat">${CATEGORIES.map(c => `<option value="${c.tag}"${c.tag===defaultCat?" selected":""}>${c.label}</option>`).join("")}</select>
+      <button type="button" class="removeRow" data-i="${i}" aria-label="Quitar">✕</button>
+    </div>`).join("");
+  el.querySelectorAll(".removeRow").forEach(b => b.addEventListener("click", () => {
+    batchFilesList.splice(parseInt(b.dataset.i,10), 1);
+    renderBatchRows();
+  }));
+  document.getElementById("batchSaveAll").style.display = batchFilesList.length ? "inline-block" : "none";
+}
+
+document.getElementById("batchSaveAll").addEventListener("click", async () => {
+  const rowsEl = document.querySelectorAll("#batchRows .batch-row");
+  if(!rowsEl.length) return;
+  const statusEl = document.getElementById("batchStatus");
+  const saveBtn = document.getElementById("batchSaveAll");
+  saveBtn.disabled = true;
+
+  const rowsData = [];
+  for(let i = 0; i < rowsEl.length; i++){
+    const rowEl = rowsEl[i];
+    const file = batchFilesList[i];
+    const name = rowEl.querySelector(".batchName").value.trim() || "Sin nombre";
+    const price = parseFloat(rowEl.querySelector(".batchPrice").value) || null;
+    const category = rowEl.querySelector(".batchCat").value;
+
+    statusEl.textContent = `Subiendo foto ${i+1} de ${rowsEl.length}…`;
+    try{
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("upload_preset", UPLOAD_PRESET);
+      fd.append("folder", "melve");
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`, { method:"POST", body: fd });
+      const data = await res.json();
+      if(!data.public_id) throw new Error("upload failed");
+      rowsData.push({
+        name, category, price, price_lista: null, qty_pricing: null, colors: null, description: null,
+        images: [{ public_id: data.public_id, format: data.format }],
+      });
+    } catch(err){
+      statusEl.textContent = `Error subiendo la foto ${i+1} ("${name}"). Se detuvo la carga — los anteriores ya se subieron a Cloudinary pero todavía no se guardó nada en la base. Corregí y volvé a intentar.`;
+      saveBtn.disabled = false;
+      return;
+    }
+  }
+
+  statusEl.textContent = "Guardando productos…";
+  const { error } = await sb.from("products").insert(rowsData);
+  saveBtn.disabled = false;
+  if(error){
+    statusEl.textContent = "Error al guardar en la base: " + error.message;
+    return;
+  }
+
+  statusEl.textContent = `¡Listo! Se guardaron ${rowsData.length} productos.`;
+  batchFilesList = [];
+  document.getElementById("batchFiles").value = "";
+  document.getElementById("batchRows").innerHTML = "";
+  document.getElementById("batchSaveAll").style.display = "none";
+  loadProducts();
+});
 
 /* ===== Listado, edición y borrado ===== */
 async function loadProducts(){
