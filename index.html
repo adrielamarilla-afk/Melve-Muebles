@@ -293,12 +293,16 @@
   .cat-heading{padding:22px 0 2px;}
   .cat-heading h2{font-size:24px;}
   .cat-heading .count{color:var(--muted); font-size:14px; font-weight:600; margin-left:10px;}
-  .pdp-top{position:static; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; padding:16px 24px;}
-  .pdp-back{background:none; border:none; color:var(--ink); font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px; white-space:nowrap;}
-  .pdp-back:hover{color:var(--accent);}
-  .pdp-crumb{font-size:12.5px; color:var(--muted); flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .lb-close{background:none; border:none; color:var(--muted); font-size:16px; width:34px; height:34px; border-radius:50%; flex:0 0 auto;}
-  .lb-close:hover{background:var(--soft); color:var(--ink);}
+  /* Migas de pan finitas, como en HDC: sin botones de volver/cerrar (el logo y el menú del
+     header ya cumplen esa función). Cada tramo clickeable filtra o cierra el overlay. */
+  .crumb-bar{padding:16px 24px 0;}
+  .pdp-crumb{font-size:12.5px; color:var(--muted);}
+  .pdp-crumb a{cursor:pointer; text-decoration:underline; text-underline-offset:2px;}
+  .pdp-crumb a:hover{color:var(--accent);}
+  .catalog-toolbar{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:24px;}
+  .catalog-toolbar .filters{margin-bottom:0;}
+  .sort-row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); white-space:nowrap;}
+  .sort-row select{background:var(--soft); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; font-weight:600; cursor:pointer;}
   .pdp-wrap{max-width:1100px; margin:0 auto; width:100%; padding:34px 28px 70px;}
   .modal-card{display:grid; grid-template-columns:1.1fr .9fr; gap:44px;}
   .modal-img{background:#0b0b0b; border:1px solid var(--line); border-radius:16px; aspect-ratio:1/1; overflow:hidden;}
@@ -328,7 +332,7 @@
   .btn.buy{background:#25D366; border-color:#25D366; color:#fff; gap:8px;}
   .btn.buy:hover{background:#1ebe57; border-color:#1ebe57;}
   @media (max-width:760px){
-    .pdp-top{padding:14px 16px;}
+    .crumb-bar{padding:14px 16px 0;}
     .pdp-wrap{padding:22px 18px 50px;}
     .modal-card{grid-template-columns:1fr; gap:22px;}
   }
@@ -594,24 +598,35 @@
 
 <!-- CATÁLOGO COMPLETO (página aparte, no vive en la home) -->
 <div class="lightbox" id="fullCatalog">
-  <div class="pdp-top">
-    <button class="pdp-back" id="catBack">‹ Volver al inicio</button>
-    <div class="pdp-crumb" id="catCrumb">Catálogo completo</div>
-    <button class="lb-close" id="catClose" aria-label="Cerrar">✕</button>
+  <div class="crumb-bar">
+    <div class="pdp-crumb" id="catCrumb"><a data-home>Inicio</a> › Catálogo completo</div>
   </div>
   <div class="pdp-wrap" style="max-width:1280px;">
     <div class="cat-heading"><h2 id="catHeading">Catálogo completo</h2><span class="count" id="catCount"></span></div>
-    <div class="filters" id="filters"></div>
+    <div class="catalog-toolbar">
+      <div class="filters" id="filters"></div>
+      <div class="sort-row">
+        <label for="sortSelect">Ordenar por</label>
+        <select id="sortSelect">
+          <option value="destacado">Destacado</option>
+          <option value="sales">Más vendidos</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="name-asc">A - Z</option>
+          <option value="name-desc">Z - A</option>
+          <option value="new">Más nuevo al más viejo</option>
+          <option value="old">Más viejo al más nuevo</option>
+        </select>
+      </div>
+    </div>
     <div class="catalog-grid" id="catalogGrid"></div>
   </div>
 </div>
 
 <!-- PÁGINA DE PRODUCTO -->
 <div class="lightbox" id="lightbox">
-  <div class="pdp-top">
-    <button class="pdp-back" id="lbBack">‹ Volver al catálogo</button>
+  <div class="crumb-bar">
     <div class="pdp-crumb" id="lbCrumb"></div>
-    <button class="lb-close" id="lbClose" aria-label="Cerrar">✕</button>
   </div>
   <div class="pdp-wrap">
     <div class="modal-card">
@@ -793,6 +808,25 @@ let categoryOf = {};      // public_id -> categoría
 let currentTags = null;   // null = todos; si no, array de etiquetas
 let view = [];
 let groups = [];          // productos agrupados del catálogo completo (según el filtro activo)
+let currentSort = "destacado";
+
+/* Orden del catálogo. "destacado" deja el orden con el que ya vienen agrupados
+   (el más nuevo primero); el resto son comparaciones directas sobre los datos del producto. */
+function sortGroups(list){
+  if(currentSort === "destacado") return list;
+  const arr = list.slice();
+  const cmp = {
+    "sales": (a,b) => (b.d.salesRank||0) - (a.d.salesRank||0),
+    "price-asc": (a,b) => (a.d.priceNum||0) - (b.d.priceNum||0),
+    "price-desc": (a,b) => (b.d.priceNum||0) - (a.d.priceNum||0),
+    "name-asc": (a,b) => a.d.n.localeCompare(b.d.n, "es"),
+    "name-desc": (a,b) => b.d.n.localeCompare(a.d.n, "es"),
+    "new": (a,b) => (b.images[0].created_at||"").localeCompare(a.images[0].created_at||""),
+    "old": (a,b) => (a.images[0].created_at||"").localeCompare(b.images[0].created_at||""),
+  }[currentSort];
+  if(cmp) arr.sort(cmp);
+  return arr;
+}
 let curImgIdx = 0;        // foto actual dentro del producto abierto en la ficha
 
 buildMenu();
@@ -824,6 +858,8 @@ async function loadFromSupabase(){
       qty,
       colors: row.colors || undefined,
       desc: row.description || undefined,
+      priceNum: row.price || 0,
+      salesRank: row.sales_rank || 0,
     };
     (row.images || []).forEach(img => {
       const item = { public_id: img.public_id, format: img.format, created_at: row.created_at };
@@ -867,9 +903,23 @@ function closeFullCatalog(){
   fullCatalog.classList.remove("open");
   if(location.hash === "#catalogo") history.back();
 }
-document.getElementById("catBack").addEventListener("click", closeFullCatalog);
-document.getElementById("catClose").addEventListener("click", closeFullCatalog);
 document.getElementById("btnVerCatalogo").addEventListener("click", () => openFullCatalog(null));
+
+/* Migas de pan clickeables (dentro de #catCrumb / #lbCrumb): "Inicio" cierra todo,
+   un tramo de categoría abre el catálogo filtrado en esa categoría. */
+document.addEventListener("click", e => {
+  const homeLink = e.target.closest(".pdp-crumb [data-home]");
+  if(homeLink){
+    lightbox.classList.remove("open");
+    fullCatalog.classList.remove("open");
+    return;
+  }
+  const tagLink = e.target.closest(".pdp-crumb [data-tags]");
+  if(tagLink){
+    lightbox.classList.remove("open");
+    openFullCatalog(tagLink.dataset.tags.split(","));
+  }
+});
 
 /* Tarjetas de categoría en la home */
 function buildCatTiles(){
@@ -1020,11 +1070,16 @@ function applyFilter(tags, label){
   document.getElementById("catHeading").textContent = cat ? cat.label : "Catálogo completo";
   const n = groups.length;
   document.getElementById("catCount").textContent = `${n} producto${n === 1 ? "" : "s"}`;
+  document.getElementById("catCrumb").innerHTML = cat ? `${categoryPath(cat.tag)}` : `<a data-home>Inicio</a> › Catálogo completo`;
 }
+document.getElementById("sortSelect").addEventListener("change", e => {
+  currentSort = e.target.value;
+  render();
+});
 
 function render(){
   view = !currentTags ? IMAGES : IMAGES.filter(x => currentTags.includes(categoryOf[x.public_id]));
-  groups = groupProducts(view);
+  groups = sortGroups(groupProducts(view));
   if(IMAGES.length){ document.getElementById("heroImg").src = imgUrl(IMAGES[0], 900); }
   if(!groups.length){
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; padding:20px 0;">Todavía no hay productos en esta categoría. ¡Pronto los subimos!</p>';
@@ -1050,13 +1105,20 @@ function render(){
   grid.querySelectorAll(".open-modal").forEach((b,i) => b.addEventListener("click", () => openLb(groups[i])));
 }
 
-/* Migas de pan: en qué categoría del menú vive esta etiqueta */
+/* Migas de pan clickeables: en qué categoría del menú vive esta etiqueta.
+   "Inicio" cierra el overlay; cada tramo intermedio abre el catálogo filtrado. */
 function categoryPath(tag){
   for(const g of MENU){
-    if(g.tag === tag) return `Inicio › ${g.label}`;
-    if(g.items){ const it = g.items.find(x => x.tag === tag); if(it) return `Inicio › ${g.label} › ${it.label}`; }
+    if(g.tag === tag) return `<a data-home>Inicio</a> › ${g.label}`;
+    if(g.items){
+      const it = g.items.find(x => x.tag === tag);
+      if(it){
+        const groupTags = g.items.map(x => x.tag).join(",");
+        return `<a data-home>Inicio</a> › <a data-tags="${groupTags}">${g.label}</a> › <a data-tags="${tag}">${it.label}</a>`;
+      }
+    }
   }
-  return "Inicio › Catálogo";
+  return `<a data-home>Inicio</a> › Catálogo`;
 }
 /* Descripción y características por defecto (se usan si el producto no trae las suyas propias) */
 function defaultDesc(item, d){
@@ -1160,7 +1222,7 @@ function renderLbImage(){
   lbImg.src = imgUrl(item, 1200);
   lbImg.alt = d.n;
   const catPath = categoryPath(tag);
-  document.getElementById("lbCrumb").textContent = `${catPath} › ${d.n}`;
+  document.getElementById("lbCrumb").innerHTML = `${catPath} › ${d.n}`;
   document.getElementById("lbDesc").textContent = d.desc || defaultDesc(item, d);
   document.getElementById("lbFeatList").innerHTML = featList(tag).map(f => `<li>${f}</li>`).join("");
 
@@ -1280,8 +1342,6 @@ function changeImg(delta){
 }
 document.getElementById("lbImgPrev").addEventListener("click", e => { e.stopPropagation(); changeImg(-1); });
 document.getElementById("lbImgNext").addEventListener("click", e => { e.stopPropagation(); changeImg(1); });
-document.getElementById("lbClose").addEventListener("click", closeLb);
-document.getElementById("lbBack").addEventListener("click", closeLb);
 document.addEventListener("keydown", e => {
   if(!lightbox.classList.contains("open")) return;
   if(e.key === "Escape") closeLb();
