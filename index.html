@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="es-AR">
 <head>
+<script>
+/* Si la URL apunta a una ficha o al catálogo, ocultamos toda la página hasta saber
+   qué mostrar, para no dejar ver un instante el inicio mientras cargan los datos. */
+(function(){
+  var h = location.hash;
+  if(h.indexOf("#producto=") === 0 || h === "#catalogo"){
+    document.documentElement.style.visibility = "hidden";
+    setTimeout(function(){ document.documentElement.style.visibility = "visible"; }, 4000);
+  }
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Melve Muebles — Mueblería en Buenos Aires · Sillas, Mesas y Escritorios</title>
@@ -756,10 +767,6 @@ const filtersEl = document.getElementById("filters");
 const navLinks = document.getElementById("navLinks");
 const lightbox = document.getElementById("lightbox");
 const fullCatalog = document.getElementById("fullCatalog");
-/* Si la URL ya indica una ficha o el catálogo, la mostramos de entrada (todavía vacía)
-   para no dejar ver un instante el inicio mientras se cargan los datos de Supabase. */
-if(location.hash.startsWith("#producto=")) lightbox.classList.add("open");
-else if(location.hash === "#catalogo") fullCatalog.classList.add("open");
 const lbImg = document.getElementById("lbImg");
 const lbWa = document.getElementById("lbWa");
 let currentGroup = null;  // producto abierto en la ficha (objeto {d, images})
@@ -819,10 +826,14 @@ loadFromSupabase()
     renderFeatured();
     render();
     restoreFromHash();
+    revealPage();
   })
   .catch(() => {
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">No se pudieron cargar los productos ahora. Recargá la página en un momento.</p>';
+    revealPage();
   });
+/* Vuelve a mostrar la página (la ocultamos desde el <head> si la URL apuntaba a una ficha o al catálogo) */
+function revealPage(){ document.documentElement.style.visibility = "visible"; }
 
 /* ===== Catálogo completo: página aparte, no vive en la home ===== */
 function openFullCatalog(tags, opts){
