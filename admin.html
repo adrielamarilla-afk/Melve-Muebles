@@ -87,6 +87,10 @@
   .tab-btn.active{background:var(--accent); border-color:var(--accent); color:#fff;}
 
   /* CARGA RAPIDA */
+  .visually-hidden{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
+  .file-input-row{display:flex; align-items:center; gap:10px;}
+  .file-btn{display:inline-block; cursor:pointer;}
+  #batchFilesLabel{color:var(--muted); font-size:13px;}
   .batch-row{display:grid; grid-template-columns:52px 1fr 1fr 110px 28px; gap:8px; align-items:center; margin-bottom:8px;}
   .batch-row img{width:52px; height:52px; border-radius:7px; object-fit:cover; border:1px solid var(--line);}
   .batch-row select{padding:8px 6px; font-size:12.5px;}
@@ -180,8 +184,11 @@
         <select id="batchCategory"></select>
       </div>
       <div class="field"><label for="batchFiles">Fotos</label>
-        <input type="file" id="batchFiles" accept="image/*" multiple>
-        <p class="hint" id="batchFilesCount"></p>
+        <div class="file-input-row">
+          <label for="batchFiles" class="btn ghost file-btn">Elegir archivos</label>
+          <span id="batchFilesLabel">Ningún archivo seleccionado</span>
+        </div>
+        <input type="file" id="batchFiles" accept="image/*" multiple class="visually-hidden">
       </div>
 
       <div id="batchRows"></div>
@@ -413,9 +420,9 @@ function renderBatchRows(){
     renderBatchRows();
   }));
   document.getElementById("batchSaveAll").style.display = batchRows.length ? "inline-block" : "none";
-  document.getElementById("batchFilesCount").textContent = batchRows.length
+  document.getElementById("batchFilesLabel").textContent = batchRows.length
     ? `${batchRows.length} foto${batchRows.length === 1 ? "" : "s"} seleccionada${batchRows.length === 1 ? "" : "s"}`
-    : "";
+    : "Ningún archivo seleccionado";
 }
 
 document.getElementById("batchSaveAll").addEventListener("click", async () => {
