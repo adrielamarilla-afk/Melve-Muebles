@@ -288,6 +288,13 @@
   /* PÁGINA DE PRODUCTO (a pantalla completa, no ventana chica) */
   .lightbox{position:fixed; inset:0; background:var(--bg); z-index:200; display:none; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;}
   .lightbox.open{display:block;}
+  /* El catálogo completo, a diferencia de la ficha de producto, deja el header (logo + menú)
+     visible arriba para poder seguir navegando por categorías sin volver al inicio. */
+  #fullCatalog{z-index:40; padding-top:var(--header-h, 86px);}
+  #fullCatalog .pdp-top{position:static;}
+  .cat-heading{padding:22px 0 2px;}
+  .cat-heading h2{font-size:24px;}
+  .cat-heading .count{color:var(--muted); font-size:14px; font-weight:600; margin-left:10px;}
   .pdp-top{position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; padding:16px 24px;}
   .pdp-back{background:none; border:none; color:var(--ink); font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px; white-space:nowrap;}
   .pdp-back:hover{color:var(--accent);}
@@ -595,6 +602,7 @@
     <button class="lb-close" id="catClose" aria-label="Cerrar">✕</button>
   </div>
   <div class="pdp-wrap" style="max-width:1280px;">
+    <div class="cat-heading"><h2 id="catHeading">Catálogo completo</h2><span class="count" id="catCount"></span></div>
     <div class="filters" id="filters"></div>
     <div class="catalog-grid" id="catalogGrid"></div>
   </div>
@@ -767,6 +775,19 @@ const filtersEl = document.getElementById("filters");
 const navLinks = document.getElementById("navLinks");
 const lightbox = document.getElementById("lightbox");
 const fullCatalog = document.getElementById("fullCatalog");
+
+/* El catálogo completo deja el header real visible arriba (como en HDC); necesitamos
+   su altura exacta para no tapar el contenido, y que se recalcule si cambia de tamaño. */
+const headerEl = document.querySelector("header");
+function syncHeaderHeight(){ document.documentElement.style.setProperty("--header-h", headerEl.offsetHeight + "px"); }
+syncHeaderHeight();
+window.addEventListener("resize", syncHeaderHeight);
+
+/* Si tocan el logo estando en el catálogo o en una ficha, cerramos el overlay para volver al inicio real */
+document.querySelector(".logo").addEventListener("click", () => {
+  lightbox.classList.remove("open");
+  fullCatalog.classList.remove("open");
+});
 const lbImg = document.getElementById("lbImg");
 const lbWa = document.getElementById("lbWa");
 let currentGroup = null;  // producto abierto en la ficha (objeto {d, images})
@@ -997,6 +1018,10 @@ function applyFilter(tags, label){
     const on = currentTags ? (currentTags.length === 1 && b.dataset.f === currentTags[0]) : (b.dataset.f === "all");
     b.classList.toggle("active", on);
   });
+  const cat = currentTags && currentTags.length === 1 ? CATEGORIES.find(c => c.tag === currentTags[0]) : null;
+  document.getElementById("catHeading").textContent = cat ? cat.label : "Catálogo completo";
+  const n = groups.length;
+  document.getElementById("catCount").textContent = `${n} producto${n === 1 ? "" : "s"}`;
 }
 
 function render(){
