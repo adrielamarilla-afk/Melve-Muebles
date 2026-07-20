@@ -181,6 +181,7 @@
       </div>
       <div class="field"><label for="batchFiles">Fotos</label>
         <input type="file" id="batchFiles" accept="image/*" multiple>
+        <p class="hint" id="batchFilesCount"></p>
       </div>
 
       <div id="batchRows"></div>
@@ -412,6 +413,9 @@ function renderBatchRows(){
     renderBatchRows();
   }));
   document.getElementById("batchSaveAll").style.display = batchRows.length ? "inline-block" : "none";
+  document.getElementById("batchFilesCount").textContent = batchRows.length
+    ? `${batchRows.length} foto${batchRows.length === 1 ? "" : "s"} seleccionada${batchRows.length === 1 ? "" : "s"}`
+    : "";
 }
 
 document.getElementById("batchSaveAll").addEventListener("click", async () => {
