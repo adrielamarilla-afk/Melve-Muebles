@@ -149,6 +149,7 @@
 
         <div class="field"><label for="fColors">Colores (opcional, separados por coma)</label><input type="text" id="fColors" placeholder="Blanco,Negro"></div>
         <div class="field"><label for="fDesc">Descripción (opcional)</label><textarea id="fDesc" rows="3" placeholder="Se genera una automática si lo dejás vacío"></textarea></div>
+        <div class="field"><label for="fSales">Ventas (para ordenar "Más vendidos" en la web, opcional)</label><input type="number" id="fSales" min="0" step="1" placeholder="0"></div>
 
         <label class="checkline"><input type="checkbox" id="fHasQty"> Se vende por cantidad (x1, x2, x3, x4, x6 — como las sillas de comedor)</label>
         <div id="qtyRows" style="display:none;">
@@ -330,6 +331,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   const colorsRaw = document.getElementById("fColors").value.trim();
   const colors = colorsRaw ? colorsRaw.split(",").map(s => s.trim()).filter(Boolean) : null;
   const description = document.getElementById("fDesc").value.trim() || null;
+  const salesRank = parseInt(document.getElementById("fSales").value, 10) || 0;
 
   let qtyPricing = null;
   if(document.getElementById("fHasQty").checked){
@@ -348,7 +350,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   if(!name){ alert("Escribí un nombre para el producto."); return; }
   if(currentPhotos.length === 0){ alert("Subí al menos una foto."); return; }
 
-  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, description, images: currentPhotos };
+  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, description, sales_rank: salesRank, images: currentPhotos };
 
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
@@ -514,6 +516,7 @@ function editProduct(id){
   document.getElementById("fLista").value = p.price_lista || "";
   document.getElementById("fColors").value = (p.colors || []).join(",");
   document.getElementById("fDesc").value = p.description || "";
+  document.getElementById("fSales").value = p.sales_rank || "";
   currentPhotos = p.images ? p.images.map(x => ({...x})) : [];
   renderPhotoList();
 
