@@ -234,7 +234,7 @@ const QTYS = [1,2,3,4,6];
 let currentPhotos = [];   // [{public_id, format}]
 let editingId = null;
 let allProducts = [];
-let batchFilesList = [];  // [File, ...] seleccionados para carga rápida
+let batchRows = [];  // [{file, name, price, category}, ...] para carga rápida
 
 /* ===== Sesión ===== */
 async function checkSession(){
@@ -380,43 +380,54 @@ document.getElementById("tabBatch").addEventListener("click", () => {
 });
 
 document.getElementById("batchFiles").addEventListener("change", e => {
-  batchFilesList = Array.from(e.target.files);
+  const defaultCat = document.getElementById("batchCategory").value;
+  syncBatchRowsFromDom();
+  Array.from(e.target.files).forEach(file => {
+    batchRows.push({ file, name: "", price: "", category: defaultCat });
+  });
+  e.target.value = "";
   renderBatchRows();
 });
+function syncBatchRowsFromDom(){
+  document.querySelectorAll("#batchRows .batch-row").forEach((rowEl, i) => {
+    if(!batchRows[i]) return;
+    batchRows[i].name = rowEl.querySelector(".batchName").value;
+    batchRows[i].price = rowEl.querySelector(".batchPrice").value;
+    batchRows[i].category = rowEl.querySelector(".batchCat").value;
+  });
+}
 function renderBatchRows(){
   const el = document.getElementById("batchRows");
-  const defaultCat = document.getElementById("batchCategory").value;
-  el.innerHTML = batchFilesList.map((file, i) => `
+  el.innerHTML = batchRows.map((row, i) => `
     <div class="batch-row" data-i="${i}">
-      <img src="${URL.createObjectURL(file)}" alt="">
-      <input type="text" class="batchName" placeholder="Nombre">
-      <input type="number" class="batchPrice" placeholder="Precio" min="0" step="1">
-      <select class="batchCat">${CATEGORIES.map(c => `<option value="${c.tag}"${c.tag===defaultCat?" selected":""}>${c.label}</option>`).join("")}</select>
+      <img src="${URL.createObjectURL(row.file)}" alt="">
+      <input type="text" class="batchName" placeholder="Nombre" value="${(row.name || "").replace(/"/g,"&quot;")}">
+      <input type="number" class="batchPrice" placeholder="Precio" min="0" step="1" value="${row.price || ""}">
+      <select class="batchCat">${CATEGORIES.map(c => `<option value="${c.tag}"${c.tag===row.category?" selected":""}>${c.label}</option>`).join("")}</select>
       <button type="button" class="removeRow" data-i="${i}" aria-label="Quitar">✕</button>
     </div>`).join("");
   el.querySelectorAll(".removeRow").forEach(b => b.addEventListener("click", () => {
-    batchFilesList.splice(parseInt(b.dataset.i,10), 1);
+    syncBatchRowsFromDom();
+    batchRows.splice(parseInt(b.dataset.i,10), 1);
     renderBatchRows();
   }));
-  document.getElementById("batchSaveAll").style.display = batchFilesList.length ? "inline-block" : "none";
+  document.getElementById("batchSaveAll").style.display = batchRows.length ? "inline-block" : "none";
 }
 
 document.getElementById("batchSaveAll").addEventListener("click", async () => {
-  const rowsEl = document.querySelectorAll("#batchRows .batch-row");
-  if(!rowsEl.length) return;
+  syncBatchRowsFromDom();
+  if(!batchRows.length) return;
   const statusEl = document.getElementById("batchStatus");
   const saveBtn = document.getElementById("batchSaveAll");
   saveBtn.disabled = true;
 
   const rowsData = [];
-  for(let i = 0; i < rowsEl.length; i++){
-    const rowEl = rowsEl[i];
-    const file = batchFilesList[i];
-    const name = rowEl.querySelector(".batchName").value.trim() || "Sin nombre";
-    const price = parseFloat(rowEl.querySelector(".batchPrice").value) || null;
-    const category = rowEl.querySelector(".batchCat").value;
+  for(let i = 0; i < batchRows.length; i++){
+    const { file, name: rawName, price: rawPrice, category } = batchRows[i];
+    const name = (rawName || "").trim() || "Sin nombre";
+    const price = parseFloat(rawPrice) || null;
 
-    statusEl.textContent = `Subiendo foto ${i+1} de ${rowsEl.length}…`;
+    statusEl.textContent = `Subiendo foto ${i+1} de ${batchRows.length}…`;
     try{
       const fd = new FormData();
       fd.append("file", file);
@@ -445,7 +456,7 @@ document.getElementById("batchSaveAll").addEventListener("click", async () => {
   }
 
   statusEl.textContent = `¡Listo! Se guardaron ${rowsData.length} productos.`;
-  batchFilesList = [];
+  batchRows = [];
   document.getElementById("batchFiles").value = "";
   document.getElementById("batchRows").innerHTML = "";
   document.getElementById("batchSaveAll").style.display = "none";
