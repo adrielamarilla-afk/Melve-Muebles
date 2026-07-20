@@ -286,16 +286,14 @@
   @media (max-width:520px){ .wa{width:56px; height:56px; bottom:18px; right:18px;} .wa svg{width:30px; height:30px;} }
 
   /* PÁGINA DE PRODUCTO (a pantalla completa, no ventana chica) */
-  .lightbox{position:fixed; inset:0; background:var(--bg); z-index:200; display:none; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;}
+  /* El header (logo + menú) queda siempre visible arriba, tanto en el catálogo como en la
+     ficha de producto, para poder seguir navegando sin volver al inicio. */
+  .lightbox{position:fixed; inset:0; background:var(--bg); z-index:40; padding-top:var(--header-h, 86px); display:none; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;}
   .lightbox.open{display:block;}
-  /* El catálogo completo, a diferencia de la ficha de producto, deja el header (logo + menú)
-     visible arriba para poder seguir navegando por categorías sin volver al inicio. */
-  #fullCatalog{z-index:40; padding-top:var(--header-h, 86px);}
-  #fullCatalog .pdp-top{position:static;}
   .cat-heading{padding:22px 0 2px;}
   .cat-heading h2{font-size:24px;}
   .cat-heading .count{color:var(--muted); font-size:14px; font-weight:600; margin-left:10px;}
-  .pdp-top{position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; padding:16px 24px;}
+  .pdp-top{position:static; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; padding:16px 24px;}
   .pdp-back{background:none; border:none; color:var(--ink); font-weight:700; font-size:14px; display:flex; align-items:center; gap:6px; white-space:nowrap;}
   .pdp-back:hover{color:var(--accent);}
   .pdp-crumb{font-size:12.5px; color:var(--muted); flex:1; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
