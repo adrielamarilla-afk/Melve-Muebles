@@ -814,17 +814,19 @@ loadFromSupabase()
     renderSpotlight();
     renderFeatured();
     render();
+    restoreFromHash();
   })
   .catch(() => {
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1;">No se pudieron cargar los productos ahora. Recargá la página en un momento.</p>';
   });
 
 /* ===== Catálogo completo: página aparte, no vive en la home ===== */
-function openFullCatalog(tags){
+function openFullCatalog(tags, opts){
   applyFilter(tags && tags.length ? tags : null);
   fullCatalog.classList.add("open");
   fullCatalog.scrollTop = 0;
-  history.pushState({ cat:true }, "", "#catalogo");
+  if(opts && opts.replace) history.replaceState({ cat:true }, "", "#catalogo");
+  else history.pushState({ cat:true }, "", "#catalogo");
 }
 function closeFullCatalog(){
   if(!fullCatalog.classList.contains("open")) return;
@@ -1054,7 +1056,7 @@ let selColor = null;
 let selQty = 1;
 
 /* Página de producto (a pantalla completa, con botón Volver como una página real) */
-function openLb(group){
+function openLb(group, opts){
   if(!group) return;
   currentGroup = group;
   curImgIdx = 0;
@@ -1062,18 +1064,33 @@ function openLb(group){
   selColor = null;
   renderLbImage();
   lightbox.classList.add("open");
-  history.pushState({ pdp:true }, "", "#producto");
+  const pid = encodeURIComponent(group.images[0].public_id);
+  if(opts && opts.replace) history.replaceState({ pdp:true, pid }, "", "#producto=" + pid);
+  else history.pushState({ pdp:true, pid }, "", "#producto=" + pid);
 }
 function closeLb(){
   if(!lightbox.classList.contains("open")) return;
   lightbox.classList.remove("open");
-  if(location.hash === "#producto") history.back();
+  if(location.hash.startsWith("#producto")) history.back();
 }
 /* Sincroniza qué páginas quedan abiertas según a dónde volvimos con "atrás" */
 window.addEventListener("popstate", () => {
-  if(location.hash !== "#producto") lightbox.classList.remove("open");
-  if(location.hash !== "#catalogo" && location.hash !== "#producto") fullCatalog.classList.remove("open");
+  if(!location.hash.startsWith("#producto")) lightbox.classList.remove("open");
+  if(location.hash !== "#catalogo" && !location.hash.startsWith("#producto")) fullCatalog.classList.remove("open");
 });
+
+/* Al recargar la página (F5), reabre la ficha de producto o el catálogo si la URL lo indica */
+function restoreFromHash(){
+  const hash = location.hash;
+  if(hash.startsWith("#producto=")){
+    const pid = decodeURIComponent(hash.slice("#producto=".length));
+    const group = groupProducts(IMAGES).find(g => g.images.some(i => i.public_id === pid));
+    if(group){ openLb(group, { replace:true }); return; }
+    history.replaceState(null, "", location.pathname + location.search);
+  } else if(hash === "#catalogo"){
+    openFullCatalog(null, { replace:true });
+  }
+}
 
 function updatePriceDisplay(){
   const d = currentGroup.d;
