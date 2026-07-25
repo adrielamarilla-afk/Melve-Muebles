@@ -335,6 +335,11 @@
     .crumb-bar{padding:14px 16px 0;}
     .pdp-wrap{padding:22px 18px 50px;}
     .modal-card{grid-template-columns:1fr; gap:22px;}
+    /* Botones más grandes para tocar cómodo con el pulgar en el celular */
+    .filters button{padding:12px 18px; font-size:14px; min-height:44px;}
+    .opt-row button{padding:12px 18px; font-size:14px; min-height:44px;}
+    .btn.sm{padding:13px 16px; font-size:14px; min-height:44px;}
+    .sort-row select{padding:11px 10px; min-height:44px;}
   }
 
   .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
@@ -403,7 +408,7 @@
 
     <div class="spotlight" id="spotlight">
       <div class="spotlight-gallery">
-        <div class="spotlight-img"><img id="spotImg" src="" alt=""></div>
+        <div class="spotlight-img"><img id="spotImg" src="" alt="" loading="lazy"></div>
         <div class="spotlight-thumbs" id="spotThumbs"></div>
       </div>
       <div class="spotlight-info">
