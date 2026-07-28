@@ -1145,10 +1145,9 @@ function featList(tag){
   ];
 }
 
-/* Categorías que se venden por unidad (habilitan selector de color y/o cantidad) */
-const COLOR_CATEGORIES = ["comedor"];
+/* Categorías que se venden por unidad (habilitan el selector de cantidad).
+   El selector de color, en cambio, aparece solo si el producto tiene colores cargados. */
 const QTY_CATEGORIES = ["comedor"];
-const DEFAULT_COLORS = ["Blanco","Negro"];
 
 /* Nombre a mostrar: si se vende por pack (categoría con cantidad), aclara "x4 unidades" */
 function qtyLabel(qty){ return qty === 1 ? "x1 unidad" : `x${qty} unidades`; }
@@ -1234,8 +1233,8 @@ function renderLbImage(){
   /* Selector de color */
   const colorBlock = document.getElementById("colorBlock");
   const colorRow = document.getElementById("colorRow");
-  if(COLOR_CATEGORIES.includes(tag)){
-    const colors = d.colors || DEFAULT_COLORS;
+  if(d.colors && d.colors.length){
+    const colors = d.colors;
     if(!selColor) selColor = colors[0];
     colorRow.innerHTML = colors.map(c => `<button class="${c===selColor?"active":""}" data-color="${c}">${c}</button>`).join("");
     colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
