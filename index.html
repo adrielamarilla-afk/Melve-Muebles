@@ -654,6 +654,10 @@
           <div class="opt-label">Color</div>
           <div class="opt-row" id="colorRow"></div>
         </div>
+        <div class="opt-block" id="colorPatasBlock">
+          <div class="opt-label">Patas</div>
+          <div class="opt-row" id="colorPatasRow"></div>
+        </div>
         <div class="opt-block" id="qtyBlock">
           <div class="opt-label">Cantidad</div>
           <div class="opt-row" id="qtyRow"></div>
@@ -725,12 +729,13 @@ function pricesForQty(d, qty){
   return d.qty[qty] || null;
 }
 
-function waLink(item, qty, color){
+function waLink(item, qty, color, colorPatas){
   const d = info(item);
   qty = qty || 1;
   const pr = pricesForQty(d, qty);
   let label = d.n;
-  if(color) label += ` color ${color}`;
+  if(color && colorPatas) label += ` (tapa ${color}, patas ${colorPatas})`;
+  else if(color) label += ` color ${color}`;
   if(qty > 1) label += ` x${qty}`;
   label += pr ? ` (${pr.p} efectivo)` : ` — consultar precio para x${qty}`;
   const text = encodeURIComponent(`Hola! Quiero comprar: ${label} 👉 ${fullUrl(item)}`);
@@ -862,12 +867,13 @@ async function loadFromSupabase(){
       lista: row.price_lista ? fmtMoney(row.price_lista) : undefined,
       qty,
       colors: row.colors || undefined,
+      colorsPatas: row.colors_patas || undefined,
       desc: row.description || undefined,
       priceNum: row.price || 0,
       salesRank: row.sales_rank || 0,
     };
     (row.images || []).forEach(img => {
-      const item = { public_id: img.public_id, format: img.format, created_at: row.created_at, color: img.color || undefined };
+      const item = { public_id: img.public_id, format: img.format, created_at: row.created_at, color: img.color || undefined, colorPatas: img.colorPatas || undefined };
       IMAGES.push(item);
       categoryOf[img.public_id] = row.category;
       PRODUCTS[img.public_id] = d;
@@ -1158,7 +1164,19 @@ function displayName(d, tag, qty){
 }
 
 let selColor = null;
+let selColorPatas = null;
 let selQty = 1;
+
+/* Busca la foto que mejor coincida con los colores elegidos (tapa/patas).
+   Prioriza la coincidencia exacta de ambos; si no hay, se conforma con uno solo. */
+function matchColor(a,b){ return !!a && !!b && a.toLowerCase() === b.toLowerCase(); }
+function pickImageIndexForColors(images){
+  let idx = -1;
+  if(selColor && selColorPatas) idx = images.findIndex(im => matchColor(im.color, selColor) && matchColor(im.colorPatas, selColorPatas));
+  if(idx === -1 && selColor) idx = images.findIndex(im => matchColor(im.color, selColor));
+  if(idx === -1 && selColorPatas) idx = images.findIndex(im => matchColor(im.colorPatas, selColorPatas));
+  return idx;
+}
 
 /* Página de producto (a pantalla completa, con botón Volver como una página real) */
 function openLb(group, opts){
@@ -1167,6 +1185,7 @@ function openLb(group, opts){
   curImgIdx = 0;
   selQty = 4;   // arranca en x4: es el precio que se ve en la tarjeta del catálogo
   selColor = null;
+  selColorPatas = null;
   renderLbImage();
   lightbox.classList.add("open");
   const pid = encodeURIComponent(group.images[0].public_id);
@@ -1213,7 +1232,7 @@ function updatePriceDisplay(){
   }
 }
 function updateBuyLink(){
-  lbWa.href = waLink(currentGroup.images[0], selQty, selColor);
+  lbWa.href = waLink(currentGroup.images[0], selQty, selColor, selColorPatas);
 }
 
 function renderLbImage(){
@@ -1231,7 +1250,7 @@ function renderLbImage(){
   document.getElementById("lbDesc").textContent = d.desc || defaultDesc(item, d);
   document.getElementById("lbFeatList").innerHTML = featList(tag).map(f => `<li>${f}</li>`).join("");
 
-  /* Selector de color */
+  /* Selector de color (tapa) */
   const colorBlock = document.getElementById("colorBlock");
   const colorRow = document.getElementById("colorRow");
   if(d.colors && d.colors.length){
@@ -1240,8 +1259,7 @@ function renderLbImage(){
     colorRow.innerHTML = colors.map(c => `<button class="${c===selColor?"active":""}" data-color="${c}">${c}</button>`).join("");
     colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
       selColor = b.dataset.color;
-      /* Si hay una foto marcada con este color, la mostramos; si no, se deja la foto actual */
-      const idx = g.images.findIndex(im => im.color && im.color.toLowerCase() === selColor.toLowerCase());
+      const idx = pickImageIndexForColors(g.images);
       if(idx !== -1) curImgIdx = idx;
       renderLbImage();
     }));
@@ -1249,6 +1267,25 @@ function renderLbImage(){
   } else {
     selColor = null;
     colorBlock.style.display = "none";
+  }
+
+  /* Selector de color de patas (independiente del color de tapa, solo si el producto lo usa) */
+  const colorPatasBlock = document.getElementById("colorPatasBlock");
+  const colorPatasRow = document.getElementById("colorPatasRow");
+  if(d.colorsPatas && d.colorsPatas.length){
+    const colorsPatas = d.colorsPatas;
+    if(!selColorPatas) selColorPatas = colorsPatas[0];
+    colorPatasRow.innerHTML = colorsPatas.map(c => `<button class="${c===selColorPatas?"active":""}" data-color="${c}">${c}</button>`).join("");
+    colorPatasRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      selColorPatas = b.dataset.color;
+      const idx = pickImageIndexForColors(g.images);
+      if(idx !== -1) curImgIdx = idx;
+      renderLbImage();
+    }));
+    colorPatasBlock.style.display = "";
+  } else {
+    selColorPatas = null;
+    colorPatasBlock.style.display = "none";
   }
 
   /* Selector de cantidad */
