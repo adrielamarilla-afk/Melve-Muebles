@@ -651,11 +651,11 @@
         <div class="modal-cuotas" id="lbCuotas"></div>
 
         <div class="opt-block" id="colorBlock">
-          <div class="opt-label">Color</div>
+          <div class="opt-label" id="colorLabel">Color</div>
           <div class="opt-row" id="colorRow"></div>
         </div>
         <div class="opt-block" id="colorPatasBlock">
-          <div class="opt-label">Patas</div>
+          <div class="opt-label">Color patas</div>
           <div class="opt-row" id="colorPatasRow"></div>
         </div>
         <div class="opt-block" id="qtyBlock">
@@ -1256,6 +1256,7 @@ function renderLbImage(){
   if(d.colors && d.colors.length){
     const colors = d.colors;
     if(!selColor) selColor = colors[0];
+    document.getElementById("colorLabel").textContent = (d.colorsPatas && d.colorsPatas.length) ? "Color tapa" : "Color";
     colorRow.innerHTML = colors.map(c => `<button class="${c===selColor?"active":""}" data-color="${c}">${c}</button>`).join("");
     colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
       selColor = b.dataset.color;
