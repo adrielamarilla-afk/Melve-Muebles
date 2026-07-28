@@ -897,6 +897,7 @@ function revealPage(){ document.documentElement.style.visibility = "visible"; }
 
 /* ===== Catálogo completo: página aparte, no vive en la home ===== */
 function openFullCatalog(tags, opts){
+  lightbox.classList.remove("open");
   applyFilter(tags && tags.length ? tags : null);
   fullCatalog.classList.add("open");
   fullCatalog.scrollTop = 0;
