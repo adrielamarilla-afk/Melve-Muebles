@@ -67,6 +67,8 @@
   .photo-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
   .photo-thumb button{position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,.7); color:#fff; border:none; font-size:11px; line-height:1; cursor:pointer;}
   .photo-thumb.primary::after{content:"Principal"; position:absolute; bottom:0; left:0; right:0; background:rgba(242,106,33,.9); color:#fff; font-size:8.5px; text-align:center; font-weight:700; padding:2px 0;}
+  .photo-item{display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .photo-color{width:74px; font-size:10px; padding:3px 2px; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:5px;}
 
   .form-actions{display:flex; gap:10px; margin-top:6px;}
 
@@ -304,17 +306,31 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
 });
 function renderPhotoList(){
   const el = document.getElementById("photoList");
+  const colorsRaw = document.getElementById("fColors").value.trim();
+  const colorOptions = colorsRaw ? colorsRaw.split(",").map(s => s.trim()).filter(Boolean) : [];
   el.innerHTML = currentPhotos.map((p,i) => `
-    <div class="photo-thumb${i===0?" primary":""}">
-      <img src="https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_130/${p.public_id}.${p.format}" alt="">
-      <button type="button" data-i="${i}" aria-label="Quitar foto">✕</button>
+    <div class="photo-item">
+      <div class="photo-thumb${i===0?" primary":""}">
+        <img src="https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_130/${p.public_id}.${p.format}" alt="">
+        <button type="button" data-i="${i}" aria-label="Quitar foto">✕</button>
+      </div>
+      ${colorOptions.length ? `<select class="photo-color" data-color-i="${i}">
+        <option value="">Todos los colores</option>
+        ${colorOptions.map(c => `<option value="${c}"${p.color===c?" selected":""}>${c}</option>`).join("")}
+      </select>` : ""}
     </div>`).join("");
   el.querySelectorAll("button[data-i]").forEach(b => b.addEventListener("click", () => {
     currentPhotos.splice(parseInt(b.dataset.i,10), 1);
     renderPhotoList();
   }));
+  el.querySelectorAll("select[data-color-i]").forEach(s => s.addEventListener("change", () => {
+    const i = parseInt(s.dataset.colorI, 10);
+    if(s.value) currentPhotos[i].color = s.value; else delete currentPhotos[i].color;
+  }));
 }
 renderPhotoList();
+/* Si cambian los colores del producto, refrescamos las opciones de color por foto */
+document.getElementById("fColors").addEventListener("input", renderPhotoList);
 
 /* ===== Selector de cantidad ===== */
 document.getElementById("fHasQty").addEventListener("change", e => {

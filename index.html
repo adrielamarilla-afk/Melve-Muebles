@@ -867,7 +867,7 @@ async function loadFromSupabase(){
       salesRank: row.sales_rank || 0,
     };
     (row.images || []).forEach(img => {
-      const item = { public_id: img.public_id, format: img.format, created_at: row.created_at };
+      const item = { public_id: img.public_id, format: img.format, created_at: row.created_at, color: img.color || undefined };
       IMAGES.push(item);
       categoryOf[img.public_id] = row.category;
       PRODUCTS[img.public_id] = d;
@@ -1238,7 +1238,13 @@ function renderLbImage(){
     const colors = d.colors || DEFAULT_COLORS;
     if(!selColor) selColor = colors[0];
     colorRow.innerHTML = colors.map(c => `<button class="${c===selColor?"active":""}" data-color="${c}">${c}</button>`).join("");
-    colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { selColor = b.dataset.color; renderLbImage(); }));
+    colorRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      selColor = b.dataset.color;
+      /* Si hay una foto marcada con este color, la mostramos; si no, se deja la foto actual */
+      const idx = g.images.findIndex(im => im.color && im.color.toLowerCase() === selColor.toLowerCase());
+      if(idx !== -1) curImgIdx = idx;
+      renderLbImage();
+    }));
     colorBlock.style.display = "";
   } else {
     selColor = null;
