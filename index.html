@@ -400,6 +400,20 @@
   .catalog-toolbar .filters{margin-bottom:0;}
   .sort-row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); white-space:nowrap;}
   .sort-row select{background:var(--soft); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:13px; font-weight:600; cursor:pointer;}
+  .toolbar-tabs{display:none;}
+  @media (max-width:760px){
+    .catalog-toolbar{flex-direction:column; align-items:stretch; gap:0; margin-bottom:20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+    .toolbar-tabs{display:flex; width:100%;}
+    .toolbar-tab{flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:15px 0; background:none; border:none; font-size:14px; font-weight:700; color:var(--ink); cursor:pointer;}
+    .toolbar-tab:first-child{border-right:1px solid var(--line);}
+    .toolbar-tab svg{width:17px; height:17px;}
+    .toolbar-tab.active{color:var(--accent);}
+    .catalog-toolbar .filters{display:none; margin-bottom:0; padding:16px 2px; border-top:1px solid var(--line);}
+    .catalog-toolbar .filters.show{display:flex;}
+    .sort-row{display:none; padding:16px 2px; border-top:1px solid var(--line);}
+    .sort-row.show{display:flex;}
+    .sort-row select{flex:1;}
+  }
   .pdp-wrap{max-width:1100px; margin:0 auto; width:100%; padding:34px 28px 70px;}
   .modal-card{display:grid; grid-template-columns:1.1fr .9fr; gap:44px;}
   .modal-img{background:var(--soft); border:1px solid var(--line); border-radius:16px; aspect-ratio:1/1; overflow:hidden;}
@@ -720,8 +734,12 @@
     <div class="cat-heading"><h2 id="catHeading">Catálogo completo</h2><span class="count" id="catCount"></span></div>
     <p class="cat-desc" id="catDesc"></p>
     <div class="catalog-toolbar">
+      <div class="toolbar-tabs">
+        <button class="toolbar-tab" id="tabSort" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v14M4 8l3-3 3 3M17 19V5m3 11l-3 3-3-3"/></svg>Ordenar</button>
+        <button class="toolbar-tab" id="tabFilter" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtrar</button>
+      </div>
       <div class="filters" id="filters"></div>
-      <div class="sort-row">
+      <div class="sort-row" id="sortRow">
         <label for="sortSelect">Ordenar por</label>
         <select id="sortSelect">
           <option value="destacado">Destacado</option>
@@ -1361,6 +1379,8 @@ function buildFilters(){
   filtersEl.innerHTML = html;
   filtersEl.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
     applyFilter(b.dataset.f === "all" ? null : [b.dataset.f]);
+    filtersEl.classList.remove("show");
+    document.getElementById("tabFilter").classList.remove("active");
   }));
 }
 
@@ -1387,6 +1407,23 @@ function applyFilter(tags, label){
 document.getElementById("sortSelect").addEventListener("change", e => {
   currentSort = e.target.value;
   render();
+});
+
+/* En mobile, "Ordenar"/"Filtrar" muestran el panel correspondiente en vez de tenerlo siempre abierto */
+const tabSort = document.getElementById("tabSort");
+const tabFilter = document.getElementById("tabFilter");
+const sortRow = document.getElementById("sortRow");
+tabSort.addEventListener("click", () => {
+  sortRow.classList.toggle("show");
+  filtersEl.classList.remove("show");
+  tabSort.classList.toggle("active", sortRow.classList.contains("show"));
+  tabFilter.classList.remove("active");
+});
+tabFilter.addEventListener("click", () => {
+  filtersEl.classList.toggle("show");
+  sortRow.classList.remove("show");
+  tabFilter.classList.toggle("active", filtersEl.classList.contains("show"));
+  tabSort.classList.remove("active");
 });
 
 function render(){
