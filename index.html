@@ -104,7 +104,7 @@
   .mega-card-sub{display:flex; flex-direction:column; gap:7px; align-items:center;}
   .mega-card-sub button{background:none; border:none; padding:0; font-family:inherit; font-size:12px; color:var(--accent); cursor:pointer;}
   .mega-card-sub button:hover{color:var(--header-ink); text-decoration:underline;}
-  .mega-back, .mega-viewall{display:none;}
+  .mega-back, .mega-viewall, .mega-sub-back, .mega-sub-viewall{display:none;}
   .nav-cta{display:flex; align-items:center; gap:12px;}
   .nav-close{display:none;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
@@ -138,6 +138,13 @@
     .mega-card-label{display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left; padding:16px 2px; margin:0; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px;}
     .mega-card-label::after{content:""; width:9px; height:9px; border-right:2px solid currentColor; border-top:2px solid currentColor; border-bottom:none; transform:rotate(45deg); flex:0 0 auto;}
     .mega-card-sub{display:none;}
+    .mega-card.open .mega-card-sub{
+      display:flex; flex-direction:column; align-items:stretch; gap:0;
+      position:fixed; inset:0; background:#fff; padding:70px 20px 30px; overflow-y:auto; z-index:165;
+    }
+    .mega-card-sub .mega-sub-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; padding:0 2px 18px; font-size:20px; font-weight:800; color:var(--ink); cursor:pointer; text-align:left;}
+    .mega-card-sub .mega-sub-viewall{display:block; width:100%; text-align:left; background:none; border:none; padding:16px 2px; border-bottom:1px solid var(--line); font-size:14.5px; font-weight:600; color:var(--ink); cursor:pointer;}
+    .mega-card-sub .mega-sub-item{width:100%; text-align:left; padding:16px 2px; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; font-weight:700; background:none; border:none; cursor:pointer;}
     .top.plain{border-bottom:1px solid var(--line); color:var(--ink);}
     .nav-cta .btn.desk{display:none;}
     .logo{flex:1; justify-content:center;}
@@ -1276,10 +1283,12 @@ function buildMenu(){
     }
     const sub = g.items.map(it => {
       if(it.sub && it.sub.length){
-        const miniSub = it.sub.map(s => `<button data-tags="${s.tags.join(",")}">${s.label}</button>`).join("");
+        const itTags = it.tags.join(",");
+        const subRows = it.sub.map(s => `<button class="mega-sub-item" data-tags="${s.tags.join(",")}">${s.label}</button>`).join("");
+        const miniSub = `<button class="mega-sub-back" type="button">‹ ${it.label}</button><button class="mega-sub-viewall" data-tags="${itTags}">Ver todo en ${it.label.toUpperCase()}</button>${subRows}`;
         return `<div class="mega-card">
-          <button class="thumb-lg" data-tags="${it.tags.join(",")}" data-cat="${it.tags[0]}"></button>
-          <button class="mega-card-label" data-tags="${it.tags.join(",")}">${it.label}</button>
+          <button class="thumb-lg" data-tags="${itTags}" data-cat="${it.tags[0]}"></button>
+          <button class="mega-card-label" data-tags="${itTags}">${it.label}</button>
           <div class="mega-card-sub">${miniSub}</div>
         </div>`;
       }
@@ -1302,20 +1311,33 @@ function buildMenu(){
       closeMobileMenu();
     });
   });
-  navLinks.querySelectorAll(".mega [data-tags]").forEach(a => a.addEventListener("click", e => {
+  navLinks.querySelectorAll(".mega [data-tags]:not(.mega-card-label)").forEach(a => a.addEventListener("click", e => {
     e.preventDefault();
     e.stopPropagation();
     openFullCatalog(a.dataset.tags.split(","));
     closeMobileMenu();
   }));
+  navLinks.querySelectorAll(".mega-card-label").forEach(b => b.addEventListener("click", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if(window.innerWidth <= 900){ b.closest(".mega-card").classList.add("open"); return; }
+    openFullCatalog(b.dataset.tags.split(","));
+    closeMobileMenu();
+  }));
   navLinks.querySelectorAll(".mega-back").forEach(b => b.addEventListener("click", () => {
-    b.closest(".menu-item").classList.remove("open");
+    const mi = b.closest(".menu-item");
+    mi.classList.remove("open");
+    mi.querySelectorAll(".mega-card.open").forEach(mc => mc.classList.remove("open"));
+  }));
+  navLinks.querySelectorAll(".mega-sub-back").forEach(b => b.addEventListener("click", () => {
+    b.closest(".mega-card").classList.remove("open");
   }));
   navLinks.querySelectorAll("a.plain").forEach(a => a.addEventListener("click", () => closeMobileMenu()));
 }
 function closeMobileMenu(){
   navLinks.classList.remove("open");
   navLinks.querySelectorAll(".menu-item.open").forEach(mi => mi.classList.remove("open"));
+  navLinks.querySelectorAll(".mega-card.open").forEach(mc => mc.classList.remove("open"));
 }
 
 function fillThumbs(){
