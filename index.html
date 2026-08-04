@@ -69,8 +69,11 @@
 
   /* HEADER */
   header{
-    position:sticky; top:0; z-index:60; background:rgba(14,14,14,.92);
-    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:60; border-bottom:1px solid var(--line);
+  }
+  header::before{
+    content:""; position:absolute; inset:0; z-index:-1;
+    background:rgba(14,14,14,.92); backdrop-filter:blur(8px);
   }
   .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 0;}
   .logo{display:flex; align-items:center;}
@@ -102,6 +105,7 @@
   .mega-card-sub button{background:none; border:none; padding:0; font-family:inherit; font-size:12px; color:var(--accent); cursor:pointer;}
   .mega-card-sub button:hover{color:var(--header-ink); text-decoration:underline;}
   .nav-cta{display:flex; align-items:center; gap:12px;}
+  .nav-close{display:none;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
   .menu-toggle span{width:24px; height:2px; background:var(--header-ink); border-radius:2px;}
   @media (max-width:900px){
@@ -109,27 +113,38 @@
     .menu-toggle{display:flex;}
     nav.links.open{
       display:flex; flex-direction:column; align-items:stretch; gap:0;
-      position:absolute; top:100%; left:0; right:0; background:var(--header-bg);
-      border-bottom:1px solid var(--header-line); padding:8px 18px 16px; max-height:78vh; overflow:auto;
+      position:fixed; inset:0; background:#fff;
+      padding:70px 20px 30px; overflow-y:auto; z-index:150;
     }
-    .menu-item{width:100%;}
+    .menu-item{width:100%; position:static;}
     .menu-item::after{display:none;}
-    .top{width:100%; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--header-line);}
-    .mega{position:static; transform:none; margin:0; min-width:0; flex-direction:column; align-items:stretch; gap:2px; background:transparent; border:none; box-shadow:none; padding:2px 0 10px 8px; display:none;}
+    .top{width:100%; justify-content:space-between; padding:18px 2px; border-bottom:1px solid var(--line); color:var(--ink); opacity:1; font-size:15px;}
+    .caret{width:9px; height:9px; border-right:2px solid currentColor; border-top:2px solid currentColor; border-bottom:none; transform:rotate(45deg); top:0;}
+    .mega{
+      position:fixed; inset:0; transform:none; margin:0; min-width:0; width:auto; max-width:none; background:#fff; border:none; box-shadow:none;
+      display:none; flex-direction:column; align-items:stretch; gap:0; padding:70px 20px 30px; overflow-y:auto; z-index:160;
+    }
     .menu-item:hover .mega{display:none;}
     .menu-item.open .mega{display:flex;}
-    .mega a{flex-direction:row; align-items:center; gap:12px; width:100%; text-align:left; padding:9px;}
-    .mega a:hover{background:var(--header-soft);}
-    .mega .thumb{width:42px; height:42px;}
-    .mega-card{width:100%; align-items:flex-start; padding:9px 0;}
-    .mega-card .thumb-lg{width:52px; height:52px; margin:0 0 10px;}
-    .mega-card-label{text-align:left;}
-    .mega-card-sub{align-items:flex-start;}
-    .mega-card-sub button{text-align:left;}
-    .top.plain{border-bottom:1px solid var(--header-line);}
+    .mega-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; padding:0 2px 20px; font-size:13px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; color:var(--muted); cursor:pointer; text-align:left;}
+    .mega a{flex-direction:row; align-items:center; gap:0; width:100%; text-align:left; padding:0;}
+    .mega a:hover{background:none;}
+    .mega .thumb{display:none;}
+    .mega .lbl{width:100%; padding:16px 2px; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; font-weight:700; text-transform:uppercase;}
+    .mega-card{width:100%; align-items:stretch; padding:0;}
+    .mega-card .thumb-lg{display:none;}
+    .mega-card-label{width:100%; text-align:left; padding:16px 2px; margin:0; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; text-transform:uppercase;}
+    .mega-card-sub{display:none;}
+    .top.plain{border-bottom:1px solid var(--line); color:var(--ink);}
     .nav-cta .btn.desk{display:none;}
     .logo{flex:1; justify-content:center;}
     .nav-cta{flex:0 0 auto;}
+    .nav-close{
+      display:none; position:fixed; top:18px; right:18px; z-index:170;
+      width:34px; height:34px; align-items:center; justify-content:center;
+      background:none; border:none; font-size:19px; color:var(--ink); cursor:pointer;
+    }
+    nav.links.open ~ .nav-close{display:flex;}
   }
 
   /* CARRITO */
@@ -444,6 +459,7 @@
     <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
     <a href="#inicio" class="logo"><img src="https://res.cloudinary.com/dbepkj4h/image/upload/e_make_transparent:20/e_trim/f_png,q_auto,h_160/Dise%C3%B1o_sin_t%C3%ADtulo_vtjddd.png" alt="Melve Muebles"></a>
     <nav class="links" id="navLinks"></nav>
+    <button class="nav-close" id="navClose" aria-label="Cerrar menú">✕</button>
     <div class="nav-cta">
       <button class="cart-btn" id="cartBtn" aria-label="Ver carrito">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/><path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6"/></svg>
@@ -1256,7 +1272,7 @@ function buildMenu(){
       }
       return `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`;
     }).join("");
-    return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega">${sub}</div></div>`;
+    return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega"><button class="mega-back" type="button">‹ ${g.label}</button>${sub}</div></div>`;
   }).join("");
   html += LINKS.map(l => `<a class="top plain" href="${l.href}">${l.label}</a>`).join("");
   navLinks.innerHTML = html;
@@ -1269,16 +1285,23 @@ function buildMenu(){
       const tags = top.dataset.tags ? top.dataset.tags.split(",")
                  : [...mi.querySelectorAll(".mega [data-tags]")].flatMap(a => a.dataset.tags.split(","));
       openFullCatalog(tags);
-      navLinks.classList.remove("open");
+      closeMobileMenu();
     });
   });
   navLinks.querySelectorAll(".mega [data-tags]").forEach(a => a.addEventListener("click", e => {
     e.preventDefault();
     e.stopPropagation();
     openFullCatalog(a.dataset.tags.split(","));
-    navLinks.classList.remove("open");
+    closeMobileMenu();
   }));
-  navLinks.querySelectorAll("a.plain").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
+  navLinks.querySelectorAll(".mega-back").forEach(b => b.addEventListener("click", () => {
+    b.closest(".menu-item").classList.remove("open");
+  }));
+  navLinks.querySelectorAll("a.plain").forEach(a => a.addEventListener("click", () => closeMobileMenu()));
+}
+function closeMobileMenu(){
+  navLinks.classList.remove("open");
+  navLinks.querySelectorAll(".menu-item.open").forEach(mi => mi.classList.remove("open"));
 }
 
 function fillThumbs(){
@@ -1665,7 +1688,11 @@ document.addEventListener("keydown", e => {
 });
 /* Menú mobile (abrir/cerrar) */
 const menuToggle = document.getElementById("menuToggle");
-menuToggle.addEventListener("click", () => navLinks.classList.toggle("open"));
+menuToggle.addEventListener("click", () => {
+  if(navLinks.classList.contains("open")) closeMobileMenu();
+  else navLinks.classList.add("open");
+});
+document.getElementById("navClose").addEventListener("click", closeMobileMenu);
 
 /* Formulario -> WhatsApp */
 document.getElementById("quoteForm").addEventListener("submit", function(e){
