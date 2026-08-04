@@ -89,6 +89,17 @@
   .mega .thumb{width:76px; height:76px; border-radius:50%; background:var(--header-soft) center/cover no-repeat; border:2px solid var(--header-line); flex:0 0 auto; transition:.18s ease;}
   .mega a:hover .thumb{border-color:var(--accent); transform:translateY(-3px);}
   .mega .lbl{font-size:13px; font-weight:600; color:var(--header-ink); transition:.15s ease;}
+  .mega-card{display:flex; flex-direction:column; align-items:center; width:120px; text-align:center;}
+  .mega-card .thumb-lg{
+    width:76px; height:76px; border-radius:50%; background:var(--header-soft) center/cover no-repeat;
+    border:3px solid var(--header-soft); padding:0; margin:0 0 14px; cursor:pointer; transition:.18s ease;
+  }
+  .mega-card .thumb-lg:hover{border-color:var(--accent); transform:translateY(-3px);}
+  .mega-card-label{font-weight:700; font-size:13.5px; color:var(--header-ink); padding:0; margin:0 0 10px; background:none; border:none; font-family:inherit; cursor:pointer;}
+  .mega-card-label:hover{color:var(--accent);}
+  .mega-card-sub{display:flex; flex-direction:column; gap:7px; align-items:center;}
+  .mega-card-sub button{background:none; border:none; padding:0; font-family:inherit; font-size:12px; color:var(--accent); cursor:pointer;}
+  .mega-card-sub button:hover{color:var(--header-ink); text-decoration:underline;}
   .nav-cta{display:flex; align-items:center; gap:12px;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
   .menu-toggle span{width:24px; height:2px; background:var(--header-ink); border-radius:2px;}
@@ -109,6 +120,11 @@
     .mega a{flex-direction:row; align-items:center; gap:12px; width:100%; text-align:left; padding:9px;}
     .mega a:hover{background:var(--header-soft);}
     .mega .thumb{width:42px; height:42px;}
+    .mega-card{width:100%; align-items:flex-start; padding:9px 0;}
+    .mega-card .thumb-lg{width:52px; height:52px; margin:0 0 10px;}
+    .mega-card-label{text-align:left;}
+    .mega-card-sub{align-items:flex-start;}
+    .mega-card-sub button{text-align:left;}
     .top.plain{border-bottom:1px solid var(--header-line);}
     .nav-cta .btn.desk{display:none;}
   }
@@ -160,10 +176,10 @@
   .cat-tile{display:flex; flex-direction:column; align-items:center; width:180px;}
   .cat-tile-img{
     display:block; width:140px; height:140px; border-radius:50%;
-    background:var(--soft) center/cover no-repeat; border:none; padding:0;
-    box-shadow:12px 12px 0 0 var(--accent); margin:0 0 22px; transition:.18s ease; cursor:pointer;
+    background:var(--soft) center/cover no-repeat; border:3px solid var(--soft); padding:0;
+    margin:0 0 22px; transition:.18s ease; cursor:pointer;
   }
-  .cat-tile-img:hover{transform:translateY(-3px);}
+  .cat-tile-img:hover{border-color:var(--accent); transform:translateY(-3px);}
   .cat-tile-label{font-weight:800; font-size:15.5px; color:var(--ink); padding:0; margin:0 0 12px; background:none; border:none; font-family:inherit; cursor:pointer; text-align:center;}
   .cat-tile-label:hover{color:var(--accent);}
   .cat-tile-sub{display:flex; flex-direction:column; gap:9px; align-items:center;}
@@ -785,7 +801,11 @@ const MENU = [
   { label:"Hogar", items:[
     { label:"Combos",   tags:["combos"] },
     { label:"Mesas",    tags:["mesas-rect","mesas-circ","mesas-cuad"] },
-    { label:"Sillas y Banquetas", tags:["comedor","sillas-diseno","banquetas"] },
+    { label:"Sillas y Banquetas", tags:["comedor","sillas-diseno","banquetas"], sub:[
+        { label:"Sillas de Comedor", tags:["comedor"] },
+        { label:"Sillas de Diseño",  tags:["sillas-diseno"] },
+        { label:"Banquetas",         tags:["banquetas"] },
+      ]},
     { label:"Rack TV",  tags:["rack-tv"] },
     { label:"Espejos",  tags:["espejos"] },
     { label:"Repisas",  tags:["repisas"] },
@@ -1070,9 +1090,17 @@ function buildMenu(){
     if(!g.items || !g.items.length){
       return `<div class="menu-item"><a class="top" data-tags="${g.tag}">${g.label}</a></div>`;
     }
-    const sub = g.items.map(it =>
-      `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`
-    ).join("");
+    const sub = g.items.map(it => {
+      if(it.sub && it.sub.length){
+        const miniSub = it.sub.map(s => `<button data-tags="${s.tags.join(",")}">${s.label}</button>`).join("");
+        return `<div class="mega-card">
+          <button class="thumb-lg" data-tags="${it.tags.join(",")}" data-cat="${it.tags[0]}"></button>
+          <button class="mega-card-label" data-tags="${it.tags.join(",")}">${it.label}</button>
+          <div class="mega-card-sub">${miniSub}</div>
+        </div>`;
+      }
+      return `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`;
+    }).join("");
     return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega">${sub}</div></div>`;
   }).join("");
   html += LINKS.map(l => `<a class="top plain" href="${l.href}">${l.label}</a>`).join("");
@@ -1084,13 +1112,14 @@ function buildMenu(){
     top.addEventListener("click", () => {
       if(window.innerWidth <= 900 && hasMega){ mi.classList.toggle("open"); return; }
       const tags = top.dataset.tags ? top.dataset.tags.split(",")
-                 : [...mi.querySelectorAll(".mega a")].flatMap(a => a.dataset.tags.split(","));
+                 : [...mi.querySelectorAll(".mega [data-tags]")].flatMap(a => a.dataset.tags.split(","));
       openFullCatalog(tags);
       navLinks.classList.remove("open");
     });
   });
-  navLinks.querySelectorAll(".mega a").forEach(a => a.addEventListener("click", e => {
+  navLinks.querySelectorAll(".mega [data-tags]").forEach(a => a.addEventListener("click", e => {
     e.preventDefault();
+    e.stopPropagation();
     openFullCatalog(a.dataset.tags.split(","));
     navLinks.classList.remove("open");
   }));
@@ -1098,9 +1127,9 @@ function buildMenu(){
 }
 
 function fillThumbs(){
-  navLinks.querySelectorAll(".mega .thumb").forEach(t => {
+  navLinks.querySelectorAll(".mega .thumb, .mega .thumb-lg").forEach(t => {
     const first = IMAGES.find(x => categoryOf[x.public_id] === t.dataset.cat);
-    if(first) t.style.backgroundImage = `url(${imgUrl(first,120)})`;
+    if(first) t.style.backgroundImage = `url(${imgUrl(first,160)})`;
   });
 }
 
