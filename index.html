@@ -197,6 +197,39 @@
   .modal-actions .modal-addcart{flex:1 1 auto;}
   @media (max-width:520px){ .modal-actions{flex-direction:column;} }
 
+  /* PANEL DE FILTROS (pantalla completa, mobile) */
+  .filter-overlay{display:none;}
+  .filter-panel{display:none;}
+  @media (max-width:760px){
+    .filter-overlay{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:195; opacity:0; pointer-events:none; transition:opacity .2s ease;}
+    .filter-overlay.open{opacity:1; pointer-events:auto;}
+    .filter-panel{
+      display:flex; flex-direction:column; position:fixed; inset:0; background:#fff; z-index:196;
+      transform:translateX(100%); transition:transform .25s ease;
+    }
+    .filter-panel.open{transform:translateX(0);}
+    .filter-head{display:flex; align-items:center; justify-content:space-between; padding:20px 22px; border-bottom:1px solid var(--line);}
+    .filter-head h3{font-size:19px; font-weight:800;}
+    .filter-close{background:none; border:none; font-size:19px; color:var(--muted); cursor:pointer; padding:4px;}
+    .filter-close:hover{color:var(--ink);}
+    .filter-body{flex:1; overflow-y:auto; padding:6px 22px;}
+    .filter-foot{display:flex; gap:10px; padding:16px 22px 22px; border-top:1px solid var(--line);}
+    .filter-foot .btn{flex:1;}
+    .fsec{border-bottom:1px solid var(--line);}
+    .fsec-head{display:flex; align-items:center; justify-content:space-between; width:100%; background:none; border:none; padding:18px 2px; font-size:15px; font-weight:700; color:var(--ink); cursor:pointer; text-align:left;}
+    .fsec-head .caret{width:9px; height:9px; border-right:2px solid currentColor; border-top:2px solid currentColor; border-bottom:none; transform:rotate(135deg); transition:.15s ease;}
+    .fsec.open .fsec-head .caret{transform:rotate(-45deg);}
+    .fsec-body{display:none; flex-wrap:wrap; gap:9px; padding:0 2px 18px;}
+    .fsec.open .fsec-body{display:flex;}
+    .fsec-body button{padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font-weight:600; font-size:13.5px; cursor:pointer;}
+    .fsec-body button.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+    .fsec-price{display:none; padding:0 2px 18px; gap:10px;}
+    .fsec.open .fsec-price{display:flex;}
+    .fsec-price label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px;}
+    .fsec-price input{width:100%; padding:10px; border-radius:8px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font-size:14px;}
+    .fsec-price div{flex:1;}
+  }
+
   /* HERO */
   .hero{padding:64px 0 42px; display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
   @media (max-width:900px){ .hero{grid-template-columns:1fr; gap:34px; padding:40px 0 26px;} }
@@ -832,6 +865,20 @@
   </div>
 </aside>
 
+<!-- FILTRAR (panel a pantalla completa, mobile) -->
+<div class="filter-overlay" id="filterOverlay"></div>
+<aside class="filter-panel" id="filterPanel">
+  <div class="filter-head">
+    <h3>Filtrar</h3>
+    <button class="filter-close" id="filterClose" aria-label="Cerrar filtros">✕</button>
+  </div>
+  <div class="filter-body" id="filterBody"></div>
+  <div class="filter-foot">
+    <button class="btn ghost" id="filterClearBtn" type="button">Limpiar</button>
+    <button class="btn accent" id="filterApplyBtn" type="button">Ver resultados</button>
+  </div>
+</aside>
+
 <script src="supabase.js"></script>
 <script>
 /* ====== CONFIG ====== */
@@ -1100,6 +1147,18 @@ let currentTags = null;   // null = todos; si no, array de etiquetas
 let view = [];
 let groups = [];          // productos agrupados del catálogo completo (según el filtro activo)
 let currentSort = "destacado";
+/* Filtros por atributo (panel "Filtrar" a pantalla completa en mobile) */
+let attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+let filterPanelBuiltFor = undefined;
+function passesAttrFilters(g){
+  const d = g.d;
+  if(attrFilter.color && !(d.colors||[]).includes(attrFilter.color)) return false;
+  if(attrFilter.colorPatas && !(d.colorsPatas||[]).includes(attrFilter.colorPatas)) return false;
+  if(attrFilter.qty && !(d.qty && d.qty[attrFilter.qty])) return false;
+  if(attrFilter.priceMin != null && d.priceNum < attrFilter.priceMin) return false;
+  if(attrFilter.priceMax != null && d.priceNum > attrFilter.priceMax) return false;
+  return true;
+}
 
 /* Orden del catálogo. "destacado" deja el orden con el que ya vienen agrupados
    (el más nuevo primero); el resto son comparaciones directas sobre los datos del producto. */
@@ -1378,10 +1437,96 @@ function buildFilters(){
   filtersEl.innerHTML = html;
   filtersEl.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
     applyFilter(b.dataset.f === "all" ? null : [b.dataset.f]);
-    filtersEl.classList.remove("show");
-    document.getElementById("tabFilter").classList.remove("active");
   }));
 }
+
+/* ===== Panel "Filtrar" a pantalla completa (mobile): categoría + color + color de
+   estructura + cantidad por set + precio, armado a partir de los productos de la
+   categoría actual (allGroups, sin los filtros de atributo todavía aplicados). ===== */
+function filterCategorySection(){
+  const counts = {};
+  CATEGORIES.forEach(c => { counts[c.tag] = groupProducts(IMAGES.filter(x => categoryOf[x.public_id] === c.tag)).length; });
+  const allBtn = `<button data-key="cat" data-val="all" class="${!currentTags ? "active" : ""}">Todos (${groupProducts(IMAGES).length})</button>`;
+  const catBtns = CATEGORIES.filter(c => counts[c.tag]).map(c =>
+    `<button data-key="cat" data-val="${c.tag}" class="${currentTags && currentTags.length === 1 && currentTags[0] === c.tag ? "active" : ""}">${c.label} (${counts[c.tag]})</button>`
+  ).join("");
+  return `<div class="fsec" data-sec="cat"><button type="button" class="fsec-head">Categoría<span class="caret"></span></button><div class="fsec-body">${allBtn}${catBtns}</div></div>`;
+}
+function filterOptionSection(title, key, values){
+  const btns = values.map(v => `<button data-key="${key}" data-val="${v}">${v}</button>`).join("");
+  return `<div class="fsec" data-sec="${key}"><button type="button" class="fsec-head">${title}<span class="caret"></span></button><div class="fsec-body">${btns}</div></div>`;
+}
+function filterQtySection(values){
+  const btns = values.map(v => `<button data-key="qty" data-val="${v}">x${v}</button>`).join("");
+  return `<div class="fsec" data-sec="qty"><button type="button" class="fsec-head">Cantidad por set<span class="caret"></span></button><div class="fsec-body">${btns}</div></div>`;
+}
+function filterPriceSection(){
+  return `<div class="fsec" data-sec="price">
+    <button type="button" class="fsec-head">Precio<span class="caret"></span></button>
+    <div class="fsec-price">
+      <div><label>Desde</label><input type="number" id="priceMinInput" placeholder="0"></div>
+      <div><label>Hasta</label><input type="number" id="priceMaxInput" placeholder="999999"></div>
+      <button type="button" class="fsec-price-apply" id="priceApplyBtn">Aplicar</button>
+    </div>
+  </div>`;
+}
+function buildFilterPanel(allGroups){
+  const colors = new Set(), colorsPatas = new Set(), qtys = new Set();
+  allGroups.forEach(g => {
+    (g.d.colors || []).forEach(c => colors.add(c));
+    (g.d.colorsPatas || []).forEach(c => colorsPatas.add(c));
+    if(g.d.qty) Object.keys(g.d.qty).forEach(q => qtys.add(q));
+  });
+  let html = filterCategorySection();
+  if(colors.size) html += filterOptionSection("Color", "color", [...colors]);
+  if(colorsPatas.size) html += filterOptionSection("Color de la estructura", "colorPatas", [...colorsPatas]);
+  if(qtys.size) html += filterQtySection([...qtys].sort((a,b) => a - b));
+  html += filterPriceSection();
+  document.getElementById("filterBody").innerHTML = html;
+
+  document.querySelectorAll(".fsec-head").forEach(h => h.addEventListener("click", () => {
+    h.closest(".fsec").classList.toggle("open");
+  }));
+  document.querySelectorAll(".fsec-body button[data-key]").forEach(b => b.addEventListener("click", () => {
+    const key = b.dataset.key, val = b.dataset.val;
+    if(key === "cat"){ applyFilter(val === "all" ? null : [val]); return; }
+    attrFilter[key] = (attrFilter[key] === val) ? null : val;
+    render();
+  }));
+  const priceApplyBtn = document.getElementById("priceApplyBtn");
+  priceApplyBtn.addEventListener("click", () => {
+    const minV = parseFloat(document.getElementById("priceMinInput").value);
+    const maxV = parseFloat(document.getElementById("priceMaxInput").value);
+    attrFilter.priceMin = isNaN(minV) ? null : minV;
+    attrFilter.priceMax = isNaN(maxV) ? null : maxV;
+    render();
+  });
+}
+/* Solo actualiza qué botones quedan marcados como activos (no reconstruye el panel,
+   así el acordeón no se cierra solo mientras el cliente elige varias opciones) */
+function syncFilterPanelUI(){
+  document.querySelectorAll(".fsec-body button[data-key]").forEach(b => {
+    if(b.dataset.key === "cat") return;
+    b.classList.toggle("active", attrFilter[b.dataset.key] === b.dataset.val);
+  });
+}
+function openFilterPanel(){
+  document.getElementById("filterOverlay").classList.add("open");
+  document.getElementById("filterPanel").classList.add("open");
+}
+function closeFilterPanel(){
+  document.getElementById("filterOverlay").classList.remove("open");
+  document.getElementById("filterPanel").classList.remove("open");
+}
+document.getElementById("filterClose").addEventListener("click", closeFilterPanel);
+document.getElementById("filterOverlay").addEventListener("click", closeFilterPanel);
+document.getElementById("filterApplyBtn").addEventListener("click", closeFilterPanel);
+document.getElementById("filterClearBtn").addEventListener("click", () => {
+  attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+  const minEl = document.getElementById("priceMinInput"); if(minEl) minEl.value = "";
+  const maxEl = document.getElementById("priceMaxInput"); if(maxEl) maxEl.value = "";
+  render();
+});
 
 /* Bajada descriptiva que aparece debajo del título, por categoría (una a la vez, se suman a pedido) */
 const CATEGORY_DESC = {
@@ -1419,15 +1564,24 @@ tabSort.addEventListener("click", () => {
   tabFilter.classList.remove("active");
 });
 tabFilter.addEventListener("click", () => {
-  filtersEl.classList.toggle("show");
   sortRow.classList.remove("show");
-  tabFilter.classList.toggle("active", filtersEl.classList.contains("show"));
   tabSort.classList.remove("active");
+  openFilterPanel();
 });
 
 function render(){
   view = !currentTags ? IMAGES : IMAGES.filter(x => currentTags.includes(categoryOf[x.public_id]));
-  groups = sortGroups(groupProducts(view));
+  const allGroups = groupProducts(view);
+  const tagsKey = currentTags ? currentTags.slice().sort().join(",") : "";
+  if(filterPanelBuiltFor !== tagsKey){
+    attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+    buildFilterPanel(allGroups);
+    filterPanelBuiltFor = tagsKey;
+  }
+  groups = sortGroups(allGroups.filter(passesAttrFilters));
+  syncFilterPanelUI();
+  const n = groups.length;
+  document.getElementById("catCount").textContent = `${n} producto${n === 1 ? "" : "s"}`;
   if(IMAGES.length){ document.getElementById("heroImg").src = imgUrl(IMAGES[0], 900); }
   if(!groups.length){
     grid.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; padding:20px 0;">Todavía no hay productos en esta categoría. ¡Pronto los subimos!</p>';
