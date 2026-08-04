@@ -104,6 +104,7 @@
   .mega-card-sub{display:flex; flex-direction:column; gap:7px; align-items:center;}
   .mega-card-sub button{background:none; border:none; padding:0; font-family:inherit; font-size:12px; color:var(--accent); cursor:pointer;}
   .mega-card-sub button:hover{color:var(--header-ink); text-decoration:underline;}
+  .mega-back, .mega-viewall{display:none;}
   .nav-cta{display:flex; align-items:center; gap:12px;}
   .nav-close{display:none;}
   .menu-toggle{display:none; background:none; border:none; flex-direction:column; gap:5px; padding:6px;}
@@ -126,14 +127,16 @@
     }
     .menu-item:hover .mega{display:none;}
     .menu-item.open .mega{display:flex;}
-    .mega-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; padding:0 2px 20px; font-size:13px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; color:var(--muted); cursor:pointer; text-align:left;}
+    .mega-back{display:flex; align-items:center; gap:6px; width:100%; background:none; border:none; padding:0 2px 18px; font-size:20px; font-weight:800; color:var(--ink); cursor:pointer; text-align:left;}
+    .mega-viewall{display:block; width:100%; text-align:left; background:none; border:none; padding:16px 2px; border-bottom:1px solid var(--line); font-size:14.5px; font-weight:600; color:var(--ink); cursor:pointer;}
     .mega a{flex-direction:row; align-items:center; gap:0; width:100%; text-align:left; padding:0;}
     .mega a:hover{background:none;}
     .mega .thumb{display:none;}
-    .mega .lbl{width:100%; padding:16px 2px; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; font-weight:700; text-transform:uppercase;}
+    .mega .lbl{width:100%; padding:16px 2px; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; font-weight:700;}
     .mega-card{width:100%; align-items:stretch; padding:0;}
     .mega-card .thumb-lg{display:none;}
-    .mega-card-label{width:100%; text-align:left; padding:16px 2px; margin:0; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px; text-transform:uppercase;}
+    .mega-card-label{display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left; padding:16px 2px; margin:0; border-bottom:1px solid var(--line); color:var(--ink); font-size:15px;}
+    .mega-card-label::after{content:""; width:9px; height:9px; border-right:2px solid currentColor; border-top:2px solid currentColor; border-bottom:none; transform:rotate(45deg); flex:0 0 auto;}
     .mega-card-sub{display:none;}
     .top.plain{border-bottom:1px solid var(--line); color:var(--ink);}
     .nav-cta .btn.desk{display:none;}
@@ -879,17 +882,27 @@ function groupProducts(items){
    'melve' + la de su categoría (ej: 'espejos') y aparecen solas en su filtro. */
 const MENU = [
   { label:"Hogar", items:[
-    { label:"Combos",   tags:["combos"] },
-    { label:"Mesas",    tags:["mesas-rect","mesas-circ","mesas-cuad"] },
     { label:"Sillas y Banquetas", tags:["comedor","sillas-diseno","banquetas"], sub:[
         { label:"Sillas de Comedor", tags:["comedor"] },
         { label:"Sillas de Diseño",  tags:["sillas-diseno"] },
         { label:"Banquetas",         tags:["banquetas"] },
       ]},
-    { label:"Rack TV",  tags:["rack-tv"] },
-    { label:"Espejos",  tags:["espejos"] },
-    { label:"Repisas",  tags:["repisas"] },
-    { label:"Estantes", tags:["estantes"] },
+    { label:"Juegos de Comedor", tags:["combos"], sub:[
+        { label:"Combos", tags:["combos"] },
+      ]},
+    { label:"Muebles", tags:["rack-tv","estantes"], sub:[
+        { label:"Rack TV",  tags:["rack-tv"] },
+        { label:"Estantes", tags:["estantes"] },
+      ]},
+    { label:"Mesas", tags:["mesas-rect","mesas-circ","mesas-cuad"], sub:[
+        { label:"Rectangulares", tags:["mesas-rect"] },
+        { label:"Circulares",    tags:["mesas-circ"] },
+        { label:"Cuadradas",     tags:["mesas-cuad"] },
+      ]},
+    { label:"Decoración", tags:["espejos","repisas"], sub:[
+        { label:"Espejos",  tags:["espejos"] },
+        { label:"Repisas",  tags:["repisas"] },
+      ]},
   ]},
   { label:"Gamer", items:[
     { label:"Escritorios",       tags:["escritorios"] },
@@ -1272,7 +1285,8 @@ function buildMenu(){
       }
       return `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`;
     }).join("");
-    return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega"><button class="mega-back" type="button">‹ ${g.label}</button>${sub}</div></div>`;
+    const allTags = g.items.flatMap(it => it.tags).join(",");
+    return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega"><button class="mega-back" type="button">‹ ${g.label}</button><button class="mega-viewall" data-tags="${allTags}">Ver todo en ${g.label.toUpperCase()}</button>${sub}</div></div>`;
   }).join("");
   html += LINKS.map(l => `<a class="top plain" href="${l.href}">${l.label}</a>`).join("");
   navLinks.innerHTML = html;
