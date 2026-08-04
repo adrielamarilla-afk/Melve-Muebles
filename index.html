@@ -128,11 +128,11 @@
   .hero-visual img{width:100%; height:100%; object-fit:cover;}
 
   /* STRIP */
-  .strip{background:var(--accent); color:#fff; padding:12px 0; border-bottom:1px solid var(--line); overflow:hidden;}
+  .strip{background:var(--accent); color:#fff; padding:6px 0; border-bottom:1px solid var(--line); overflow:hidden;}
   .strip-track{display:flex; width:max-content; animation:strip-scroll 24s linear infinite;}
   .strip:hover .strip-track{animation-play-state:paused;}
   .strip-group{display:flex; align-items:center; flex-shrink:0;}
-  .strip-group span{display:flex; align-items:center; gap:8px; white-space:nowrap; font-family:var(--display); font-size:13.5px; font-weight:800; letter-spacing:.01em; text-transform:uppercase; padding:0 30px;}
+  .strip-group span{display:flex; align-items:center; gap:6px; white-space:nowrap; font-family:var(--body); font-size:11.5px; font-weight:700; letter-spacing:.01em; text-transform:uppercase; padding:0 22px;}
   @keyframes strip-scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
   @media (prefers-reduced-motion:reduce){ .strip-track{animation:none;} }
 
