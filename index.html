@@ -1477,7 +1477,7 @@ function buildFilterPanel(allGroups){
     (g.d.colorsPatas || []).forEach(c => colorsPatas.add(c));
     if(g.d.qty) Object.keys(g.d.qty).forEach(q => qtys.add(q));
   });
-  let html = filterCategorySection();
+  let html = currentTags ? "" : filterCategorySection();
   if(colors.size) html += filterOptionSection("Color", "color", [...colors]);
   if(colorsPatas.size) html += filterOptionSection("Color de la estructura", "colorPatas", [...colorsPatas]);
   if(qtys.size) html += filterQtySection([...qtys].sort((a,b) => a - b));
