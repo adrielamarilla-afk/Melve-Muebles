@@ -389,6 +389,7 @@
   .cat-heading{padding:22px 0 2px;}
   .cat-heading h2{font-size:24px;}
   .cat-heading .count{color:var(--muted); font-size:14px; font-weight:600; margin-left:10px;}
+  .cat-desc{color:var(--ink); font-size:15.5px; line-height:1.5; max-width:68ch; margin:6px 0 18px;}
   /* Migas de pan finitas, como en HDC: sin botones de volver/cerrar (el logo y el menú del
      header ya cumplen esa función). Cada tramo clickeable filtra o cierra el overlay. */
   .crumb-bar{padding:16px 24px 0;}
@@ -717,6 +718,7 @@
   </div>
   <div class="pdp-wrap" style="max-width:1280px;">
     <div class="cat-heading"><h2 id="catHeading">Catálogo completo</h2><span class="count" id="catCount"></span></div>
+    <p class="cat-desc" id="catDesc"></p>
     <div class="catalog-toolbar">
       <div class="filters" id="filters"></div>
       <div class="sort-row">
@@ -1362,6 +1364,10 @@ function buildFilters(){
   }));
 }
 
+/* Bajada descriptiva que aparece debajo del título, por categoría (una a la vez, se suman a pedido) */
+const CATEGORY_DESC = {
+  comedor: "Encontrá el equilibrio perfecto entre comodidad y estilo. Descubrí nuestra línea de sillas de comedor con diseños modernos, estructuras resistentes y calidad premium.",
+};
 function applyFilter(tags, label){
   currentTags = (tags && tags.length) ? tags : null;
   render();
@@ -1374,6 +1380,9 @@ function applyFilter(tags, label){
   const n = groups.length;
   document.getElementById("catCount").textContent = `${n} producto${n === 1 ? "" : "s"}`;
   document.getElementById("catCrumb").innerHTML = cat ? `${categoryPath(cat.tag)}` : `<a data-home>Inicio</a> › Catálogo completo`;
+  const desc = cat ? CATEGORY_DESC[cat.tag] : null;
+  document.getElementById("catDesc").textContent = desc || "";
+  document.getElementById("catDesc").style.display = desc ? "" : "none";
 }
 document.getElementById("sortSelect").addEventListener("change", e => {
   currentSort = e.target.value;
