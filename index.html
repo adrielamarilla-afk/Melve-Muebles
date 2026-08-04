@@ -79,7 +79,7 @@
   nav.links a{color:var(--header-ink);}
   .menu-item{position:relative;}
   .menu-item::after{content:""; position:absolute; top:100%; left:0; width:100%; height:12px;}
-  .top{font-size:14px; font-weight:600; color:var(--header-ink); opacity:.9; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:8px 0; user-select:none;}
+  .top{font-size:13.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:var(--header-ink); opacity:.9; cursor:pointer; display:inline-flex; align-items:center; gap:6px; padding:8px 0; user-select:none;}
   .top:hover{color:var(--accent); opacity:1;}
   .caret{width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); position:relative; top:-2px;}
   .mega{position:absolute; top:100%; left:50%; transform:translateX(-50%); margin-top:10px; width:max-content; max-width:90vw; background:#151413; border:1px solid var(--header-line); border-radius:16px; padding:22px; display:none; justify-content:center; gap:28px; flex-wrap:wrap; box-shadow:0 24px 60px rgba(0,0,0,.55); z-index:70;}
@@ -781,35 +781,41 @@ function groupProducts(items){
    Cada subcategoría es una etiqueta de Cloudinary. Subí las fotos con la etiqueta
    'melve' + la de su categoría (ej: 'espejos') y aparecen solas en su filtro. */
 const MENU = [
-  { label:"Mesas", items:[
-    { label:"Rectangulares", tag:"mesas-rect" },
-    { label:"Circulares",    tag:"mesas-circ" },
-    { label:"Cuadradas",     tag:"mesas-cuad" },
+  { label:"Hogar", items:[
+    { label:"Combos",   tags:["combos"] },
+    { label:"Mesas",    tags:["mesas-rect","mesas-circ","mesas-cuad"] },
+    { label:"Sillas",   tags:["comedor","banquetas"] },
+    { label:"Rack TV",  tags:["rack-tv"] },
+    { label:"Espejos",  tags:["espejos"] },
+    { label:"Repisas",  tags:["repisas"] },
+    { label:"Estantes", tags:["estantes"] },
   ]},
-  { label:"Sillas", items:[
-    { label:"Comedor",       tag:"comedor" },
-    { label:"Banquetas",     tag:"banquetas" },
+  { label:"Gamer", items:[
+    { label:"Escritorios",       tags:["escritorios"] },
+    { label:"Sillas Gamer",      tags:["gamer"] },
+    { label:"Sillas de Oficina", tags:["oficina"] },
   ]},
-  { label:"Oficina", items:[
-    { label:"Escritorios",       tag:"escritorios" },
-    { label:"Sillas de Oficina", tag:"oficina" },
-    { label:"Sillas Gamer",      tag:"gamer" },
-  ]},
-  { label:"Deco", items:[
-    { label:"Espejos",  tag:"espejos" },
-    { label:"Rack TV",  tag:"rack-tv" },
-    { label:"Repisas",  tag:"repisas" },
-    { label:"Estantes", tag:"estantes" },
-  ]},
-  { label:"Combos", tag:"combos", items:[] },
 ];
 const LINKS = [
-  { label:"Mayorista", href:"#mayorista" },
-  { label:"Nosotros",  href:"#nosotros" },
-  { label:"Contacto",  href:"#contacto" },
+  { label:"Envíos",         href:"#envios" },
+  { label:"Formas de pago", href:"#formas-pago" },
 ];
-/* Todas las etiquetas hoja (para traer listas y armar los chips) */
-const CATEGORIES = MENU.flatMap(g => (g.items && g.items.length) ? g.items : (g.tag ? [{label:g.label, tag:g.tag}] : []));
+/* Todas las etiquetas hoja (para traer listas y armar los chips del catálogo) */
+const CATEGORIES = [
+  { label:"Rectangulares",     tag:"mesas-rect" },
+  { label:"Circulares",        tag:"mesas-circ" },
+  { label:"Cuadradas",         tag:"mesas-cuad" },
+  { label:"Comedor",           tag:"comedor" },
+  { label:"Banquetas",         tag:"banquetas" },
+  { label:"Escritorios",       tag:"escritorios" },
+  { label:"Sillas de Oficina", tag:"oficina" },
+  { label:"Sillas Gamer",      tag:"gamer" },
+  { label:"Espejos",           tag:"espejos" },
+  { label:"Rack TV",           tag:"rack-tv" },
+  { label:"Repisas",           tag:"repisas" },
+  { label:"Estantes",          tag:"estantes" },
+  { label:"Combos",            tag:"combos" },
+];
 
 const grid = document.getElementById("catalogGrid");
 const filtersEl = document.getElementById("filters");
@@ -955,7 +961,7 @@ document.addEventListener("click", e => {
 function buildCatTiles(){
   const tilesEl = document.getElementById("catTiles");
   const items = MENU.map(g => (g.items && g.items.length)
-    ? { label:g.label, tags:g.items.map(it=>it.tag) }
+    ? { label:g.label, tags:g.items.flatMap(it=>it.tags) }
     : (g.tag ? { label:g.label, tags:[g.tag] } : null)
   ).filter(Boolean);
   tilesEl.innerHTML = items.map(it => `
@@ -1041,7 +1047,7 @@ function buildMenu(){
       return `<div class="menu-item"><a class="top" data-tags="${g.tag}">${g.label}</a></div>`;
     }
     const sub = g.items.map(it =>
-      `<a data-tag="${it.tag}"><span class="thumb" data-cat="${it.tag}"></span><span class="lbl">${it.label}</span></a>`
+      `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`
     ).join("");
     return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega">${sub}</div></div>`;
   }).join("");
@@ -1054,14 +1060,14 @@ function buildMenu(){
     top.addEventListener("click", () => {
       if(window.innerWidth <= 900 && hasMega){ mi.classList.toggle("open"); return; }
       const tags = top.dataset.tags ? top.dataset.tags.split(",")
-                 : [...mi.querySelectorAll(".mega a")].map(a => a.dataset.tag);
+                 : [...mi.querySelectorAll(".mega a")].flatMap(a => a.dataset.tags.split(","));
       openFullCatalog(tags);
       navLinks.classList.remove("open");
     });
   });
   navLinks.querySelectorAll(".mega a").forEach(a => a.addEventListener("click", e => {
     e.preventDefault();
-    openFullCatalog([a.dataset.tag]);
+    openFullCatalog(a.dataset.tags.split(","));
     navLinks.classList.remove("open");
   }));
   navLinks.querySelectorAll("a.plain").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
@@ -1141,10 +1147,10 @@ function categoryPath(tag){
   for(const g of MENU){
     if(g.tag === tag) return `<a data-home>Inicio</a> › ${g.label}`;
     if(g.items){
-      const it = g.items.find(x => x.tag === tag);
+      const it = g.items.find(x => x.tags.includes(tag));
       if(it){
-        const groupTags = g.items.map(x => x.tag).join(",");
-        return `<a data-home>Inicio</a> › <a data-tags="${groupTags}">${g.label}</a> › <a data-tags="${tag}">${it.label}</a>`;
+        const groupTags = g.items.flatMap(x => x.tags).join(",");
+        return `<a data-home>Inicio</a> › <a data-tags="${groupTags}">${g.label}</a> › <a data-tags="${it.tags.join(",")}">${it.label}</a>`;
       }
     }
   }
