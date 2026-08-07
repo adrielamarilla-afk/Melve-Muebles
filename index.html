@@ -68,8 +68,9 @@
   .btn.sm{padding:10px 16px; font-size:13px; border-radius:8px;}
 
   /* HEADER */
+  .topbar{position:sticky; top:0; z-index:60;}
   header{
-    position:sticky; top:0; z-index:60; border-bottom:1px solid var(--line);
+    position:relative; border-bottom:1px solid var(--line);
   }
   header::before{
     content:""; position:absolute; inset:0; z-index:-1;
@@ -495,40 +496,43 @@
 </head>
 <body>
 
-<!-- STRIP -->
-<div class="strip">
-  <div class="strip-track" id="stripTrack">
-    <div class="strip-group">
-      <span>💳 3 y 6 cuotas sin interés</span>
-      <span>🚚 Envíos a CABA y GBA</span>
-      <span>💵 30% off en efectivo / billete</span>
-      <span>🏦 5% off por transferencia</span>
-    </div>
-    <div class="strip-group" aria-hidden="true">
-      <span>💳 3 y 6 cuotas sin interés</span>
-      <span>🚚 Envíos a CABA y GBA</span>
-      <span>💵 30% off en efectivo / billete</span>
-      <span>🏦 5% off por transferencia</span>
+<!-- BARRA SUPERIOR (carrusel + header, pegados arriba mientras se scrollea) -->
+<div class="topbar">
+  <!-- STRIP -->
+  <div class="strip">
+    <div class="strip-track" id="stripTrack">
+      <div class="strip-group">
+        <span>💳 3 y 6 cuotas sin interés</span>
+        <span>🚚 Envíos a CABA y GBA</span>
+        <span>💵 30% off en efectivo / billete</span>
+        <span>🏦 5% off por transferencia</span>
+      </div>
+      <div class="strip-group" aria-hidden="true">
+        <span>💳 3 y 6 cuotas sin interés</span>
+        <span>🚚 Envíos a CABA y GBA</span>
+        <span>💵 30% off en efectivo / billete</span>
+        <span>🏦 5% off por transferencia</span>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- HEADER -->
-<header>
-  <div class="wrap nav">
-    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
-    <a href="#inicio" class="logo"><img src="https://res.cloudinary.com/dbepkj4h/image/upload/e_make_transparent:20/e_trim/f_png,q_auto,h_160/Dise%C3%B1o_sin_t%C3%ADtulo_vtjddd.png" alt="Melve Muebles"></a>
-    <nav class="links" id="navLinks"></nav>
-    <button class="nav-close" id="navClose" aria-label="Cerrar menú">✕</button>
-    <div class="nav-cta">
-      <button class="cart-btn" id="cartBtn" aria-label="Ver carrito">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/><path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6"/></svg>
-        <span class="cart-badge" id="cartBadge">0</span>
-      </button>
-      <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" class="btn accent sm desk">WhatsApp</a>
+  <!-- HEADER -->
+  <header>
+    <div class="wrap nav">
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+      <a href="#inicio" class="logo"><img src="https://res.cloudinary.com/dbepkj4h/image/upload/e_make_transparent:20/e_trim/f_png,q_auto,h_160/Dise%C3%B1o_sin_t%C3%ADtulo_vtjddd.png" alt="Melve Muebles"></a>
+      <nav class="links" id="navLinks"></nav>
+      <button class="nav-close" id="navClose" aria-label="Cerrar menú">✕</button>
+      <div class="nav-cta">
+        <button class="cart-btn" id="cartBtn" aria-label="Ver carrito">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1.4"/><circle cx="18" cy="21" r="1.4"/><path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L21 8H6"/></svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+        <a href="https://wa.me/5491166789801" target="_blank" rel="noopener" class="btn accent sm desk">WhatsApp</a>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
+</div>
 
 <!-- HERO -->
 <section id="inicio">
@@ -1132,7 +1136,7 @@ renderCartBadge();
 
 /* El catálogo completo deja el header real visible arriba (como en HDC); necesitamos
    su altura exacta para no tapar el contenido, y que se recalcule si cambia de tamaño. */
-const headerEl = document.querySelector("header");
+const headerEl = document.querySelector(".topbar");
 function syncHeaderHeight(){ document.documentElement.style.setProperty("--header-h", headerEl.offsetHeight + "px"); }
 syncHeaderHeight();
 window.addEventListener("resize", syncHeaderHeight);
