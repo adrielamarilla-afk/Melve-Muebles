@@ -223,6 +223,9 @@
     .fsec.open .fsec-body{display:flex;}
     .fsec-body button{padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--soft); color:var(--ink); font-weight:600; font-size:13.5px; cursor:pointer;}
     .fsec-body button.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+    .fsec-body.fsec-list{flex-direction:column; flex-wrap:nowrap; gap:0;}
+    .fchk{display:flex; align-items:center; gap:11px; padding:10px 2px; font-size:14.5px; color:var(--ink); cursor:pointer;}
+    .fchk input[type=checkbox]{width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto;}
     .fsec-price{display:none; padding:0 2px 18px; gap:10px;}
     .fsec.open .fsec-price{display:flex;}
     .fsec-price label{display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px;}
@@ -1148,13 +1151,13 @@ let view = [];
 let groups = [];          // productos agrupados del catálogo completo (según el filtro activo)
 let currentSort = "destacado";
 /* Filtros por atributo (panel "Filtrar" a pantalla completa en mobile) */
-let attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+let attrFilter = { color:[], colorPatas:[], qty:[], priceMin:null, priceMax:null };
 let filterPanelBuiltFor = undefined;
 function passesAttrFilters(g){
   const d = g.d;
-  if(attrFilter.color && !(d.colors||[]).includes(attrFilter.color)) return false;
-  if(attrFilter.colorPatas && !(d.colorsPatas||[]).includes(attrFilter.colorPatas)) return false;
-  if(attrFilter.qty && !(d.qty && d.qty[attrFilter.qty])) return false;
+  if(attrFilter.color.length && !(d.colors||[]).some(c => attrFilter.color.includes(c))) return false;
+  if(attrFilter.colorPatas.length && !(d.colorsPatas||[]).some(c => attrFilter.colorPatas.includes(c))) return false;
+  if(attrFilter.qty.length && !(d.qty && attrFilter.qty.some(q => d.qty[q]))) return false;
   if(attrFilter.priceMin != null && d.priceNum < attrFilter.priceMin) return false;
   if(attrFilter.priceMax != null && d.priceNum > attrFilter.priceMax) return false;
   return true;
@@ -1452,13 +1455,10 @@ function filterCategorySection(){
   ).join("");
   return `<div class="fsec" data-sec="cat"><button type="button" class="fsec-head">Categoría<span class="caret"></span></button><div class="fsec-body">${allBtn}${catBtns}</div></div>`;
 }
-function filterOptionSection(title, key, values){
-  const btns = values.map(v => `<button data-key="${key}" data-val="${v}">${v}</button>`).join("");
-  return `<div class="fsec" data-sec="${key}"><button type="button" class="fsec-head">${title}<span class="caret"></span></button><div class="fsec-body">${btns}</div></div>`;
-}
-function filterQtySection(values){
-  const btns = values.map(v => `<button data-key="qty" data-val="${v}">x${v}</button>`).join("");
-  return `<div class="fsec" data-sec="qty"><button type="button" class="fsec-head">Cantidad por set<span class="caret"></span></button><div class="fsec-body">${btns}</div></div>`;
+/* Lista con checkbox + contador, como el panel de referencia (multi-selección por sección) */
+function filterCheckSection(title, key, values, counts, labelFn){
+  const rows = values.map(v => `<label class="fchk"><input type="checkbox" data-key="${key}" data-val="${v}"><span>${labelFn ? labelFn(v) : v} (${counts[v] || 0})</span></label>`).join("");
+  return `<div class="fsec" data-sec="${key}"><button type="button" class="fsec-head">${title}<span class="caret"></span></button><div class="fsec-body fsec-list">${rows}</div></div>`;
 }
 function filterPriceSection(){
   return `<div class="fsec" data-sec="price">
@@ -1472,25 +1472,30 @@ function filterPriceSection(){
 }
 function buildFilterPanel(allGroups){
   const colors = new Set(), colorsPatas = new Set(), qtys = new Set();
+  const colorCounts = {}, colorPatasCounts = {}, qtyCounts = {};
   allGroups.forEach(g => {
-    (g.d.colors || []).forEach(c => colors.add(c));
-    (g.d.colorsPatas || []).forEach(c => colorsPatas.add(c));
-    if(g.d.qty) Object.keys(g.d.qty).forEach(q => qtys.add(q));
+    (g.d.colors || []).forEach(c => { colors.add(c); colorCounts[c] = (colorCounts[c]||0) + 1; });
+    (g.d.colorsPatas || []).forEach(c => { colorsPatas.add(c); colorPatasCounts[c] = (colorPatasCounts[c]||0) + 1; });
+    if(g.d.qty) Object.keys(g.d.qty).forEach(q => { qtys.add(q); qtyCounts[q] = (qtyCounts[q]||0) + 1; });
   });
   let html = currentTags ? "" : filterCategorySection();
-  if(colors.size) html += filterOptionSection("Color", "color", [...colors]);
-  if(colorsPatas.size) html += filterOptionSection("Color de la estructura", "colorPatas", [...colorsPatas]);
-  if(qtys.size) html += filterQtySection([...qtys].sort((a,b) => a - b));
+  if(colors.size) html += filterCheckSection("Color", "color", [...colors], colorCounts);
+  if(qtys.size) html += filterCheckSection("Cantidad por set", "qty", [...qtys].sort((a,b) => a - b), qtyCounts, v => `X${v}`);
+  if(colorsPatas.size) html += filterCheckSection("Color de la estructura", "colorPatas", [...colorsPatas], colorPatasCounts);
   html += filterPriceSection();
   document.getElementById("filterBody").innerHTML = html;
 
   document.querySelectorAll(".fsec-head").forEach(h => h.addEventListener("click", () => {
     h.closest(".fsec").classList.toggle("open");
   }));
-  document.querySelectorAll(".fsec-body button[data-key]").forEach(b => b.addEventListener("click", () => {
-    const key = b.dataset.key, val = b.dataset.val;
-    if(key === "cat"){ applyFilter(val === "all" ? null : [val]); return; }
-    attrFilter[key] = (attrFilter[key] === val) ? null : val;
+  document.querySelectorAll(".fsec-body button[data-key='cat']").forEach(b => b.addEventListener("click", () => {
+    applyFilter(b.dataset.val === "all" ? null : [b.dataset.val]);
+  }));
+  document.querySelectorAll(".fsec-body input[type=checkbox][data-key]").forEach(cb => cb.addEventListener("change", () => {
+    const key = cb.dataset.key, val = cb.dataset.val, arr = attrFilter[key];
+    const idx = arr.indexOf(val);
+    if(cb.checked){ if(idx === -1) arr.push(val); }
+    else if(idx !== -1) arr.splice(idx, 1);
     render();
   }));
   const priceApplyBtn = document.getElementById("priceApplyBtn");
@@ -1502,12 +1507,11 @@ function buildFilterPanel(allGroups){
     render();
   });
 }
-/* Solo actualiza qué botones quedan marcados como activos (no reconstruye el panel,
+/* Solo actualiza qué opciones quedan marcadas (no reconstruye el panel,
    así el acordeón no se cierra solo mientras el cliente elige varias opciones) */
 function syncFilterPanelUI(){
-  document.querySelectorAll(".fsec-body button[data-key]").forEach(b => {
-    if(b.dataset.key === "cat") return;
-    b.classList.toggle("active", attrFilter[b.dataset.key] === b.dataset.val);
+  document.querySelectorAll(".fsec-body input[type=checkbox][data-key]").forEach(cb => {
+    cb.checked = attrFilter[cb.dataset.key].includes(cb.dataset.val);
   });
 }
 function openFilterPanel(){
@@ -1522,7 +1526,7 @@ document.getElementById("filterClose").addEventListener("click", closeFilterPane
 document.getElementById("filterOverlay").addEventListener("click", closeFilterPanel);
 document.getElementById("filterApplyBtn").addEventListener("click", closeFilterPanel);
 document.getElementById("filterClearBtn").addEventListener("click", () => {
-  attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+  attrFilter = { color:[], colorPatas:[], qty:[], priceMin:null, priceMax:null };
   const minEl = document.getElementById("priceMinInput"); if(minEl) minEl.value = "";
   const maxEl = document.getElementById("priceMaxInput"); if(maxEl) maxEl.value = "";
   render();
@@ -1574,7 +1578,7 @@ function render(){
   const allGroups = groupProducts(view);
   const tagsKey = currentTags ? currentTags.slice().sort().join(",") : "";
   if(filterPanelBuiltFor !== tagsKey){
-    attrFilter = { color:null, colorPatas:null, qty:null, priceMin:null, priceMax:null };
+    attrFilter = { color:[], colorPatas:[], qty:[], priceMin:null, priceMax:null };
     buildFilterPanel(allGroups);
     filterPanelBuiltFor = tagsKey;
   }
