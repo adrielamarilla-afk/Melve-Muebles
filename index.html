@@ -1413,9 +1413,18 @@ function closeMobileMenu(){
   navLinks.querySelectorAll(".mega-card.open").forEach(mc => mc.classList.remove("open"));
 }
 
+/* Portada elegida a mano para el menú, por categoría (si no está acá, se usa
+   la foto del producto más nuevo de esa categoría). */
+const THUMB_OVERRIDE = {
+  "escritorios": "melve/puu8tstgwqorbv4nlhv1",
+};
 function fillThumbs(){
   navLinks.querySelectorAll(".mega .thumb, .mega .thumb-lg").forEach(t => {
-    const first = IMAGES.find(x => categoryOf[x.public_id] === t.dataset.cat);
+    const cat = t.dataset.cat;
+    const overrideId = THUMB_OVERRIDE[cat];
+    const first = overrideId
+      ? IMAGES.find(x => x.public_id === overrideId)
+      : IMAGES.find(x => categoryOf[x.public_id] === cat);
     if(first) t.style.backgroundImage = `url(${imgUrl(first,160)})`;
   });
 }
