@@ -1360,12 +1360,12 @@ function buildMenu(){
         const subRows = it.sub.map(s => `<button class="mega-sub-item" data-tags="${s.tags.join(",")}">${s.label}</button>`).join("");
         const miniSub = `<button class="mega-sub-back" type="button">‹ ${it.label}</button><button class="mega-sub-viewall" data-tags="${itTags}">Ver todo en ${it.label.toUpperCase()}</button>${subRows}`;
         return `<div class="mega-card">
-          <button class="thumb-lg" data-tags="${itTags}" data-cat="${it.tags[0]}"></button>
+          <button class="thumb-lg" data-tags="${itTags}" data-cat="${it.tags[0]}" data-group="${g.label}"></button>
           <button class="mega-card-label" data-tags="${itTags}">${it.label}</button>
           <div class="mega-card-sub">${miniSub}</div>
         </div>`;
       }
-      return `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}"></span><span class="lbl">${it.label}</span></a>`;
+      return `<a data-tags="${it.tags.join(",")}"><span class="thumb" data-cat="${it.tags[0]}" data-group="${g.label}"></span><span class="lbl">${it.label}</span></a>`;
     }).join("");
     const allTags = g.items.flatMap(it => it.tags).join(",");
     return `<div class="menu-item"><span class="top">${g.label}<span class="caret"></span></span><div class="mega"><button class="mega-back" type="button">‹ ${g.label}</button><button class="mega-viewall" data-tags="${allTags}">Ver todo en ${g.label.toUpperCase()}</button>${sub}</div></div>`;
@@ -1413,15 +1413,20 @@ function closeMobileMenu(){
   navLinks.querySelectorAll(".mega-card.open").forEach(mc => mc.classList.remove("open"));
 }
 
-/* Portada elegida a mano para el menú, por categoría (si no está acá, se usa
-   la foto del producto más nuevo de esa categoría). */
+/* Portada elegida a mano para el menú. Clave "Grupo:categoría" (para cuando la
+   misma categoría aparece en dos menús distintos, ej. Escritorios en Gamer y
+   en Oficina, y cada uno quiere mostrar una foto diferente); si no hay una
+   clave específica del grupo, se prueba solo la categoría, y si tampoco hay
+   override se usa la foto del producto más nuevo de esa categoría. */
 const THUMB_OVERRIDE = {
-  "escritorios": "melve/puu8tstgwqorbv4nlhv1",
+  "Oficina:escritorios": "melve/puu8tstgwqorbv4nlhv1",
+  "Gamer:escritorios":   "melve/xzc9dkhpfgfrt0mssaek",
 };
 function fillThumbs(){
   navLinks.querySelectorAll(".mega .thumb, .mega .thumb-lg").forEach(t => {
     const cat = t.dataset.cat;
-    const overrideId = THUMB_OVERRIDE[cat];
+    const group = t.dataset.group;
+    const overrideId = THUMB_OVERRIDE[`${group}:${cat}`] || THUMB_OVERRIDE[cat];
     const first = overrideId
       ? IMAGES.find(x => x.public_id === overrideId)
       : IMAGES.find(x => categoryOf[x.public_id] === cat);
