@@ -1303,10 +1303,25 @@ function fillCatTiles(){
 }
 
 /* Destacados: una muestra chica en la home (el resto vive en el catálogo completo) */
+/* Mezcla el orden (Fisher-Yates) — se usa para que "Destacados" no muestre
+   siempre lo último subido, sino una selección que rota en cada visita. */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 function renderFeatured(){
   const el = document.getElementById("featuredGrid");
-  const featured = groupProducts(IMAGES)
-    .filter(g => !spotlightGroup || !(g.d.n === spotlightGroup.d.n && g.d.p === spotlightGroup.d.p))
+  const candidates = groupProducts(IMAGES)
+    .filter(g => g.d.p)   // nunca destacar productos sin precio todavía cargado
+    .filter(g => !spotlightGroup || !(g.d.n === spotlightGroup.d.n && g.d.p === spotlightGroup.d.p));
+  /* Los "más vendidos" (sales_rank cargado a mano) van primero; el resto se
+     mezcla al azar para que roten entre visitas. */
+  const featured = shuffle(candidates)
+    .sort((a,b) => (b.d.salesRank||0) - (a.d.salesRank||0))
     .slice(0, 8);   // el que va en el destacado grande de arriba no se repite acá
   el.innerHTML = featured.map(g => { const d = g.d; const item = g.images[0]; return `
     <article class="prod">
