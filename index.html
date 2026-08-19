@@ -806,6 +806,10 @@
           <div class="opt-label">Cantidad</div>
           <div class="opt-row" id="qtyRow"></div>
         </div>
+        <div class="opt-block" id="sizeBlock">
+          <div class="opt-label">Medidas</div>
+          <div class="opt-row" id="sizeRow"></div>
+        </div>
 
         <p class="modal-note">Precio en <b>efectivo</b>. Sumalo al carrito o tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
         <div class="modal-actions">
@@ -899,20 +903,27 @@ function fmtMoney(n){ return "$" + Math.round(n).toLocaleString("es-AR"); }
    (combos, por ejemplo) usa directamente su precio único. Si vende por cantidad
    (sillas) pero no cargamos ese número todavía, devuelve null y la ficha muestra
    "Consultar por WhatsApp" en vez de inventar un número. */
-function pricesForQty(d, qty){
+function pricesForQty(d, qty, sizeLabel){
+  /* Si el producto se vende por medida (espejos, por ejemplo), esa selección
+     manda: cada medida tiene su propio precio, independiente de la cantidad. */
+  if(d.sizes && d.sizes.length){
+    const s = d.sizes.find(s => s.label === sizeLabel) || d.sizes[0];
+    return s ? { p: s.p, lista: s.lista } : null;
+  }
   if(!d.qty) return d.p ? { p:d.p, lista:d.lista } : null;
   return d.qty[qty] || null;
 }
 
-function waLink(item, qty, color, colorPatas){
+function waLink(item, qty, color, colorPatas, sizeLabel){
   const d = info(item);
   qty = qty || 1;
-  const pr = pricesForQty(d, qty);
+  const pr = pricesForQty(d, qty, sizeLabel);
   let label = d.n;
+  if(sizeLabel) label += ` (${sizeLabel})`;
   if(color && colorPatas) label += ` (tapa ${color}, patas ${colorPatas})`;
   else if(color) label += ` color ${color}`;
-  if(qty > 1) label += ` x${qty}`;
-  label += pr ? ` (${pr.p} efectivo)` : ` — consultar precio para x${qty}`;
+  if(!sizeLabel && qty > 1) label += ` x${qty}`;
+  label += pr ? ` (${pr.p} efectivo)` : ` — consultar precio`;
   const text = encodeURIComponent(`Hola! Quiero comprar: ${label} 👉 ${fullUrl(item)}`);
   return `https://wa.me/${WA}?text=${text}`;
 }
@@ -1215,6 +1226,9 @@ async function loadFromSupabase(){
       desc: row.description || undefined,
       priceNum: row.price || 0,
       salesRank: row.sales_rank || 0,
+      sizes: row.sizes && row.sizes.length
+        ? row.sizes.map(s => ({ label: s.label, p: fmtMoney(s.p), lista: s.lista ? fmtMoney(s.lista) : undefined }))
+        : undefined,
     };
     (row.images || []).forEach(img => {
       const item = { public_id: img.public_id, format: img.format, created_at: row.created_at, color: img.color || undefined, colorPatas: img.colorPatas || undefined };
@@ -1691,6 +1705,7 @@ function displayName(d, tag, qty){
 let selColor = null;
 let selColorPatas = null;
 let selQty = 1;
+let selSize = null;
 
 /* Busca la foto que mejor coincida con los colores elegidos (tapa/patas).
    Prioriza la coincidencia exacta de ambos; si no hay, se conforma con uno solo. */
@@ -1711,6 +1726,7 @@ function openLb(group, opts){
   selQty = 4;   // arranca en x4: es el precio que se ve en la tarjeta del catálogo
   selColor = null;
   selColorPatas = null;
+  selSize = null;
   renderLbImage();
   lightbox.classList.add("open");
   const pid = encodeURIComponent(group.images[0].public_id);
@@ -1744,7 +1760,7 @@ function restoreFromHash(){
 function updatePriceDisplay(){
   const d = currentGroup.d;
   const qty = selQty || 1;
-  const pr = pricesForQty(d, qty);
+  const pr = pricesForQty(d, qty, selSize);
   const priceEl = document.getElementById("lbPrice");
   if(pr){
     priceEl.innerHTML = `${pr.p}<span class="prod-ef"> efectivo</span>`;
@@ -1757,7 +1773,7 @@ function updatePriceDisplay(){
   }
 }
 function updateBuyLink(){
-  lbWa.href = waLink(currentGroup.images[0], selQty, selColor, selColorPatas);
+  lbWa.href = waLink(currentGroup.images[0], selQty, selColor, selColorPatas, selSize);
 }
 
 /* Arma la línea de carrito para el producto/variante/cantidad seleccionados en la ficha.
@@ -1766,17 +1782,18 @@ function cartLineFromCurrent(){
   const d = currentGroup.d;
   const item = currentGroup.images[0];
   const qty = selQty || 1;
-  const pr = pricesForQty(d, qty);
+  const pr = pricesForQty(d, qty, selSize);
   if(!pr) return null;
   const tag = categoryOf[item.public_id];
   let variant = "";
-  if(selColor && selColorPatas) variant = `tapa ${selColor}, patas ${selColorPatas}`;
+  if(selSize) variant = selSize;
+  else if(selColor && selColorPatas) variant = `tapa ${selColor}, patas ${selColorPatas}`;
   else if(selColor) variant = `color ${selColor}`;
   return {
-    key: [item.public_id, qty, selColor||"", selColorPatas||""].join("|"),
+    key: [item.public_id, qty, selColor||"", selColorPatas||"", selSize||""].join("|"),
     publicId: item.public_id,
     format: item.format,
-    name: displayName(d, tag, qty),
+    name: selSize ? d.n : displayName(d, tag, qty),
     variant,
     unitPriceNum: parseInt(String(pr.p).replace(/[^\d]/g,""), 10) || 0,
   };
@@ -1863,6 +1880,25 @@ function renderLbImage(){
   } else {
     selQty = 1;
     qtyBlock.style.display = "none";
+  }
+
+  /* Selector de medidas (cada medida tiene su propio precio) */
+  const sizeBlock = document.getElementById("sizeBlock");
+  const sizeRow = document.getElementById("sizeRow");
+  if(d.sizes && d.sizes.length){
+    if(!selSize) selSize = d.sizes[0].label;
+    sizeRow.innerHTML = d.sizes.map(s => `<button class="${s.label===selSize?"active":""}" data-size="${s.label}">${s.label}</button>`).join("");
+    sizeRow.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+      selSize = b.dataset.size;
+      sizeRow.querySelectorAll("button").forEach(x => x.classList.toggle("active", x===b));
+      updatePriceDisplay();
+      updateBuyLink();
+      updateAddCartBtn();
+    }));
+    sizeBlock.style.display = "";
+  } else {
+    selSize = null;
+    sizeBlock.style.display = "none";
   }
 
   document.getElementById("lbTitle").textContent = displayName(d, tag, selQty);

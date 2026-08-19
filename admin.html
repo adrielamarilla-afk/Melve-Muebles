@@ -62,6 +62,10 @@
   #qtyRows{border:1px dashed var(--line); border-radius:10px; padding:14px; margin-bottom:16px;}
   .qty-row{display:grid; grid-template-columns:44px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px;}
   .qty-row span{color:var(--muted); font-size:13px; font-weight:700;}
+  #sizeRows{border:1px dashed var(--line); border-radius:10px; padding:14px; margin-bottom:16px;}
+  .size-row{display:grid; grid-template-columns:1fr 1fr 1fr 24px; gap:8px; align-items:center; margin-bottom:8px;}
+  .size-row input{padding:8px 8px; font-size:12.5px;}
+  .size-row .removeSizeRow{background:none; border:none; color:var(--danger); font-size:16px; cursor:pointer; padding:0;}
 
   .photo-uploader{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
   #photoList{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
@@ -167,6 +171,12 @@
           <div class="qty-row"><span>x3</span><input type="number" id="qty_3_p" placeholder="Precio"><input type="number" id="qty_3_lista" placeholder="Lista (opcional)"></div>
           <div class="qty-row"><span>x4</span><input type="number" id="qty_4_p" placeholder="Precio"><input type="number" id="qty_4_lista" placeholder="Lista (opcional)"></div>
           <div class="qty-row"><span>x6</span><input type="number" id="qty_6_p" placeholder="Precio"><input type="number" id="qty_6_lista" placeholder="Lista (opcional)"></div>
+        </div>
+
+        <label class="checkline"><input type="checkbox" id="fHasSizes"> Se vende por medida (cada tamaño con su propio precio, ej. espejos de 40/60/80cm)</label>
+        <div id="sizeRows" style="display:none;">
+          <div id="sizeRowsList"></div>
+          <button type="button" class="btn ghost" id="addSizeRow">+ Agregar medida</button>
         </div>
 
         <div class="field">
@@ -372,6 +382,40 @@ document.getElementById("fHasQty").addEventListener("change", e => {
   document.getElementById("qtyRows").style.display = e.target.checked ? "block" : "none";
 });
 
+/* ===== Selector de medidas (cada medida con su propio precio) ===== */
+let sizeRows = []; // [{label, p, lista}]
+function renderSizeRowsUI(){
+  const el = document.getElementById("sizeRowsList");
+  el.innerHTML = sizeRows.map((s,i) => `
+    <div class="size-row" data-i="${i}">
+      <input type="text" class="size-label" placeholder="Ej: 40 cm" value="${s.label || ""}">
+      <input type="number" class="size-p" placeholder="Precio" value="${s.p || ""}">
+      <input type="number" class="size-lista" placeholder="Lista (opcional)" value="${s.lista || ""}">
+      <button type="button" class="removeSizeRow" data-i="${i}" aria-label="Quitar">✕</button>
+    </div>`).join("");
+  el.querySelectorAll(".size-row").forEach(row => {
+    const i = parseInt(row.dataset.i, 10);
+    row.querySelector(".size-label").addEventListener("input", e => { sizeRows[i].label = e.target.value; });
+    row.querySelector(".size-p").addEventListener("input", e => { sizeRows[i].p = e.target.value; });
+    row.querySelector(".size-lista").addEventListener("input", e => { sizeRows[i].lista = e.target.value; });
+  });
+  el.querySelectorAll(".removeSizeRow").forEach(b => b.addEventListener("click", () => {
+    sizeRows.splice(parseInt(b.dataset.i, 10), 1);
+    renderSizeRowsUI();
+  }));
+}
+document.getElementById("addSizeRow").addEventListener("click", () => {
+  sizeRows.push({ label:"", p:"", lista:"" });
+  renderSizeRowsUI();
+});
+document.getElementById("fHasSizes").addEventListener("change", e => {
+  document.getElementById("sizeRows").style.display = e.target.checked ? "block" : "none";
+  if(e.target.checked && sizeRows.length === 0){
+    sizeRows.push({ label:"", p:"", lista:"" });
+    renderSizeRowsUI();
+  }
+});
+
 /* ===== Guardar (alta / edición) ===== */
 document.getElementById("productForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -401,10 +445,18 @@ document.getElementById("productForm").addEventListener("submit", async e => {
     if(Object.keys(qtyPricing).length === 0) qtyPricing = null;
   }
 
+  let sizes = null;
+  if(document.getElementById("fHasSizes").checked){
+    sizes = sizeRows
+      .map(s => ({ label: (s.label||"").trim(), p: parseFloat(s.p), lista: parseFloat(s.lista) || undefined }))
+      .filter(s => s.label && s.p);
+    if(sizes.length === 0) sizes = null;
+  }
+
   if(!name){ alert("Escribí un nombre para el producto."); return; }
   if(currentPhotos.length === 0){ alert("Subí al menos una foto."); return; }
 
-  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, extra_categories: extraCategories.length ? extraCategories : null, images: currentPhotos };
+  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, sizes, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, extra_categories: extraCategories.length ? extraCategories : null, images: currentPhotos };
 
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
@@ -427,6 +479,9 @@ function resetForm(){
   document.getElementById("formTitle").textContent = "Agregar producto";
   document.getElementById("cancelEditBtn").style.display = "none";
   document.getElementById("qtyRows").style.display = "none";
+  sizeRows = [];
+  renderSizeRowsUI();
+  document.getElementById("sizeRows").style.display = "none";
 }
 document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
 
@@ -585,6 +640,12 @@ function editProduct(id){
     document.getElementById(`qty_${q}_p`).value = qd ? qd.p : "";
     document.getElementById(`qty_${q}_lista`).value = (qd && qd.lista) ? qd.lista : "";
   });
+
+  const hasSizes = p.sizes && p.sizes.length > 0;
+  document.getElementById("fHasSizes").checked = !!hasSizes;
+  document.getElementById("sizeRows").style.display = hasSizes ? "block" : "none";
+  sizeRows = hasSizes ? p.sizes.map(s => ({...s})) : [];
+  renderSizeRowsUI();
 
   document.getElementById("formTitle").textContent = "Editar producto";
   document.getElementById("cancelEditBtn").style.display = "inline-flex";
