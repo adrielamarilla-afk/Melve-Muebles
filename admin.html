@@ -57,6 +57,8 @@
   .panel h2{font-size:17px; margin-bottom:18px;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   .checkline{display:flex; align-items:center; gap:9px; margin-bottom:14px; font-size:13.5px; color:var(--ink);}
+  .extra-cats{display:flex; flex-wrap:wrap; gap:8px 16px; border:1px dashed var(--line); border-radius:10px; padding:12px; margin-bottom:16px;}
+  .extra-cats label{display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink); cursor:pointer;}
   #qtyRows{border:1px dashed var(--line); border-radius:10px; padding:14px; margin-bottom:16px;}
   .qty-row{display:grid; grid-template-columns:44px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px;}
   .qty-row span{color:var(--muted); font-size:13px; font-weight:700;}
@@ -142,6 +144,10 @@
 
         <div class="field"><label for="fCategory">Categoría</label>
           <select id="fCategory" required></select>
+        </div>
+
+        <div class="field"><label>Categorías extra (opcional — para que este mismo producto aparezca también en otro filtro, ej. una silla de comedor que además querés mostrar en "Sillas de Diseño")</label>
+          <div id="fExtraCats" class="extra-cats"></div>
         </div>
 
         <div class="row2">
@@ -243,6 +249,21 @@ const CATEGORIES = [
 const categoryOptions = CATEGORIES.map(c => `<option value="${c.tag}">${c.label}</option>`).join("");
 document.getElementById("fCategory").innerHTML = categoryOptions;
 document.getElementById("batchCategory").innerHTML = categoryOptions;
+
+/* Categorías extra: mismas opciones que la categoría principal, salvo la que ya está elegida ahí */
+function renderExtraCats(checkedTags){
+  checkedTags = checkedTags || [];
+  const primary = document.getElementById("fCategory").value;
+  const el = document.getElementById("fExtraCats");
+  el.innerHTML = CATEGORIES.filter(c => c.tag !== primary).map(c => `
+    <label><input type="checkbox" value="${c.tag}"${checkedTags.includes(c.tag) ? " checked" : ""}> ${c.label}</label>
+  `).join("");
+}
+renderExtraCats();
+document.getElementById("fCategory").addEventListener("change", () => {
+  const checked = Array.from(document.querySelectorAll("#fExtraCats input:checked")).map(i => i.value);
+  renderExtraCats(checked);
+});
 
 const QTYS = [1,2,3,4,6];
 let currentPhotos = [];   // [{public_id, format}]
@@ -364,6 +385,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   const colorsPatas = colorsPatasRaw ? colorsPatasRaw.split(",").map(s => s.trim()).filter(Boolean) : null;
   const description = document.getElementById("fDesc").value.trim() || null;
   const salesRank = parseInt(document.getElementById("fSales").value, 10) || 0;
+  const extraCategories = Array.from(document.querySelectorAll("#fExtraCats input:checked")).map(i => i.value);
 
   let qtyPricing = null;
   if(document.getElementById("fHasQty").checked){
@@ -382,7 +404,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   if(!name){ alert("Escribí un nombre para el producto."); return; }
   if(currentPhotos.length === 0){ alert("Subí al menos una foto."); return; }
 
-  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, images: currentPhotos };
+  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, extra_categories: extraCategories.length ? extraCategories : null, images: currentPhotos };
 
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
@@ -400,6 +422,7 @@ function resetForm(){
   document.getElementById("productForm").reset();
   currentPhotos = [];
   renderPhotoList();
+  renderExtraCats();
   editingId = null;
   document.getElementById("formTitle").textContent = "Agregar producto";
   document.getElementById("cancelEditBtn").style.display = "none";
@@ -550,6 +573,7 @@ function editProduct(id){
   document.getElementById("fColorsPatas").value = (p.colors_patas || []).join(",");
   document.getElementById("fDesc").value = p.description || "";
   document.getElementById("fSales").value = p.sales_rank || "";
+  renderExtraCats(p.extra_categories || []);
   currentPhotos = p.images ? p.images.map(x => ({...x})) : [];
   renderPhotoList();
 

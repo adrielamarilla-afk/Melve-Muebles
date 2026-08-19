@@ -1137,7 +1137,15 @@ document.querySelector(".logo").addEventListener("click", () => {
 const lbImg = document.getElementById("lbImg");
 const lbWa = document.getElementById("lbWa");
 let currentGroup = null;  // producto abierto en la ficha (objeto {d, images})
-let categoryOf = {};      // public_id -> categoría
+let categoryOf = {};      // public_id -> categoría principal
+let extraCatOf = {};      // public_id -> [categorías extra] (mismo producto, visible también en otro filtro)
+/* ¿Esta foto pertenece a esta categoría? (la principal, o alguna de las extra) */
+function matchesTag(public_id, tag){
+  return categoryOf[public_id] === tag || (extraCatOf[public_id] || []).includes(tag);
+}
+function matchesAnyTag(public_id, tags){
+  return tags.some(t => matchesTag(public_id, t));
+}
 let currentTags = null;   // null = todos; si no, array de etiquetas
 let view = [];
 let groups = [];          // productos agrupados del catálogo completo (según el filtro activo)
@@ -1185,6 +1193,7 @@ async function loadFromSupabase(){
   if(error) throw error;
   IMAGES = [];
   categoryOf = {};
+  extraCatOf = {};
   PRODUCTS = {};
   (data || []).forEach(row => {
     let qty;
@@ -1211,6 +1220,7 @@ async function loadFromSupabase(){
       const item = { public_id: img.public_id, format: img.format, created_at: row.created_at, color: img.color || undefined, colorPatas: img.colorPatas || undefined };
       IMAGES.push(item);
       categoryOf[img.public_id] = row.category;
+      extraCatOf[img.public_id] = row.extra_categories || [];
       PRODUCTS[img.public_id] = d;
     });
   });
@@ -1287,7 +1297,7 @@ function buildCatTiles(){
 function fillCatTiles(){
   document.querySelectorAll(".cat-tile-img").forEach(el => {
     const tags = el.dataset.tags.split(",");
-    const imgs = IMAGES.filter(x => tags.includes(categoryOf[x.public_id]));
+    const imgs = IMAGES.filter(x => matchesAnyTag(x.public_id, tags));
     if(imgs[0]) el.style.backgroundImage = `url(${imgUrl(imgs[0],300)})`;
   });
 }
@@ -1429,7 +1439,7 @@ function fillThumbs(){
     const overrideId = THUMB_OVERRIDE[`${group}:${cat}`] || THUMB_OVERRIDE[cat];
     const first = overrideId
       ? IMAGES.find(x => x.public_id === overrideId)
-      : IMAGES.find(x => categoryOf[x.public_id] === cat);
+      : IMAGES.find(x => matchesTag(x.public_id, cat));
     if(first) t.style.backgroundImage = `url(${imgUrl(first,160)})`;
   });
 }
@@ -1438,7 +1448,7 @@ function fillThumbs(){
 function buildFilters(){
   const counts = {};
   CATEGORIES.forEach(c => {
-    const imgs = IMAGES.filter(x => categoryOf[x.public_id] === c.tag);
+    const imgs = IMAGES.filter(x => matchesTag(x.public_id, c.tag));
     counts[c.tag] = groupProducts(imgs).length;
   });
   let html = `<button data-f="all" class="active">Todos (${groupProducts(IMAGES).length})</button>`;
@@ -1454,7 +1464,7 @@ function buildFilters(){
    categoría actual (allGroups, sin los filtros de atributo todavía aplicados). ===== */
 function filterCategorySection(){
   const counts = {};
-  CATEGORIES.forEach(c => { counts[c.tag] = groupProducts(IMAGES.filter(x => categoryOf[x.public_id] === c.tag)).length; });
+  CATEGORIES.forEach(c => { counts[c.tag] = groupProducts(IMAGES.filter(x => matchesTag(x.public_id, c.tag))).length; });
   const allBtn = `<button data-key="cat" data-val="all" class="${!currentTags ? "active" : ""}">Todos (${groupProducts(IMAGES).length})</button>`;
   const catBtns = CATEGORIES.filter(c => counts[c.tag]).map(c =>
     `<button data-key="cat" data-val="${c.tag}" class="${currentTags && currentTags.length === 1 && currentTags[0] === c.tag ? "active" : ""}">${c.label} (${counts[c.tag]})</button>`
@@ -1580,7 +1590,7 @@ tabFilter.addEventListener("click", () => {
 });
 
 function render(){
-  view = !currentTags ? IMAGES : IMAGES.filter(x => currentTags.includes(categoryOf[x.public_id]));
+  view = !currentTags ? IMAGES : IMAGES.filter(x => matchesAnyTag(x.public_id, currentTags));
   const allGroups = groupProducts(view);
   const tagsKey = currentTags ? currentTags.slice().sort().join(",") : "";
   if(filterPanelBuiltFor !== tagsKey){
@@ -1872,7 +1882,7 @@ function renderLbImage(){
 function renderSimilar(tag){
   const wrap = document.getElementById("pdpSimilar");
   const simGrid = document.getElementById("similarGrid");
-  const pool = groupProducts(IMAGES.filter(x => categoryOf[x.public_id] === tag));
+  const pool = groupProducts(IMAGES.filter(x => matchesTag(x.public_id, tag)));
   const others = pool.filter(g => !(g.d.n === currentGroup.d.n && g.d.p === currentGroup.d.p)).slice(0,4);
   if(!others.length){ wrap.style.display = "none"; return; }
   wrap.style.display = "";
