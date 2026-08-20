@@ -332,8 +332,11 @@
   .prod-lista{font-size:12px; color:var(--muted); text-decoration:line-through; margin-top:2px;}
   .prod-cuotas{font-size:11px; color:var(--muted); margin-top:4px; line-height:1.5; white-space:pre-line;}
   .prod-img .multi{position:absolute; top:10px; left:10px; background:rgba(0,0,0,.6); color:#fff; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:999px;}
+  .prod-img .stock-badge{position:absolute; top:10px; left:10px; background:#1a1a1a; color:#fff; font-size:10px; font-weight:800; letter-spacing:.04em; padding:4px 9px; border-radius:6px; text-transform:uppercase;}
   .prod-foot{padding:12px 13px 14px; display:flex;}
   .prod-foot .btn{flex:1;}
+  .prod-foot .btn.out-of-stock{background:var(--soft); border-color:var(--line); color:var(--muted); cursor:default; pointer-events:none;}
+  .btn-out-of-stock{width:100%; padding:15px; border-radius:10px; border:1.5px solid var(--line); background:var(--soft); color:var(--muted); font-weight:700; font-size:15px; cursor:default;}
   .modal-price{font-size:30px; font-weight:800; color:var(--accent); font-family:var(--display); margin:0 0 4px;}
   .modal-price .prod-ef{font-family:var(--body); font-size:12px; font-weight:600; color:var(--muted);}
   .modal-lista{font-size:14px; color:var(--muted); text-decoration:line-through; margin-bottom:4px;}
@@ -824,11 +827,12 @@
           <div class="opt-row" id="sizeRow"></div>
         </div>
 
-        <p class="modal-note">Precio en <b>efectivo</b>. Sumalo al carrito o tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
-        <div class="modal-actions">
+        <p class="modal-note" id="lbNote">Precio en <b>efectivo</b>. Sumalo al carrito o tocá <b>Comprar por WhatsApp</b> y coordinamos el pago y el envío a tu zona.</p>
+        <div class="modal-actions" id="lbActions">
           <button class="btn ghost modal-addcart" id="lbAddCart">Agregar al carrito</button>
           <a class="btn buy modal-buy" id="lbWa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor" width="20" height="20"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.1.6 4.2 1.6 6L4 29l8.2-1.6c1.7.9 3.6 1.4 5.6 1.4h.2c6.6 0 12-5.4 12-12S22.6 3 16 3zm5.9 14c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1c-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.3s0-.5.1-.7l.5-.6c.2-.2.2-.3.3-.5s.1-.4 0-.5c-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3 2.1 3.2 5 4.5c.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5z"/></svg>Comprar por WhatsApp</a>
         </div>
+        <button class="btn-out-of-stock" id="lbOutOfStock" disabled style="display:none;">Sin stock</button>
         <ul class="modal-feats">
           <li>Pago en efectivo al recibir</li>
           <li>Envíos a CABA y GBA</li>
@@ -1239,6 +1243,7 @@ async function loadFromSupabase(){
       desc: row.description || undefined,
       priceNum: row.price || 0,
       salesRank: row.sales_rank || 0,
+      inStock: row.in_stock !== false,   // por defecto hay stock, salvo que se marque lo contrario
       sizes: row.sizes && row.sizes.length
         ? row.sizes.map(s => ({ label: s.label, p: fmtMoney(s.p), lista: s.lista ? fmtMoney(s.lista) : undefined }))
         : undefined,
@@ -1354,7 +1359,7 @@ function renderFeatured(){
     <article class="prod">
       <div class="prod-img">
         <img src="${imgUrl(item,700)}" alt="${d.n}" loading="lazy">
-        ${g.images.length > 1 ? `<span class="multi">1/${g.images.length}</span>` : ""}
+        ${!d.inStock ? `<span class="stock-badge">Sin stock</span>` : g.images.length > 1 ? `<span class="multi">1/${g.images.length}</span>` : ""}
         <span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4M11 8v6M8 11h6"/></svg></span>
       </div>
       <div class="prod-body">
@@ -1362,7 +1367,7 @@ function renderFeatured(){
         <div class="prod-price">${d.p}<span class="prod-ef">${d.p ? " efectivo" : ""}</span></div>
         ${d.lista ? `<div class="prod-lista">Lista ${d.lista}</div><div class="prod-cuotas">${cuotasText(d.lista)}</div>` : ""}
       </div>
-      <div class="prod-foot"><button class="btn sm">Comprar</button></div>
+      <div class="prod-foot">${d.inStock ? `<button class="btn sm">Comprar</button>` : `<button class="btn sm out-of-stock" disabled>Sin stock</button>`}</div>
     </article>`; }).join("");
   el.querySelectorAll(".prod").forEach((card,i) => card.addEventListener("click", () => openLb(featured[i])));
 }
@@ -1653,7 +1658,7 @@ function render(){
     <article class="prod">
       <div class="prod-img" data-index="${i}">
         <img src="${imgUrl(item,700)}" alt="${d.n}" loading="lazy">
-        ${g.images.length > 1 ? `<span class="multi">1/${g.images.length}</span>` : ""}
+        ${!d.inStock ? `<span class="stock-badge">Sin stock</span>` : g.images.length > 1 ? `<span class="multi">1/${g.images.length}</span>` : ""}
         <span class="zoom"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4M11 8v6M8 11h6"/></svg></span>
       </div>
       <div class="prod-body">
@@ -1662,7 +1667,7 @@ function render(){
         ${d.lista ? `<div class="prod-lista">Lista ${d.lista}</div><div class="prod-cuotas">${cuotasText(d.lista)}</div>` : ""}
       </div>
       <div class="prod-foot">
-        <button class="btn sm open-modal" data-index="${i}">Comprar</button>
+        ${d.inStock ? `<button class="btn sm open-modal" data-index="${i}">Comprar</button>` : `<button class="btn sm out-of-stock" disabled>Sin stock</button>`}
       </div>
     </article>`; }).join("");
   grid.querySelectorAll(".prod-img").forEach((el,i) => el.addEventListener("click", () => openLb(groups[i])));
@@ -1919,6 +1924,11 @@ function renderLbImage(){
   updateBuyLink();
   updateAddCartBtn();
 
+  /* Sin stock: se sigue viendo la ficha completa, pero no se puede comprar */
+  document.getElementById("lbActions").style.display = d.inStock ? "" : "none";
+  document.getElementById("lbNote").style.display = d.inStock ? "" : "none";
+  document.getElementById("lbOutOfStock").style.display = d.inStock ? "none" : "";
+
   /* Miniaturas de fotos del producto */
   const thumbs = document.getElementById("lbThumbRow");
   const imgPrev = document.getElementById("lbImgPrev");
@@ -1954,6 +1964,7 @@ function renderSimilar(tag){
     <article class="prod">
       <div class="prod-img">
         <img src="${imgUrl(item,500)}" alt="${d.n}" loading="lazy">
+        ${!d.inStock ? `<span class="stock-badge">Sin stock</span>` : ""}
       </div>
       <div class="prod-body">
         <h3 class="prod-name">${displayName(d, categoryOf[item.public_id])}</h3>

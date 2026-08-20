@@ -84,6 +84,7 @@
   .prod-row img, .prod-row .no-img{width:46px; height:46px; border-radius:7px; object-fit:cover; background:var(--soft); flex:0 0 auto;}
   .prod-row-info{flex:1; min-width:0;}
   .prod-row-name{font-weight:600; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .out-of-stock-tag{background:var(--danger); color:#fff; font-size:9.5px; font-weight:800; text-transform:uppercase; padding:2px 6px; border-radius:5px; letter-spacing:.03em;}
   .prod-row-meta{font-size:12px; color:var(--muted);}
   .prod-row .btn{padding:8px 12px; font-size:12px;}
 
@@ -163,6 +164,8 @@
         <div class="field"><label for="fColorsPatas">Colores de patas (opcional — solo si tapa y patas se eligen por separado, separados por coma)</label><input type="text" id="fColorsPatas" placeholder="Blanco,Negro"></div>
         <div class="field"><label for="fDesc">Descripción (opcional)</label><textarea id="fDesc" rows="3" placeholder="Se genera una automática si lo dejás vacío"></textarea></div>
         <div class="field"><label for="fSales">Ventas (para ordenar "Más vendidos" en la web, opcional)</label><input type="number" id="fSales" min="0" step="1" placeholder="0"></div>
+
+        <label class="checkline"><input type="checkbox" id="fOutOfStock"> Sin stock (sigue apareciendo en la web, marcado como "Sin stock" y sin poder comprarse)</label>
 
         <label class="checkline"><input type="checkbox" id="fHasQty"> Se vende por cantidad (x1, x2, x3, x4, x6 — como las sillas de comedor)</label>
         <div id="qtyRows" style="display:none;">
@@ -429,6 +432,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   const colorsPatas = colorsPatasRaw ? colorsPatasRaw.split(",").map(s => s.trim()).filter(Boolean) : null;
   const description = document.getElementById("fDesc").value.trim() || null;
   const salesRank = parseInt(document.getElementById("fSales").value, 10) || 0;
+  const inStock = !document.getElementById("fOutOfStock").checked;
   const extraCategories = Array.from(document.querySelectorAll("#fExtraCats input:checked")).map(i => i.value);
 
   let qtyPricing = null;
@@ -456,7 +460,7 @@ document.getElementById("productForm").addEventListener("submit", async e => {
   if(!name){ alert("Escribí un nombre para el producto."); return; }
   if(currentPhotos.length === 0){ alert("Subí al menos una foto."); return; }
 
-  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, sizes, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, extra_categories: extraCategories.length ? extraCategories : null, images: currentPhotos };
+  const row = { name, category, price, price_lista: priceLista, qty_pricing: qtyPricing, sizes, colors, colors_patas: colorsPatas, description, sales_rank: salesRank, in_stock: inStock, extra_categories: extraCategories.length ? extraCategories : null, images: currentPhotos };
 
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Guardando…";
@@ -606,7 +610,7 @@ function renderProductsList(list){
     <div class="prod-row">
       ${thumb ? `<img src="${thumb}" alt="">` : `<div class="no-img"></div>`}
       <div class="prod-row-info">
-        <div class="prod-row-name">${p.name}</div>
+        <div class="prod-row-name">${p.name}${p.in_stock === false ? ' <span class="out-of-stock-tag">Sin stock</span>' : ""}</div>
         <div class="prod-row-meta">${catLabel} · ${priceTxt}</div>
       </div>
       <button type="button" class="btn ghost editBtn" data-id="${p.id}">Editar</button>
@@ -628,6 +632,7 @@ function editProduct(id){
   document.getElementById("fColorsPatas").value = (p.colors_patas || []).join(",");
   document.getElementById("fDesc").value = p.description || "";
   document.getElementById("fSales").value = p.sales_rank || "";
+  document.getElementById("fOutOfStock").checked = p.in_stock === false;
   renderExtraCats(p.extra_categories || []);
   currentPhotos = p.images ? p.images.map(x => ({...x})) : [];
   renderPhotoList();
